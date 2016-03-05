@@ -1,14 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 
-__title__ = 'GmmPy'
-__author__ = 'Albert Kottke'
-__license__ = 'GPLv3'  #FIXME look at Apache 2.0
-__copyright__ = 'Copyright 2016 Albert Kottke'
-
-from ._version import get_versions
-__version__ = get_versions()['version']
-del get_versions
+import logging
 
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
@@ -32,8 +25,14 @@ __all__ = [
     'TavakoliPezeshk05',
 ]
 
+__author__ = 'Albert Kottke'
+__copyright__ = 'Copyright 2016 Albert Kottke'
+__license__ = 'MIT'
+__title__ = 'pyGMM'
+__version__ = '0.1.0'
+
+
 # Set default logging handler to avoid "No handler found" warnings.
-import logging
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:
@@ -43,3 +42,14 @@ except ImportError:
 
 logging.getLogger(__name__).addHandler(NullHandler())
 
+models = [
+    AbrahamsonSilvaKamai2014,
+    AtkinsonBoore2006,
+    BooreStewartSeyhanAtkinson2014,
+    Campbell2003,
+    CampbellBozorgnia2014,
+    ChiouYoungs2014,
+    Idriss2014,
+    PezeshkZandiehTavakoli2011,
+    TavakoliPezeshk05,
+]

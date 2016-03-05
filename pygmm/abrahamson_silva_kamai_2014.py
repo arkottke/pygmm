@@ -63,7 +63,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
             'global'
         ),
         model.CategoricalParameter(
-            'vs_source', True, ['measured', 'inferred']),
+            'vs_source', False, ['measured', 'inferred'], 'measured'),
         model.CategoricalParameter(
             'is_aftershock', False, [True, False], False),
         model.CategoricalParameter('on_hanging_wall', False,
@@ -284,7 +284,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
             f6 = a15 * np.clip(p['depth_tor'] / 20, 0, 1)
 
             # Basin term
-            if v_s30 == self.V_REF:
+            if v_s30 == self.V_REF or p['depth_1_0'] is None:
+                # No basin response
                 f10 = 0
             else:
                 depth_1_0_ref = self.calc_depth_1_0(v_s30, p['region'])

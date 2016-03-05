@@ -1,6 +1,8 @@
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
+
 import gzip
 
-import itertools
 import json
 import os
 
@@ -65,4 +67,3 @@ def check_model(model, params, values):
             values[key],
             decimal=DECIMAL,
         )
-

@@ -1,23 +1,15 @@
-"""Create plots for visual comparison."""
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
-__author__ = 'akottke'
+"""Create plots for visual comparison."""
 
 import os
 
 import matplotlib
 matplotlib.use('agg')
-
 import matplotlib.pyplot as plt
-import numpy as np
 
-from ..atkinson_boore_2006 import AtkinsonBoore2006
-from ..boore_stewart_seyhan_atkinson_2014 import  BooreStewartSeyhanAtkinson2014
-from ..campbell_2003 import Campbell2003
-from ..campbell_bozorgnia_2014 import CampbellBozorgnia2014
-from ..chiou_youngs_2014 import ChiouYoungs2014
-from ..idriss_2014 import Idriss2014
-from ..pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
-from ..tavakoli_pezeshk_2005 import TavakoliPezeshk05
+import pygmm
 
 DEFAULT_PROPS = dict(
     depth_2_5=5,
@@ -83,9 +75,7 @@ def plot_model_with_param(model, key, values, label):
 
 
 def test_models():
-    for m in [AtkinsonBoore2006, BooreStewartSeyhanAtkinson2014,
-              Campbell2003, CampbellBozorgnia2014, ChiouYoungs2014,
-              Idriss2014, PezeshkZandiehTavakoli2011, TavakoliPezeshk05]:
+    for m in pygmm.models:
         for key, values, label in [
                 ('mag', [5, 6, 7], 'Magnitude'),
                 (['dist', 'dist_rup', 'dist_jb', 'dist_x'], [10, 50, 100],
@@ -93,4 +83,3 @@ def test_models():
                 ('v_s30', [300, 650, 1000], '$V_{s30}$ (m/s)'),
                 ]:
             yield plot_model_with_param, m, key, values, label
-
