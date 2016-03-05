@@ -59,7 +59,7 @@ docs/_build/
 target/
 
 # Vim files
-
+*.swp
 
 # Figures from testing
 figures/
