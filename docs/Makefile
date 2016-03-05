@@ -43,6 +43,7 @@ help:
 	@echo "  changes    to make an overview of all changed/added/deprecated items"
 	@echo "  xml        to make Docutils-native XML files"
 	@echo "  pseudoxml  to make pseudoxml-XML files for display purposes"
+	@echo "  livehtml   to make live HTML that automaticall rebuilds"
 	@echo "  linkcheck  to check all external links for integrity"
 	@echo "  doctest    to run all doctests embedded in the documentation (if enabled)"
 
@@ -175,3 +176,13 @@ pseudoxml:
 	$(SPHINXBUILD) -b pseudoxml $(ALLSPHINXOPTS) $(BUILDDIR)/pseudoxml
 	@echo
 	@echo "Build finished. The pseudo-XML files are in $(BUILDDIR)/pseudoxml."
+
+livehtml:
+	sphinx-autobuild -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html\
+	    --watch ../pygmm \
+	    -i "*.swp" \
+	    -i "*.swx" \
+	    -i "*.swpx" \
+	    -i "*~" \
+	    -i "\.*" \
+	    -i "*4913"
