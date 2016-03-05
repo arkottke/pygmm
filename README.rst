@@ -1,6 +1,6 @@
-===============================
+=====
 pyGMM
-===============================
+=====
 
 .. image:: https://img.shields.io/pypi/v/pygmm.svg
         :target: https://pypi.python.org/pypi/pygmm
@@ -15,13 +15,32 @@ pyGMM
 
 Ground motion models implemented in Python.
 
-* Free software: ISC license
+* Free software: MIT license
 * Documentation: https://pygmm.readthedocs.org.
 
 Features
 --------
 
-* TODO
+Models currently supported:
+
+* Atkinson & Boore (2006) 
+
+* Abrahamson, Silva, & Kamai (2014) with unit tests
+
+* Boore, Stewart, Seyhan, & Atkinson (2014) with unit tests
+
+* Campbell (2003)
+
+* Campbell & Bozorgnia (2014) with unit tests
+
+* Chiou & Youngs (2014) with unit tests
+
+* Idriss (2014) with unit tests
+
+* Pezeshk, Zandieh, & Tavakoli (2001)
+
+* Tavakoli & Pezeshk (2005)
+
 
 Credits
 ---------
