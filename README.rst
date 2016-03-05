@@ -10,8 +10,8 @@ pyGMM
     :target: https://travis-ci.org/arkottke/pygmm
     :alt: Build Status
 
-.. image:: https://readthedocs.org/projects/pygmm/badge/?version=latest
-    :target: https://readthedocs.org/projects/pygmm/?badge=latest
+.. image:: https://readthedocs.org/projects/pygmm/badge/?version=latest&style=flat
+    :target: https://pygmm.rtfd.org
     :alt: Documentation Status
 
 .. image:: https://coveralls.io/repos/github/arkottke/pygmm/badge.svg?branch=master 
