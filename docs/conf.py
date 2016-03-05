@@ -16,6 +16,8 @@
 import sys
 import os
 
+from unittest.mock import MagicMock
+
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
 # relative to the documentation root, use os.path.abspath to make it
@@ -30,6 +32,17 @@ project_root = os.path.dirname(cwd)
 # This lets us ensure that the source package is imported, and that its
 # version is used.
 sys.path.insert(0, project_root)
+
+
+# Mock modules that take a long time to install.
+# Source: http://read-the-docs.readthedocs.org/en/latest/faq.html
+class Mock(MagicMock):
+    @classmethod
+    def __getattr__(cls, name):
+            return Mock()
+
+MOCK_MODULES = ['matplotlib', 'numpy']
+sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 import pygmm
 
