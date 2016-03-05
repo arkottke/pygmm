@@ -3,15 +3,26 @@ pyGMM
 =====
 
 .. image:: https://img.shields.io/pypi/v/pygmm.svg
-        :target: https://pypi.python.org/pypi/pygmm
+    :target: https://pypi.python.org/pypi/pygmm
+    :alt: PyPi Cheese Shop
 
 .. image:: https://img.shields.io/travis/arkottke/pygmm.svg
-        :target: https://travis-ci.org/arkottke/pygmm
+    :target: https://travis-ci.org/arkottke/pygmm
+    :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/pygmm/badge/?version=latest
-        :target: https://readthedocs.org/projects/pygmm/?badge=latest
-        :alt: Documentation Status
+    :target: https://readthedocs.org/projects/pygmm/?badge=latest
+    :alt: Documentation Status
 
+.. image:: https://coveralls.io/repos/github/arkottke/pygmm/badge.svg?branch=master 
+    :target: https://coveralls.io/github/arkottke/pygmm?branch=master
+    :alt: Test Coverage
+
+.. image:: https://img.shields.io/codeclimate/github/arkottke/pygmm.svg
+    :target: https://codeclimate.com/github/arkottke/pygmm
+    :alt: Code Climate
+
+.. image:: https://img.shields.io/badge/license-MIT-blue.svg
 
 Ground motion models implemented in Python.
 
