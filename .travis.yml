@@ -49,12 +49,12 @@ before_install:
 install:
     - conda create -q -n testenv --yes pip python=$TRAVIS_PYTHON_VERSION
     - source activate testenv
-    - conda install --yes numpy scipy
+    - conda install --yes numpy scipy matplotlib
     - pip install -r requirements_dev.txt
     - python setup.py install
 
 script:  
-    - py.test --flakes --cov-report html --cov pygmm tests/
+    - py.test --flake8 --cov-report html --cov pygmm tests/
 
 after_success:
     coveralls
