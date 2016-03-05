@@ -1,5 +1,6 @@
 bumpversion
 flake8
+invoke
 pytest
 pytest-cov
 pytest-flake8
