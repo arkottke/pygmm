@@ -60,6 +60,7 @@ target/
 
 # Vim files
 *.swp
+/tags
 
 # Figures from testing
 figures/
