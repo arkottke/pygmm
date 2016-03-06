@@ -7,5 +7,7 @@ numpy
 pytest
 pytest-cov
 pytest-flake8
+sphinx
+sphinxcontrib-bibtex
 watchdog
 wheel

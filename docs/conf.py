@@ -18,6 +18,9 @@ import os
 
 from unittest.mock import MagicMock
 
+
+# on_rtd = os.environ.get('READTHEDOCS', None) == True
+
 # If extensions (or modules to document with autodoc) are in another
 # directory, add these directories to sys.path here. If the directory is
 # relative to the documentation root, use os.path.abspath to make it
@@ -33,7 +36,6 @@ project_root = os.path.dirname(cwd)
 # version is used.
 sys.path.insert(0, project_root)
 
-
 # Mock modules that take a long time to install.
 # Source: http://read-the-docs.readthedocs.org/en/latest/faq.html
 class Mock(MagicMock):
@@ -41,8 +43,9 @@ class Mock(MagicMock):
     def __getattr__(cls, name):
             return Mock()
 
-MOCK_MODULES = ['matplotlib', 'numpy']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
+# if on_rtd:
+#     MOCK_MODULES = ['matplotlib', 'numpy']
+#     sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
 
 import pygmm
 
@@ -58,6 +61,8 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'matplotlib.sphinxext.plot_directive',
+    'sphinxcontrib.bibtex',
 ]
 
 # Add any paths that contain templates here, relative to this directory.
