@@ -13,15 +13,10 @@ __author__ = 'Albert Kottke'
 
 
 class AtkinsonBoore2006(model.Model):
-    """Atkinson and Boore (2006) ground motion prediction model.
+    """Atkinson and Boore (2006) :cite:`atkinson06` ground motion prediction model.
 
     Developed for the Eastern North America with a reference velocity of 760
     or 2000 m/s.
-
-    Citation:
-        Atkinson, G. M., & Boore, D. M. (2006). Earthquake ground-motion
-        prediction equations for eastern North America. Bulletin of the
-        seismological society of America, 96(6), 2181-2205.
     """
 
     NAME = 'Atkinson and Boore (2006)'
@@ -52,13 +47,12 @@ class AtkinsonBoore2006(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        Inputs:
-            mag: float
-                moment magnitude of the event
-            dist_rup: float
-                closest distance to the rupture (km)
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the site (m/s)
+        Keyword Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+            dist_rup (float): Closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
         """
         super(AtkinsonBoore2006, self).__init__(**kwds)
         p = self.params

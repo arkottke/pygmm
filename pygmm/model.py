@@ -7,10 +7,6 @@ import os
 
 import numpy as np
 
-# Conversion from cm/sec/sec to gravity
-# TO_GRAVITY = 0.00101971621
-# FROM_GRAVITY = 1. / TO_GRAVITY
-
 
 class Model(object):
     """Abstract class for ground motion prediction models.
@@ -53,13 +49,11 @@ class Model(object):
         """Return the pseudo-spectral acceleration at the provided damping
         at specified periods.
 
-        Inputs:
-            period: :class:`numpy.array`
-                periods of interest (sec).
+        Args:
+            period (:class:`numpy.array`): periods of interest (sec).
 
-        Return
-            :class:`numpy.array`
-                pseudo-spectral accelerations.
+        Returns:
+            (:class:`numpy.array`): pseudo-spectral accelerations.
 
         """
 
@@ -73,10 +67,8 @@ class Model(object):
         (:math:`\\sigma_{ \\ln}`) of spectral acceleration at the provided
         damping at specified periods.
 
-
-        Inputs:
-            period: :class:`numpy.array`
-                periods of interest (sec).
+        Args:
+            period (:class:`numpy.array`): periods of interest (sec).
 
         Returns:
             :class:`numpy.array`
@@ -276,11 +268,11 @@ class NumericParameter(Parameter):
             if self.min is not None and value < self.min:
                 logging.warning(
                     '{} ({:g}) is less than the recommended limit ({:g}).'.
-                        format(self.name, value, self.min))
+                    format(self.name, value, self.min))
             elif self.max is not None and self.max < value:
                 logging.warning(
                     '{} ({:g}) is greater than the recommended limit ({:g}).'.
-                        format(self.name, value, self.max))
+                    format(self.name, value, self.max))
 
         return value
 
@@ -304,14 +296,15 @@ class CategoricalParameter(Parameter):
             alert = logging.error if self._required else logging.warning
             alert(
                 '{} value of "{}" is not one of the options. The following'
-                ' options are possible: {}'
-                    .format(self._name, value,
-                            ', '.join([str(o) for o in self._options]))
+                ' options are possible: {}'.
+                format(self._name, value,
+                       ', '.join([str(o) for o in self._options]))
             )
 
         return value
 
 
+# FIXME return a list of records
 def load_data_file(name, skip_header=None):
     fname = os.path.join(os.path.dirname(__file__), 'data', name)
     return np.recfromcsv(fname, skip_header=skip_header).view(np.recarray)

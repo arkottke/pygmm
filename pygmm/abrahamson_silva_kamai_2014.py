@@ -14,12 +14,8 @@ __author__ = 'Albert Kottke'
 
 
 class AbrahamsonSilvaKamai2014(model.Model):
-    """Abrahamson, Silva, and Kamai (2014) ground motion model.
-
-    Citation:
-        Abrahamson, N. A., Silva, W. J., & Kamai, R. (2014). Summary of the
-        ASK14 ground motion relation for active crustal regions. Earthquake
-        Spectra, 30(3), 1025-1055.
+    """The Abrahamson, Silva, and Kamai (2014) :cite:`abrahamson14` ground
+    motion model.
     """
 
     NAME = 'Abrahamson, Silva, & Kamai (2014)'
@@ -82,80 +78,84 @@ class AbrahamsonSilvaKamai2014(model.Model):
             p['depth_tor'] = self.calc_width(p['mag'])
 
     def __init__(self, **kwds):
-        """
-        Inputs:
-            depth_1_0: float, default: None
-                (optional) depth to the 1.0 km∕s shear wave velocity horizon
-                beneath the site. Used to compute `depth_2_5` if it is not
-                explicitly provided.
-            depth_2_5: float, default: None
-                (optional) depth to the 2.5 km∕s shear wave velocity horizon
-                beneath the
-                site (a.k.a. sediment depth). If `None`, then it is computed
-                from `depth_1_0`, or `v_s30`. If `depth_2_5` is to be
-                estimated from the `v_s30` and the `region` parameter.
-            depth_tor: float, default: None
-                (optional) Depth to the top of the rupture (km). If not provided,
-                average model is used.
-            depth_bor: float, default: None
-                (optional) Depth to bottom of the rupture (km).
-            depth_hyp: float, default: None
-                Depth of the hypocenter (km).
-            dip: float
-                Fault dip angle (deg)
-            dist_jb: float
-                Joyner-Boore distance to the rupture plane (km)
-            dist_rup: float
-                closest distance to the rupture (km)
-            dist_x: float
-                site coordinate (km) measured perpendicular to the fault strike
-                from the fault line with the down-dip direction being positive
-                (see Figure 3.12 in Chiou and Youngs (2008).
-            dist_y0: float
-                (optional) the horizontal distance off the end of the rupture
-                measured parallel to strike (km).
-            mag: float
-                moment magnitude of the event
-            mechanism: str
-                fault mechanism.
+        """Initialize the model.
 
-                    SS
-                        strike slip
+        Keyword Args:
+            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+                Used to estimate `depth_2_5`.
 
-                    NS
-                        normal slip
-                        -120° <= rake angle <= -60°
-                        (excludes normal-oblique)
+            depth_2_5 (Optional[float]): depth to the 2.5 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{2.5}` in (km).
+                If *None*, then it is computed from `depth_1_0` or `v_s30`
+                and the `region` parameter.
 
-                    RS
-                        reverse slip
-                        30° <= rake angle <= 150°
-                        (combined reverse and reverse-oblique)
-            on_hanging_wall: bool, default: False
-                (optional) If the site is located on the hanging wall of the
-                fault.
-                    True
-                        :math:`R_x >= 0`
-                    False
-                        :math:`R_x < 0`
-            region: str, default: global
-                region. Potential regions:
-                    global
-                    california
-                    china
-                    italy
-                    japan
-                    taiwan
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the site
-                (m/s)
-            vs_source: str, default: measured
-                source of the :math:`V_{s30}`. Potential sources:
-                    measured
-                    inferred
-            width: float, default: None
-                (optional) Down-dip width of the fault. If not provided,
-                it is estimated.
+            depth_tor (Optional[float]): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km). If *None*, then  the average
+                model is used.
+
+            depth_bor (Optional[float]): depth to the bottom of the rupture
+                plane (:math:`Z_{bor}`, km). If *None*, then  the average
+                model is used.
+
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            dist_jb (float): Joyner-Boore distance to the rupture plane
+                (:math:`R_\\text{JB}`, km)
+
+            dist_rup (float): closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
+
+            dist_x (float): site coordinate measured perpendicular to the
+                fault strike from the fault line with the down-dip direction
+                being positive (:math:`R_x`, km).
+
+            dist_y0 (Optional[float]): the horizontal distance off the end of
+                the rupture measured parallel to strike (:math:`R_{y0}`, km).
+
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            mechanism (str): fault mechanism
+
+                +------+--------------+-----------------------------+
+                | name | meaning      | definition                  |
+                +======+==============+=============================+
+                | ss   | strike slip  |                             |
+                +------+--------------+-----------------------------+
+                | ns   | normal slip  | -120° :math:`\le`           |
+                |      |              | rake angle :math:`\le` -60° |
+                |      |              |                             |
+                |      |              | (excludes normal-oblique)   |
+                +------+--------------+-----------------------------+
+                | rs   | reverse slip | 30° :math:`\le`             |
+                |      |              | rake angle :math:`\le` 150° |
+                |      |              |                             |
+                |      |              | (combines reverse           |
+                |      |              | and reverse-oblique)        |
+                +------+--------------+-----------------------------+
+
+            on_hanging_wall (Optional[bool]): If the site is located on the
+                hanging wall of the fault. If *None*, then *False* is assumed.
+
+            region (Optional[str]): region.
+                Potential regions:
+                 * global (default)
+                 * california
+                 * china
+                 * italy
+                 * japan
+                 * taiwan
+
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
+
+            vs_source (Optional[str]): source of the `v_s30` value.  Potential
+                sources:
+                 * measured
+                 * inferred
+
+            width (Optional[float]): Down-dip width of the fault. If *None*,
+                then  the average model is used.
         """
         super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
         p = self.params
@@ -361,14 +361,14 @@ class AbrahamsonSilvaKamai2014(model.Model):
     def calc_width(mag, dip):
         """Compute the fault width based on equation in NGW2 spreadsheet.
 
-        Inputs:
-            mag: float
-                magnitude
-            dip: float
-                Dip of the fault (degrees).
+        This equation is not provided in the paper.
+
+        Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+            dip (float): Fault dip angle (:math:`\phi`, deg)
+
         Returns:
-            width: float
-                estimated fault width (km).
+            float: estimated fault width (:math:`W`, km)
         """
         return min(
             18 / np.sin(np.radians(dip)),
@@ -379,35 +379,32 @@ class AbrahamsonSilvaKamai2014(model.Model):
     def calc_depth_tor(mag):
         """Calculate the depth to top of rupture (km).
 
-        Inputs:
-            mag: float
-                magnitude
+        Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
         Returns:
-            depth_tor: float
-                Estimated depth (m).
+            float: estimated depth (km)
         """
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
     def calc_depth_1_0(v_s30, region):
-        """Calculate an estimate of the depth to 1 km/sec, :math:`Z_{1.0}`
-        based on :math:`V_{s30}` and region.
+        """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
+        :math:`V_{s30}` and region.
 
-        This is based on equations 18 and 19 in the Spectra paper,
-        and differs from the equations in the CY14 paper.
+        This is based on equations 18 and 19 in the :cite:`abrahamson14`
+        and differs from the equations in the :cite:`chiou14`.
 
-        Inputs:
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the
-                site, :math:`V_{s30}` (m/s)
-            region: str
-                region for the :math:`V_{s30}-Z_{1.0}` correlation. Potential regions:
-                    california (default)
-                    japan
+        Args:
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
+            region (str): (optional) region. Potential regions:
+                    * california (default)
+                    * japan
+
         Returns:
-            depth_1_0: float
-                depth (m) to a shear-wave velocity of 1,000 m/sec,
-                :math:`Z_{1.0}`.
+            float: depth to a shear-wave velocity of 1,000 m/sec,
+                (:math:`Z_{1.0}`, km).
 
         """
         if region in ['japan']:

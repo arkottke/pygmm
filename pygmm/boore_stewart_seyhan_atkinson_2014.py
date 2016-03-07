@@ -16,14 +16,10 @@ __author__ = 'Albert Kottke'
 
 
 class BooreStewartSeyhanAtkinson2014(model.Model):
-    """Boore, Stewart, Seyhan, and Atkinson (2014) ground motion model.
+    """Boore, Stewart, Seyhan, and Atkinson (2014) :cite:`boore14` ground
+    motion model.
 
     Developed for the California and other active tectonic environments.
-
-    Citation:
-        Boore, D. M., Stewart, J. P., Seyhan, E., & Atkinson, G. M. (2014).
-        NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for
-        Shallow Crustal Earthquakes. Earthquake Spectra, 30(3), 1057-1085.
     """
     NAME = 'Boore, Stewart, Seyhan, and Atkinson (2014)'
     ABBREV = 'BSSA14'
@@ -64,36 +60,55 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
         """Compute the response predicted the Boore, Stewart, Seyhan,
         and Atkinson (2014) ground motion model.
 
-        Inputs:
-            dist_jb: float
-                Joyner-Boore distance to the rupture plane (km)
-            mag: float
-                moment magnitude of the event
-            mechanism: str, default: 'U'
-                (optional) fault mechanism with the following options:
+        Keyword Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
 
-                    +--------------+--------------+
-                    | Abbreviation | Name         |
-                    +==============+==============+
-                    | U            | Unspecified  |
-                    +--------------+--------------+
-                    | SS           | Strike-slip  |
-                    +--------------+--------------+
-                    | NS           | Normal slip  |
-                    +--------------+--------------+
-                    | RS           | Reverse slip |
-                    +--------------+--------------+
+            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+                If *None* is specified, then no adjustment is applied.
 
-            region: str, default: 'global'
-                (optional) region for distance attenuation and basin model.
-                The BSSA14 model defines the following distance attenuation
-                models:
-                    global:         Global; California and Taiwan
-                    china_turkey:   China and Turkey
-                    italy_japan:    Italy and Japan
+            dist_jb (float): Joyner-Boore distance to the rupture plane
+                (:math:`R_\\text{JB}`, km)
+
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
+
+            mechanism (str): fault mechanism
+
+                +--------------+--------------+
+                | Abbreviation | Name         |
+                +==============+==============+
+                | u            | Unspecified  |
+                +--------------+--------------+
+                | ss           | Strike-slip  |
+                +--------------+--------------+
+                | ns           | Normal slip  |
+                +--------------+--------------+
+                | rs           | Reverse slip |
+                +--------------+--------------+
+
+            region (Optional[str]): region for distance attenuation and basin
+                model.  The BSSA14 model defines the following distance
+                attenuation models:
+
+                    +--------------+-------------------------------+
+                    | Name         | Description                   |
+                    +--------------+-------------------------------+
+                    | global       | Global; California and Taiwan |
+                    | china_turkey | China and Turkey              |
+                    | italy_japan  | Italy and Japan               |
+                    +--------------+-------------------------------+
+
                 and the following basin region models:
-                    global:         Global / California
-                    japan:          Japan
+
+                    +--------+---------------------+
+                    | Name   | Description         |
+                    +========+=====================+
+                    | global | Global / California |
+                    +--------+---------------------+
+                    | japan  | Japan               |
+                    +--------+---------------------+
+
                 These are simplified into one regional parameter with the
                 following possibilities:
 
@@ -118,14 +133,6 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
                     +-------------+--------------+------------+
 
                 If *None* is specified, then 'global' parameters are used.
-
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the
-                site (m/s).
-            depth_1_0: float, default: None
-                (optional) depth to the 1.0 km∕s shear wave velocity horizon
-                beneath the site (:math:`Z_{1.0}`). If *None* is specified,
-                then no adjustment is applied.
         """
         super(BooreStewartSeyhanAtkinson2014, self).__init__(**kwds)
         p = self.params

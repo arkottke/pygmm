@@ -13,16 +13,11 @@ __author__ = 'Albert Kottke'
 
 
 class PezeshkZandiehTavakoli2011(model.Model):
-    """Pezeshk, Zandieh, and Tavakoli (2011) ground motion prediction model.
+    """Pezeshk, Zandieh, and Tavakoli (2011) :cite:`pezeshk11` ground motion
+    prediction model.
 
     Developed for the Eastern North America with a reference velocity of 2000
     m/s.
-
-    Citation:
-        Pezeshk, S., Zandieh, A., & Tavakoli, B. (2011). Hybrid empirical
-        ground-motion prediction equations for Eastern North America using
-        NGA models and updated seismological parameters. Bulletin of the
-        Seismological Society of America, 101(4), 1859-1870.
     """
 
     NAME = 'Pezeshk et al. (2011)'
@@ -46,11 +41,10 @@ class PezeshkZandiehTavakoli2011(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        Inputs:
-            mag: float
-                magnitude of the event
-            dist_rup: float
-                closest distance to the rupture (km)
+        Keyword Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+            dist_rup (float): Closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
         """
         super(PezeshkZandiehTavakoli2011, self).__init__(**kwds)
         p = self.params

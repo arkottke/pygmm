@@ -15,15 +15,11 @@ __author__ = 'Albert Kottke'
 
 
 class TavakoliPezeshk05(model.Model):
-    """Tavakoli and Pezeshk (2005) ground motion prediction model.
+    """Tavakoli and Pezeshk (2005) :cite:`tavakoli05` ground motion prediction
+    model.
 
     Developed for the Eastern North America with a reference velocity of 2880
     m/s.
-
-    Citation:
-        Tavakoli, B., & Pezeshk, S. (2005). Empirical-stochastic
-        ground-motion prediction for eastern North America. Bulletin of the
-        Seismological Society of America, 95(6), 2283-2296.
     """
 
     NAME = 'Tavakoli and Pezeshk (2005)'
@@ -47,11 +43,10 @@ class TavakoliPezeshk05(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        Inputs:
-            mag: float
-                moment magnitude of the event
-            dist_rup: float
-                closest distance to the rupture (km)
+        Keyword Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+            dist_rup (float): Closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
         """
         super(TavakoliPezeshk05, self).__init__(**kwds)
         p = self.params
