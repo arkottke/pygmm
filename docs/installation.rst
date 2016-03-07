@@ -4,19 +4,29 @@
 Installation
 ============
 
-Prior to using pyGMM, Python and a number of packages need to be installed. In
-addition to Python, the following packages need to be installed:
+Prior to using pyGMM, Python and the following dependencies need to be
+installed:
 
 * matplotlib -- used for plotting
 
 * numpy -- fast vector operations
 
-Install Python dependencies is best accomplished with a package manager. On
-Windows or OS-X, I recommend using Miniconda3. On Linux, the package manager
-is preferred.
+pyGMM supports both Python 2.7 and Python 3.
 
-Miniconda3 has installers for `Windows 32-bit`_, `Windows 64-bit`_, and `OS-X`_.
-While pyGMM has support Python27, Python3 is preferred.
+Linux
+-----
+
+Install pyGMM dependencies is best accomplished with a package manager. On Arch
+Linux this can be accomplished with::
+
+    pacman -S python-numpy python-matplotlib pip
+
+Windows and OS-X
+----------------
+
+On Windows, installing matplotlib and numpy can be simplified by using
+Miniconda3. Miniconda3 has installers for `Windows 32-bit`_, `Windows 64-bit`_,
+and `OS-X`_.
 
 .. _Windows 32-bit: http://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86.exe
 .. _Windows 64-bit: http://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe
@@ -34,8 +44,11 @@ window, and select *Properties*, and then check the *Quick Edit Mode* check box
 within the *Edit Options* group. Copy the text, and then paste it by click the
 right mouse button.
 
-Now that the dependencies have been installed, install or upgrade pyGMM using
-pip::
+
+Installing pyGMM
+----------------
+
+After the dependencies have been installed, install or upgrade pyGMM using pip::
 
   pip install --upgrade pygmm
 
