@@ -23,7 +23,7 @@ def clean():
 @task
 def test():
     """test - run the test runner."""
-    run('py.test --flakes --cov-report html --cov pygmm tests/', pty=True)
+    run('py.test --flake8 --cov-report html --cov pygmm tests/', pty=True)
     run('open htmlcov/index.html')
 
 
