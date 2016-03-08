@@ -16,13 +16,8 @@ __author__ = 'Albert Kottke'
 
 
 class CampbellBozorgnia2014(model.Model):
-    """Model for the Campbell and Bozorgnia (2014) ground motion model.
-
-    Citation:
-        Campbell, K. W., & Bozorgnia, Y. (2014). NGA-West2 ground motion
-        model for the average horizontal components of PGA, PGV, and 5%
-        damped linear acceleration response spectra. Earthquake Spectra,
-        30(3), 1087-1115.
+    """Campbell and Bozorgnia (2014) :cite:`campbell14` ground motion model
+    for active tectonic regions.
     """
 
     NAME = 'Campbell & Bozorgnia (2014)'
@@ -99,61 +94,56 @@ class CampbellBozorgnia2014(model.Model):
         """Compute the response predicted the Campbell and Bozorgnia (2014)
         ground motion model.
 
-        Inputs:
-            depth_1_0: float, default: None
-                depth to the 1.0 km∕s shear wave velocity horizon beneath the
-                site, :math:`Z_{1.0}`. Used to compute :math:`Z_{2.5}`,
-                if it is not explicitly provided.
-            depth_2_5: float, default: None
-                depth to the 2.5 km∕s shear wave velocity horizon beneath the
-                site (a.k.a. sediment depth). If `None`, then it is computed
-                from `depth_1_0`, or `v_s30`. If `depth_2_5` is to be
-                estimated from the `v_s30`.
-            depth_tor: float, default: None
-                Depth to the top of the rupture (km). If not provided,
-                average model is used.
-            depth_bor: float, default: None
-                (optional) Depth to bottom of the rupture (km).
-            depth_bot: float, default: 15.0
-                (optional) depth to bottom of seismogenic crust (km). Used to
-                calculate fault width if none is specified.
-            depth_hyp: float, default: None
-                Depth of the hypocenter (km).
-            dip: float
-                Fault dip angle (deg)
-            dist_jb: float
-                Joyner-Boore distance to the rupture plane, :math:`R_{JB}` (km)
-            dist_rup: float
-                closest distance to the rupture (km)
-            dist_x: float
-                site coordinate (km) measured perpendicular to the fault strike
-                from the fault line with the down-dip direction being positive
-                (see Figure 3.12 in Chiou and Youngs (2008).
-            mag: float
-                moment magnitude of the event
-            mechanism: str
-                fault mechanism.
-                    SS
-                        strike slip
-                    NS
-                        normal slip
-                        -120° <= rake angle <= -60°
-                        (excludes normal-oblique)
-                    RS
-                        reverse slip
-                        30° <= rake angle <= 150°
-                        (combined reverse and reverse-oblique)
-            region: str, default: california
-                region. Potential regions:
-                    california
-                    japan_italy
-                    eastern_china
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the
-                site, :math:`V_{s30}` (m/s)
-            width: float, default: None
-                (optional) Down-dip width of the fault. If not provided,
-                it is estimated.
+        Keyword Args:
+            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+                Used to estimate `depth_2_5`.
+
+            depth_2_5 (Optional[float]): depth to the 2.5 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{2.5}` in (km).
+                If *None*, then it is computed from `depth_1_0` or `v_s30`
+                and the `region` parameter.
+
+            depth_tor (Optional[float]): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km). If *None*, then  the average
+                model is used.
+
+            depth_bor (Optional[float]): depth to the bottom of the rupture
+                plane (:math:`Z_{bor}`, km). If *None*, then  the average
+                model is used.
+
+            depth_bot (Optional[float]): depth to bottom of seismogenic crust
+                (km). Used to calculate fault width if none is specified. If
+                *None*, then a value of 15 km is used.
+
+            depth_hyp (Optional[float]): depth of the hypocenter (km). If
+                *None*, then the model average is used.
+
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            dist_jb (float): Joyner-Boore distance to the rupture plane
+                (:math:`R_\\text{JB}`, km)
+
+            dist_rup (float): closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
+
+            dist_x (float): site coordinate measured perpendicular to the
+                fault strike from the fault line with the down-dip direction
+                being positive (:math:`R_x`, km).
+
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            mechanism (str): fault mechanism. Valid values: "SS", "NS", "RS".
+
+            region (Optional[str]): region. Valid values: "california",
+                "china", "italy", "japan". If *None*, then "california" is
+                used as a default value.
+
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
+
+            width (Optional[float]): Down-dip width of the fault. If *None*,
+                then the model average is used.
         """
         super(CampbellBozorgnia2014, self).__init__(**kwds)
         p = self.params
@@ -345,24 +335,25 @@ class CampbellBozorgnia2014(model.Model):
 
     @staticmethod
     def calc_depth_2_5(v_s30, region='global', depth_1_0=None):
-        """Calculate the depth to a shear-wave velocity of 2.5 km/sec.
+        """Calculate the depth to a shear-wave velocity of 2.5 km/sec
+        (:math:`Z_{2.5}`).
 
-        Inputs:
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the site
-                (m/s)
-            region: str, default: 'global'
-                region for the :math:`V_s30`-:math:`Z_{2.5}` correlation. Potential regions:
-                    global:     Data from California and Japan
-                    california: Data only from California
-                    japan:      Data only from Japan
-            depth_1_0: float, default: None
-                depth (m) to a shearw-wave velocity of 1,000 (m/sec). Only
-                used if :math:`V_{s30}` is not provided.
+        Provide either `v_s30` or `depth_1_0`.
+
+        Args:
+            v_s30 (Optional[float]): time-averaged shear-wave velocity over
+                the top 30 m of the site (:math:`V_{s30}`, m/s).
+
+        Keyword Args:
+            region (Optional[str]): region of the basin model. Valid values:
+                "california", "japan".
+
+            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
 
         Returns:
-            depth_2_5: float
-                Estimated depth (km) to a shear-wave velocity of 2,500 (m/sec)
+            float: estimated depth to a shear-wave velocity of 2.5 km/sec
+            (km).
         """
         if v_s30:
             param = v_s30
@@ -401,21 +392,21 @@ class CampbellBozorgnia2014(model.Model):
 
     @staticmethod
     def calc_depth_hyp(mag, dip, depth_tor, depth_bor):
-        """Calculate the depth to hypocenter.
+        """Estimate the depth to hypocenter.
 
-        Inputs:
-            mag: float
-                magnitude
-            dip: float
-                Dip of the fault (degrees).
-            depth_tor: float
-                Depth to top of rupture (km).
-            depth_bor: float
-                Depth to bottom of seismogenic crust (km).
+        Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            depth_tor (float): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km).
+
+            depth_bor (float): depth to the bottom of the rupture
+                plane (:math:`Z_{bor}`, km).
 
         Returns:
-            depth_hyp: float
-                Estimated hypocenter depth (m).
+            float: estimated hypocenter depth (km)
         """
         # Equations 35, 36, and 37 of journal article
         ln_dZ = min(
@@ -430,21 +421,23 @@ class CampbellBozorgnia2014(model.Model):
 
     @staticmethod
     def calc_width(mag, dip, depth_tor, depth_bot=15.0):
-        """Compute the fault width based on Equation (39) of CB14.
+        """Estimate the fault width using Equation (39) of CB14.
 
-        Inputs:
-            mag: float
-                magnitude
-            dip: float
-                Dip of the fault (degrees).
-            depth_tor: float
-                Depth to top of rupture (km).
-            depth_bot: float, default: 15.0
-                Depth to bottom of seismogenic crust (km).
+        Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            depth_tor (float): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km).
+
+        Keyword Args:
+            depth_bot (Optional[float]): depth to bottom of seismogenic crust
+                (km). Used to calculate fault width if none is specified. If
+                *None*, then a value of 15 km is used.
 
         Returns:
-            width: float
-                estimated fault width (km).
+            float: estimated fault width (km)
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
@@ -452,19 +445,18 @@ class CampbellBozorgnia2014(model.Model):
         )
 
     @staticmethod
-    def calc_depth_bor(depth_tor, dip, width=None):
+    def calc_depth_bor(depth_tor, dip, width):
         """Compute the depth to bottom of the rupture (km).
 
-        Inputs:
-            depth_tor: float
-                Depth to top of rupture (km).
-            dip: float
-                Dip of the fault (degrees).
-            width: float
-                Fault width (km).
+        Args:
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            depth_tor (float): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km).
+
+            width (float): Down-dip width of the fault.
 
         Returns:
-            depth_bor: float
-                estimated depth to bottom of the fault rupture (km).
+            float: depth to bottom of the fault rupture (km)
         """
         return depth_tor + width * np.sin(np.radians(dip))

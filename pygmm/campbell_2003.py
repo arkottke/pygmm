@@ -13,13 +13,7 @@ __author__ = 'Albert Kottke'
 
 
 class Campbell2003(model.Model):
-    """Campbell (2003) model for Eastern US.
-
-    Citation:
-        Campbell, K. W. (2003). Prediction of strong ground motion using the
-        hybrid empirical method and its use in the development of ground-motion
-        (attenuation) relations in eastern North America. Bulletin of the
-        Seismological Society of America, 93(3), 1012-1033.
+    """Campbell (2003) :cite:`campbell03` ground motion model for Eastern US.
     """
 
     NAME = 'Campbell (2003)'
@@ -39,14 +33,14 @@ class Campbell2003(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Campbell (2003) ground motion
-        model.
+        """Initialize the ground motion model.
 
-        Inputs:
-            mag: float
-                moment magnitude of the event
-            dist_rup: float
-                closest distance to the rupture (km)
+        Keyword Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            dist_rup (float): closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
+
         """
         super(Campbell2003, self).__init__(**kwds)
         p = self.params

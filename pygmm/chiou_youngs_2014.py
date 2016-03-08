@@ -15,12 +15,7 @@ __author__ = 'Albert Kottke'
 
 
 class ChiouYoungs2014(model.Model):
-    """Chiou and Youngs (2014) model.
-
-    Citation:
-        Chiou, B. S. J., & Youngs, R. R. (2014). Update of the Chiou and
-        Youngs NGA model for the average horizontal component of peak ground
-        motion and response spectra. Earthquake Spectra, 30(3), 1117-1153.
+    """Chiou and Youngs (2014) :cite:`chiou14` model.
     """
     NAME = 'Chiou and Youngs (2014)'
     ABBREV = 'CY14'
@@ -62,70 +57,49 @@ class ChiouYoungs2014(model.Model):
         """Compute the response predicted the Chiou and Youngs (2014) ground
         motion model.
 
-        Inputs:
-            depth_1_0: float, default: None
-                (optional) depth (m) to a shear-wave velocity of 1,
-                000 m/sec, :math:`Z_{1.0}` centered to the California
-                average. If not provided, model average is used.
-            depth_tor: float, default: None
-                (optional) depth to the top of the rupture (km). If not
-                provided, model average is used.
-            dist_jb: float
-                Joyner-Boore distance to the rupture plane (km)
-            dist_rup: float
-                closest distance to the rupture (km)
-            dist_x: float
-                site coordinate (km) measured perpendicular to the fault strike
-                from the fault line with the down-dip direction being positive
-                (see Figure 3.12 in Chiou and Youngs (2008).
-            dpp_centered: float, default: 0
-                (optional) direct point parameter for directivity effect
-                (see Chiou and Spudich (2014)) centered on the
-                earthquake-specific average DPP for California. A value of 0
-                provides the average directivity.
-            dip: float
-                Fault dip angle (deg)
-            mag: float
-                moment magnitude of the event
-            mechanism: str, default: U
-                (optional) fault mechanism.
-                    U
-                        unspecified
-                    SS
-                        strike slip
-                    NS
-                        normal slip
-                        -120° <= rake angle <= -60°
-                        (excludes normal-oblique)
-                    RS
-                        reverse slip
-                        30° <= rake angle <= 150°
-                        (combined reverse and reverse-oblique)
-            on_hanging_wall: bool, default: False
-                (optional) If the site is located on the hanging wall of the
-                fault.
-                    True
-                        :math:`R_x >= 0`
-                    False
-                        :math:`R_x < 0`
-            region: str, default: california
-                (optional) region for the :math:`V_{s30}-Z_{1.0}` correlation
-                and
-                attenuation model. Potential regions:
-                    california (default)
-                    china
-                    italy
-                    japan
-                California is used for all regions other than 'japan'.
-            vs_source: str, default: 'measured'
-                (optional) :math:`V_{s30}` source flag.
-                    measured
-                        Measured :math:`V_{s30}` (default)
-                    inferred
-                        :math:`V_{s30}` inferred from a proxy
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the
-                site, :math:`V_{s30}` (m/s)
+        Keyword Args:
+            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
+                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+                Used to estimate `depth_2_5`.
+
+            depth_tor (Optional[float]): depth to the top of the rupture
+                plane (:math:`Z_{tor}`, km). If *None*, then  the average
+                model is used.
+
+            dist_jb (float): Joyner-Boore distance to the rupture plane
+                (:math:`R_\\text{JB}`, km)
+
+            dist_rup (float): closest distance to the rupture plane
+                (:math:`R_\\text{rup}`, km)
+
+            dist_x (float): site coordinate measured perpendicular to the
+                fault strike from the fault line with the down-dip direction
+                being positive (:math:`R_x`, km).
+
+            dip (float): fault dip angle (:math:`\phi`, deg).
+
+            dpp_centered (Optional[float]): direct point parameter for
+                directivity effect (see Chiou and Spudich (2014)) centered on the
+                earthquake-specific average DPP for California. If *None*,
+                then value of 0 used to provide the average directivity.
+
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS", "RS".
+
+            on_hanging_wall (Optional[bool]): If the site is located on the
+                hanging wall of the fault. If *None*, then *False* is assumed.
+
+            region (Optional[str]): region. Valid options: "california",
+                "china", "italy", "japan". If *None*, then "california" is used as
+                a default value.
+
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
+
+            vs_source (Optional[str]): source of the `v_s30` value.  Valid
+                options: "measured", "inferred"
+
         """
         super(ChiouYoungs2014, self).__init__(**kwds)
         p = self.params
@@ -306,22 +280,17 @@ class ChiouYoungs2014(model.Model):
 
     @staticmethod
     def calc_depth_1_0(v_s30, region):
-        """Calculate an estimate of the depth to 1 km/sec, :math:`Z_{1.0}`
+        """Calculate an estimate of the depth to 1 km/sec (:math:`Z_{1.0}`)
         based on :math:`V_{s30}` and region.
 
-        Inputs:
-            v_s30: float
-                time-averaged shear-wave velocity over the top 30 m of the
-                site, :math:`V_{s30}` (m/s)
-            region: str
-                region for the :math:`V_{s30}-Z_{1.0}` correlation. Potential regions:
-                    california (default)
-                    japan
-        Returns:
-            depth_1_0: float
-                depth (m) to a shear-wave velocity of 1,000 m/sec,
-                :math:`Z_{1.0}`.
+        Args:
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
 
+            region (str): basin region. Valid options: "california", "japan"
+
+        Returns:
+            float: estimated depth to a shear-wave velocity of 1 km/sec (km)
         """
         if region in ['japan']:
             # Japan
@@ -341,26 +310,13 @@ class ChiouYoungs2014(model.Model):
     def calc_depth_tor(mag, mechanism):
         """Calculate an estimate of the depth to top of rupture (km).
 
-        Inputs:
-            mag: float
-                moment magnitude of the event
-            mechanism: str, default: U
-                (optional) fault mechanism.
-                    U
-                        unspecified
-                    SS
-                        strike slip
-                    NS
-                        normal slip
-                        -120° <= rake angle <= -60°
-                        (excludes normal-oblique)
-                    RS
-                        reverse slip
-                        30° <= rake angle <= 150°
-                        (combined reverse and reverse-oblique)
+        Args:
+            mag (float): moment magnitude of the event (:math:`M_w`)
+
+            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS", "RS".
+
         Returns:
-            depth_tor: float
-                Estimated depth to top of rupture (km)
+            float: estimated depth to top of rupture (km)
         """
         if mechanism == 'RS':
             # Reverse and reverse-oblique faulting

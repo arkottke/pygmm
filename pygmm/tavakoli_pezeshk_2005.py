@@ -45,6 +45,7 @@ class TavakoliPezeshk05(model.Model):
 
         Keyword Args:
             mag (float): moment magnitude of the event (:math:`M_w`)
+
             dist_rup (float): Closest distance to the rupture plane
                 (:math:`R_\\text{rup}`, km)
         """

@@ -51,25 +51,9 @@ class Idriss2014(model.Model):
 
             mag (float): moment magnitude of the event (:math:`M_w`)
 
-            mechanism (str): fault mechanism. *ss* and *ns* mechanism are
-                treated the same with :math:`F=0` in the model.
-
-                +------+--------------+-----------------------------+
-                | name | meaning      | definition                  |
-                +======+==============+=============================+
-                | ss   | strike slip  |                             |
-                +------+--------------+-----------------------------+
-                | ns   | normal slip  | -120° :math:`\le`           |
-                |      |              | rake angle :math:`\le` -60° |
-                |      |              |                             |
-                |      |              | (excludes normal-oblique)   |
-                +------+--------------+-----------------------------+
-                | rs   | reverse slip | 30° :math:`\le`             |
-                |      |              | rake angle :math:`\le` 150° |
-                |      |              |                             |
-                |      |              | (combines reverse           |
-                |      |              | and reverse-oblique)        |
-                +------+--------------+-----------------------------+
+            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
+                *SS* and *NS* mechanism are treated the same with :math:`F=0` in
+                the model.
 
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).

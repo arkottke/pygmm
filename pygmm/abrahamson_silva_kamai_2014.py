@@ -15,7 +15,7 @@ __author__ = 'Albert Kottke'
 
 class AbrahamsonSilvaKamai2014(model.Model):
     """The Abrahamson, Silva, and Kamai (2014) :cite:`abrahamson14` ground
-    motion model.
+    motion model for active tectonic regions.
     """
 
     NAME = 'Abrahamson, Silva, & Kamai (2014)'
@@ -115,47 +115,23 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
             mag (float): moment magnitude of the event (:math:`M_w`)
 
-            mechanism (str): fault mechanism
-
-                +------+--------------+-----------------------------+
-                | name | meaning      | definition                  |
-                +======+==============+=============================+
-                | ss   | strike slip  |                             |
-                +------+--------------+-----------------------------+
-                | ns   | normal slip  | -120° :math:`\le`           |
-                |      |              | rake angle :math:`\le` -60° |
-                |      |              |                             |
-                |      |              | (excludes normal-oblique)   |
-                +------+--------------+-----------------------------+
-                | rs   | reverse slip | 30° :math:`\le`             |
-                |      |              | rake angle :math:`\le` 150° |
-                |      |              |                             |
-                |      |              | (combines reverse           |
-                |      |              | and reverse-oblique)        |
-                +------+--------------+-----------------------------+
+            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
 
             on_hanging_wall (Optional[bool]): If the site is located on the
                 hanging wall of the fault. If *None*, then *False* is assumed.
 
-            region (Optional[str]): region.
-                Potential regions:
-                 * global (default)
-                 * california
-                 * china
-                 * italy
-                 * japan
-                 * taiwan
+            region (Optional[str]): region. Valid options: "global",
+                "california", "china", "italy", "japan", "taiwan". If *None*,
+                then "global" is used as a default value.
 
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).
 
-            vs_source (Optional[str]): source of the `v_s30` value.  Potential
-                sources:
-                 * measured
-                 * inferred
+            vs_source (Optional[str]): source of the `v_s30` value.  Valid
+                options: "measured", "inferred"
 
             width (Optional[float]): Down-dip width of the fault. If *None*,
-                then  the average model is used.
+                then  the model average is used.
         """
         super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
         p = self.params
@@ -388,7 +364,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30, region):
+    def calc_depth_1_0(v_s30, region='california'):
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
@@ -398,12 +374,14 @@ class AbrahamsonSilvaKamai2014(model.Model):
         Args:
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).
-            region (str): (optional) region. Potential regions:
-                    * california (default)
-                    * japan
+
+        Keyword Args:
+            region (Optional[str]): region of basin model. Valid options:
+                "california", "japan". If *None*, then "california" is used as the
+                default value.
 
         Returns:
-            float: depth to a shear-wave velocity of 1,000 m/sec,
+            float: depth to a shear-wave velocity of 1,000 m/sec
                 (:math:`Z_{1.0}`, km).
 
         """

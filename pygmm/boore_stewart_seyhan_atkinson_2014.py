@@ -20,6 +20,53 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
     motion model.
 
     Developed for the California and other active tectonic environments.
+
+
+    The BSSA14 model defines the following distance attenuation models:
+
+        +--------------+-------------------------------+
+        | Name         | Description                   |
+        +--------------+-------------------------------+
+        | global       | Global; California and Taiwan |
+        +--------------+-------------------------------+
+        | china_turkey | China and Turkey              |
+        +--------------+-------------------------------+
+        | italy_japan  | Italy and Japan               |
+        +--------------+-------------------------------+
+
+    and the following basin region models:
+
+        +--------+---------------------+
+        | Name   | Description         |
+        +========+=====================+
+        | global | Global / California |
+        +--------+---------------------+
+        | japan  | Japan               |
+        +--------+---------------------+
+
+    These are simplified into one regional parameter with the following
+    possibilities:
+
+        +-------------+--------------+------------+
+        | Region      | Attenuation  | Basin      |
+        +=============+==============+============+
+        | global      | global       | global     |
+        +-------------+--------------+------------+
+        | california  | global       | global     |
+        +-------------+--------------+------------+
+        | china       | china_turkey | global     |
+        +-------------+--------------+------------+
+        | italy       | italy_japan  | global     |
+        +-------------+--------------+------------+
+        | japan       | italy_japan  | japan      |
+        +-------------+--------------+------------+
+        | new zealand | italy_japan  | global     |
+        +-------------+--------------+------------+
+        | taiwan      | global       | global     |
+        +-------------+--------------+------------+
+        | turkey      | china_turkey | global     |
+        +-------------+--------------+------------+
+
     """
     NAME = 'Boore, Stewart, Seyhan, and Atkinson (2014)'
     ABBREV = 'BSSA14'
@@ -73,66 +120,13 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).
 
-            mechanism (str): fault mechanism
-
-                +--------------+--------------+
-                | Abbreviation | Name         |
-                +==============+==============+
-                | u            | Unspecified  |
-                +--------------+--------------+
-                | ss           | Strike-slip  |
-                +--------------+--------------+
-                | ns           | Normal slip  |
-                +--------------+--------------+
-                | rs           | Reverse slip |
-                +--------------+--------------+
+            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS",
+                "RS"
 
             region (Optional[str]): region for distance attenuation and basin
-                model.  The BSSA14 model defines the following distance
-                attenuation models:
-
-                    +--------------+-------------------------------+
-                    | Name         | Description                   |
-                    +--------------+-------------------------------+
-                    | global       | Global; California and Taiwan |
-                    | china_turkey | China and Turkey              |
-                    | italy_japan  | Italy and Japan               |
-                    +--------------+-------------------------------+
-
-                and the following basin region models:
-
-                    +--------+---------------------+
-                    | Name   | Description         |
-                    +========+=====================+
-                    | global | Global / California |
-                    +--------+---------------------+
-                    | japan  | Japan               |
-                    +--------+---------------------+
-
-                These are simplified into one regional parameter with the
-                following possibilities:
-
-                    +-------------+--------------+------------+
-                    | Region      | Attenuation  | Basin      |
-                    +=============+==============+============+
-                    | global      | global       | global     |
-                    +-------------+--------------+------------+
-                    | california  | global       | global     |
-                    +-------------+--------------+------------+
-                    | china       | china_turkey | global     |
-                    +-------------+--------------+------------+
-                    | italy       | italy_japan  | global     |
-                    +-------------+--------------+------------+
-                    | japan       | italy_japan  | japan      |
-                    +-------------+--------------+------------+
-                    | new zealand | italy_japan  | global     |
-                    +-------------+--------------+------------+
-                    | taiwan      | global       | global     |
-                    +-------------+--------------+------------+
-                    | turkey      | china_turkey | global     |
-                    +-------------+--------------+------------+
-
-                If *None* is specified, then 'global' parameters are used.
+                model.  Valid options: "global", "california", "china", "italy",
+                "japan", "new_zealand", "taiwan", "turkey".  If *None* is
+                specified, then "global" is used as default.
         """
         super(BooreStewartSeyhanAtkinson2014, self).__init__(**kwds)
         p = self.params
