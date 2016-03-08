@@ -2,24 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import gzip
-
+import itertools
 import json
 import os
 
 import numpy as np
+import pytest
 
-from ..abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
-from ..boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
-from ..campbell_bozorgnia_2014 import CampbellBozorgnia2014
-from ..chiou_youngs_2014 import ChiouYoungs2014
-from ..idriss_2014 import Idriss2014
+import pygmm
 
 models = [
-    AbrahamsonSilvaKamai2014,
-    BooreStewartSeyhanAtkinson2014,
-    CampbellBozorgnia2014,
-    ChiouYoungs2014,
-    Idriss2014,
+    pygmm.AbrahamsonSilvaKamai2014,
+    pygmm.BooreStewartSeyhanAtkinson2014,
+    pygmm.CampbellBozorgnia2014,
+    pygmm.ChiouYoungs2014,
+    pygmm.Idriss2014,
 ]
 
 # Number of decimal places to test against.
@@ -31,32 +28,30 @@ fname = os.path.join(
 with gzip.open(fname, 'rt') as fp:
     tests = json.load(fp)
 
-
-def test_generator():
-    for t in tests:
-        for model in models:
-            yield check_model, model, t['params'], t['results'][model.ABBREV]
+testdata = [(m, t['params'], t['results'][m.ABBREV])
+            for m, t in itertools.product(models, tests)]
 
 
-def check_model(model, params, values):
+@pytest.mark.parametrize('model,params,expected', testdata)
+def test_model(model, params, expected):
     m = model(**params)
 
     np.testing.assert_array_almost_equal(
-        m.interp_spec_accels(values['periods']),
-        values['spec_accels'],
+        m.interp_spec_accels(expected['periods']),
+        expected['spec_accels'],
         decimal=DECIMAL,
         err_msg='Spectral accelerations'
     )
 
     np.testing.assert_array_almost_equal(
-        m.interp_ln_stds(values['periods']),
-        values['ln_stds'],
+        m.interp_ln_stds(expected['periods']),
+        expected['ln_stds'],
         decimal=DECIMAL,
         err_msg='Logarithmic standard deviations'
     )
 
     for key in ['pga', 'pga_ln_std', 'pgv', 'pgv_ln_std']:
-        if values[key] is None:
+        if expected[key] is None:
             continue
 
         if not hasattr(m, key) or getattr(m, key) is None:
@@ -64,6 +59,6 @@ def check_model(model, params, values):
 
         np.testing.assert_almost_equal(
             getattr(m, key),
-            values[key],
+            expected[key],
             decimal=DECIMAL,
         )
