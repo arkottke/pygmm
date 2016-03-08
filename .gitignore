@@ -62,5 +62,8 @@ target/
 *.swp
 /tags
 
+# PyCharm
+.idea/
+
 # Figures from testing
 figures/
