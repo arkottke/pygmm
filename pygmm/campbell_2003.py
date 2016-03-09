@@ -43,46 +43,54 @@ class Campbell2003(model.Model):
 
         """
         super(Campbell2003, self).__init__(**kwds)
-        p = self.params
+        self._ln_resp = self._calc_ln_resp()
+        self._ln_std = self._calc_ln_std()
 
-        def calc_ln_resp(period, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9,
-                         c_10, c_11, c_12, c_13):
-            # Magnitude scaling
+    def _calc_ln_resp(self):
+        """Calculate the natural logarithm of the response.
 
-            f_1 = c_2 * p['mag'] + c_3 * (8.5 - p['mag']) ** 2
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        p = self.PARAMS
+        c = self.COEFF
 
-            # Distance scaling
-            f_2 = (c_4 * np.log(np.sqrt(
-                p['dist_rup'] ** 2 + (c_7 * np.exp(c_8 * p['mag'])) ** 2))
-                + (c_5 + c_6 * p['mag']) * p['dist_rup'])
+        f_1 = c['c_2'] * p['mag'] + c['c_3'] * (8.5 - p['mag']) ** 2
 
-            # Geometric attenuation
-            r_1 = 70.0
-            r_2 = 130.0
-            if p['dist_rup'] <= r_1:
-                f_3 = 0.
-            else:
-                f_3 = c_9 * (np.log(p['dist_rup']) - np.log(r_1))
+        # Distance scaling
+        f_2 = (c['c_4'] * np.log(
+            np.sqrt( p['dist_rup'] ** 2 +
+                     (c['c_7'] * np.exp(c['c_8'] * p['mag'])) ** 2)) +
+               (c['c_5'] + c['c_6'] * p['mag']) * p['dist_rup'])
 
-                if r_2 < p['dist_rup']:
-                    f_3 += c_10 * (np.log(p['dist_rup']) - np.log(r_2))
+        # Geometric attenuation
+        r_1 = 70.0
+        r_2 = 130.0
+        if p['dist_rup'] <= r_1:
+            f_3 = 0.
+        else:
+            f_3 = c['c_9'] * (np.log(p['dist_rup']) - np.log(r_1))
 
-            # Compute the ground motion
-            ln_resp = c_1 + f_1 + f_2 + f_3
+            if r_2 < p['dist_rup']:
+                f_3 += c['c_10'] * (np.log(p['dist_rup']) - np.log(r_2))
 
-            return ln_resp
+        # Compute the ground motion
+        ln_resp = c['c_1'] + f_1 + f_2 + f_3
 
-        def calc_ln_std(period, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9,
-                        c_10, c_11, c_12, c_13):
-            # Compute the standard deviation
+        return ln_resp
 
-            del period, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9, c_10
-            if p['mag'] < 7.16:
-                ln_std = c_11 + c_12 * p['mag']
-            else:
-                ln_std = c_13
+    def _calc_ln_std(self, p, c):
+        """Calculate the logarithmic standard deviation.
 
-            return ln_std
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.PARAMS
+        c = self.COEFF
 
-        self._ln_resp = np.array([calc_ln_resp(*c) for c in self.COEFF])
-        self._ln_std = np.array([calc_ln_std(*c) for c in self.COEFF])
+        if p['mag'] < 7.16:
+            ln_std = c['c_11'] + c['c_12'] * p['mag']
+        else:
+            ln_std = c['c_13']
+
+        return ln_std
