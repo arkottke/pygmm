@@ -29,7 +29,7 @@ __author__ = 'Albert Kottke'
 __copyright__ = 'Copyright 2016 Albert Kottke'
 __license__ = 'MIT'
 __title__ = 'pyGMM'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 
 
 # Set default logging handler to avoid "No handler found" warnings.
