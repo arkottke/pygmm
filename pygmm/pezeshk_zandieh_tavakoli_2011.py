@@ -47,38 +47,58 @@ class PezeshkZandiehTavakoli2011(model.Model):
                 (:math:`R_\\text{rup}`, km)
         """
         super(PezeshkZandiehTavakoli2011, self).__init__(**kwds)
+        self._ln_resp = self._calc_ln_resp()
+        self._ln_std = self._calc_ln_std()
+
+    def _calc_ln_resp(self):
+        """Calculate the natural logarithm of the response.
+
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
         p = self.params
+        c = self.COEFF
 
-        def calc_log10_resp(period, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10,
-                            c11, c12, c13, c14, sigma_reg):
-            # Distance scaling
-            del period, c12, c13, c14, sigma_reg
+        dist = np.sqrt(p['dist_rup'] ** 2 + c['c11'] ** 2)
 
-            R = np.sqrt(p['dist_rup'] ** 2 + c11 ** 2)
+        log10_resp = (
+            c['c1'] +
+            c['c2'] * p['mag'] +
+            c['c3'] * p['mag'] ** 2 +
+            (c['c4'] + c['c5'] * p['mag']) * np.minimum(
+                np.log10(dist),
+                np.log10(70.)
+            ) +
+            (c['c6'] + c['c7'] * p['mag']) *
+             np.maximum(
+                 np.minimum(
+                     np.log10(dist / 70.),
+                     np.log10(140. / 70.)
+                 ), 0. ) +
+            (c['c8'] + c['c9'] * p['mag']) * np.maximum(
+                np.log10(dist / 140.), 0) +
+            c['c10'] * dist
+        )
 
-            return (
-                c1 + c2 * p['mag'] + c3 * p['mag'] ** 2 +
-                (c4 + c5 * p['mag']) * min(np.log10(R), np.log10(70.)) +
-                (c6 + c7 * p['mag']) * max(min(np.log10(R / 70.),
-                                               np.log10(140. / 70.)), 0.) +
-                (c8 + c9 * p['mag']) * max(np.log10(R / 140.), 0) + c10 * R
-            )
+        ln_resp = np.log(np.power(10, log10_resp))
 
-        def calc_ln_std(period, c1, c2, c3, c4, c5, c6, c7, c8, c9, c10, c11,
-                        c12, c13, c14, sigma_reg):
-            # Compute the standard deviation
-            del period, c1, c2, c4, c5, c6, c7, c8, c9, c10, c11
+        return ln_resp
 
-            if p['mag'] <= 7.:
-                ln_std_mean = c12 * p['mag'] + c13
-            else:
-                ln_std_mean = -6.95e-3 * p['mag'] + c14
 
-            ln_std = np.sqrt(ln_std_mean ** 2 + sigma_reg ** 2)
+    def _calc_ln_std(self):
+        """Calculate the logarithmic standard deviation.
 
-            return ln_std
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.params
+        c = self.COEFF
 
-        log10_resp = np.array([calc_log10_resp(*c) for c in self.COEFF])
-        self._ln_resp = np.log(np.power(10, log10_resp))
+        if p['mag'] <= 7.:
+            ln_std_mean = c['c12'] * p['mag'] + c['c13']
+        else:
+            ln_std_mean = -6.95e-3 * p['mag'] + c['c14']
 
-        self._ln_std = np.array([calc_ln_std(*c) for c in self.COEFF])
+        ln_std = np.sqrt(ln_std_mean ** 2 + c['sigma_reg'] ** 2)
+
+        return ln_std
