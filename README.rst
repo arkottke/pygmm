@@ -18,9 +18,9 @@ pyGMM
     :target: https://coveralls.io/github/arkottke/pygmm?branch=master
     :alt: Test Coverage
 
-.. image:: https://img.shields.io/codeclimate/github/arkottke/pygmm.svg
-    :target: https://codeclimate.com/github/arkottke/pygmm
-    :alt: Code Climate
+.. image:: https://landscape.io/github/arkottke/pygmm/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/arkottke/pygmm/master
+    :alt: Code Health
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
 
