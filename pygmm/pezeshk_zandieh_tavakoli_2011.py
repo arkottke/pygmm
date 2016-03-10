@@ -84,7 +84,6 @@ class PezeshkZandiehTavakoli2011(model.Model):
 
         return ln_resp
 
-
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
