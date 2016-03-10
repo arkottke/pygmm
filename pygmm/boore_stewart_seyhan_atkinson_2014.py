@@ -241,11 +241,13 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
                 logging.warning(
                     'Magnitude (%g) exceeds recommended bounds (%g to %g)'
                     ' for a strike-slip earthquake!',
-                        self.params['mag'], _min, _max)
+                    self.params['mag'], _min, _max
+                )
         elif self.params['mechanism'] == 'NS':
             _min, _max = 3., 7.0
             if not (_min <= self.params['mag'] <= _max):
                 logging.warning(
                     'Magnitude (%g) exceeds recommended bounds (%g to %g)'
                     ' for a normal-slip earthquake!',
-                        self.params['mag'], _min, _max)
+                    self.params['mag'], _min, _max
+                )

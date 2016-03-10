@@ -267,7 +267,7 @@ class ChiouYoungs2014(model.Model):
             logging.warning(
                 'Magnitude (%g) exceeds recommended bounds (%g to %g)'
                 ' for a %s earthquake!',
-                    self.params['mag'], _min, _max, self.params['mechanism']
+                self.params['mag'], _min, _max, self.params['mechanism']
                 )
 
         if self.params.get('depth_tor', None) is None:
