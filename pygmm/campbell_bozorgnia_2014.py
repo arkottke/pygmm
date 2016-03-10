@@ -68,12 +68,14 @@ class CampbellBozorgnia2014(model.Model):
         for mech, limit in [('SS', 8.5), ('RS', 8.0), ('NS', 7.5)]:
             if mech == p['mechanism'] and p['mag'] > limit:
                 logging.warning(
-                    'Magnitude of {mag:g} is greater than the recommended limit ≥'
-                    '{:g} for {} style faults'.format(limit, mech, **p)
+                    'Magnitude of %g is greater than the recommended limit of'
+                    '%g for %s style faults',
+                    p['mag'], limit, mech
                 )
 
         if p['depth_2_5'] is None:
-            p['depth_2_5'] = self.calc_depth_2_5(p['v_s30'], p['region'], p['depth_1_0'])
+            p['depth_2_5'] = self.calc_depth_2_5(
+                p['v_s30'], p['region'], p['depth_1_0'])
 
         if p['depth_tor'] is None:
             p['depth_tor'] = CY14.calc_depth_tor(p['mag'], p['mechanism'])

@@ -267,12 +267,12 @@ class NumericParameter(Parameter):
         else:
             if self.min is not None and value < self.min:
                 logging.warning(
-                    '{} ({:g}) is less than the recommended limit ({:g}).'.
-                    format(self.name, value, self.min))
+                    '%s (%g) is less than the recommended limit (%g).',
+                    self.name, value, self.min)
             elif self.max is not None and self.max < value:
                 logging.warning(
-                    '{} ({:g}) is greater than the recommended limit ({:g}).'.
-                    format(self.name, value, self.max))
+                    '%s (%g) is greater than the recommended limit (%g).',
+                    self.name, value, self.min)
 
         return value
 
@@ -295,10 +295,9 @@ class CategoricalParameter(Parameter):
         elif value not in self.options:
             alert = logging.error if self._required else logging.warning
             alert(
-                '{} value of "{}" is not one of the options. The following'
-                ' options are possible: {}'.
-                format(self._name, value,
-                       ', '.join([str(o) for o in self._options]))
+                '%s value of "%s" is not one of the options. The following'
+                ' options are possible: %s',
+                self._name, value, ', '.join([str(o) for o in self._options])
             )
 
         return value
