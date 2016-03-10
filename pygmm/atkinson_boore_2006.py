@@ -55,7 +55,6 @@ class AtkinsonBoore2006(model.Model):
                 of the site (:math:`V_{s30}`, m/s).
         """
         super(AtkinsonBoore2006, self).__init__(**kwds)
-        p = self.params
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
@@ -69,13 +68,13 @@ class AtkinsonBoore2006(model.Model):
         c = self.COEFF['bc'] if p['v_s30'] else self.COEFF['rock']
 
         # Compute the response at the reference condition
-        R0 = 10.0
-        R1 = 70.0
-        R2 = 140.0
+        r0 = 10.0
+        r1 = 70.0
+        r2 = 140.0
 
-        f0 = np.maximum(np.log10(R0 / p['dist_rup']), 0)
-        f1 = np.minimum(np.log10(p['dist_rup']), np.log10(R1))
-        f2 = np.maximum(np.log10(p['dist_rup'] / R2), 0)
+        f0 = np.maximum(np.log10(r0 / p['dist_rup']), 0)
+        f1 = np.minimum(np.log10(p['dist_rup']), np.log10(r1))
+        f2 = np.maximum(np.log10(p['dist_rup'] / r2), 0)
 
         # Compute the log10 PSA in units of cm/sec/sec
         log10_resp = (
@@ -125,12 +124,12 @@ class AtkinsonBoore2006(model.Model):
         c = self.COEFF_SF
 
         stress_drop = 10. ** (3.45 - 0.2 * p['mag'])
-        foo = c.delta + 0.05
-        bar = (0.05 + c.delta * np.maximum(p['mag'] - c.m_1, 0) /
-               (c.m_h - c.m_1))
+        v1 = c.delta + 0.05
+        v2 = (0.05 + c.delta * np.maximum(p['mag'] - c.m_1, 0) /
+              (c.m_h - c.m_1))
 
         log10_stress_factor = (np.minimum(2., stress_drop / 140.) *
-                               np.minimum(foo, bar))
+                               np.minimum(v1, v2))
 
         return np.interp(self.PERIODS, c.period, log10_stress_factor)
 
