@@ -8,7 +8,6 @@ from __future__ import division
 import numpy as np
 
 from . import model
-from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
 
 __author__ = 'Albert Kottke'
 
@@ -75,7 +74,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
             p['width'] = self.calc_width(p['mag'], p['dip'])
 
         if p['depth_tor'] is None:
-            p['depth_tor'] = self.calc_width(p['mag'])
+            p['depth_tor'] = self.calc_depth_tor(p['mag'])
 
     def __init__(self, **kwds):
         """Initialize the model.
