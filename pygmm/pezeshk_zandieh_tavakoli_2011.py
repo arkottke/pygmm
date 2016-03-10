@@ -70,11 +70,11 @@ class PezeshkZandiehTavakoli2011(model.Model):
                 np.log10(70.)
             ) +
             (c['c6'] + c['c7'] * p['mag']) *
-             np.maximum(
-                 np.minimum(
-                     np.log10(dist / 70.),
-                     np.log10(140. / 70.)
-                 ), 0. ) +
+            np.maximum(
+                np.minimum(
+                    np.log10(dist / 70.),
+                    np.log10(140. / 70.)
+                ), 0. ) +
             (c['c8'] + c['c9'] * p['mag']) * np.maximum(
                 np.log10(dist / 140.), 0) +
             c['c10'] * dist
