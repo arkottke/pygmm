@@ -52,7 +52,7 @@ class Campbell2003(model.Model):
         Returns:
             :class:`np.array`: Natural log of the response.
         """
-        p = self.PARAMS
+        p = self.params
         c = self.COEFF
 
         f_1 = c['c2'] * p['mag'] + c['c3'] * (8.5 - p['mag']) ** 2
@@ -85,7 +85,7 @@ class Campbell2003(model.Model):
         Returns:
             :class:`np.array`: Logarithmic standard deviation.
         """
-        p = self.PARAMS
+        p = self.params
         c = self.COEFF
 
         if p['mag'] < 7.16:
