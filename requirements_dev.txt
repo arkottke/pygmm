@@ -1,5 +1,6 @@
 bumpversion
 coveralls
+cryptography
 flake8
 invoke
 matplotlib
