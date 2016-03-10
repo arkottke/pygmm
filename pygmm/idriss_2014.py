@@ -59,7 +59,17 @@ class Idriss2014(model.Model):
                 of the site (:math:`V_{s30}`, m/s).
         """
         super(Idriss2014, self).__init__(**kwds)
+        self._ln_resp = self._calc_ln_resp()
+        self._ln_std = self._calc_ln_std()
+
+    def _calc_ln_resp(self):
+        """Calculate the natural logarithm of the response.
+
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
         p = self.params
+        c = self.COEFF['small'] if p['mag'] <= 6.75 else self.COEFF['large']
 
         if p['mechanism'] == 'RS':
             flag_mech = 1
@@ -67,25 +77,27 @@ class Idriss2014(model.Model):
             # SS/RS/U
             flag_mech = 0
 
-        def calc_ln_resp(period, alpha_1, alpha_2, alpha_3, beta_1, beta_2,
-                         epsilon, gamma, phi):
-            # Equation 3 on page 1166
-            del period
-            f_mag = (
-                alpha_1 + alpha_2 * p['mag'] + alpha_3 * (8.5 - p['mag']) ** 2)
-            f_dst = (-(beta_1 + beta_2 * p['mag']) * np.log(
-                p['dist_rup'] + 10) + gamma * p['dist_rup'])
-            f_ste = epsilon * np.log(p['v_s30'])
-            f_mec = phi * flag_mech
+        f_mag = (
+            c['a1'] + c['a2'] * p['mag'] + c['a3'] * (8.5 - p['mag']) ** 2)
+        f_dst = (-(c['b1'] + c['b2'] * p['mag']) * np.log(
+            p['dist_rup'] + 10) + c['g'] * p['dist_rup'])
+        f_ste = c['e'] * np.log(p['v_s30'])
+        f_mec = c['p'] * flag_mech
 
-            return f_mag + f_dst + f_ste + f_mec
+        ln_resp = f_mag + f_dst + f_ste + f_mec
 
-        coeff = self.COEFF['small'] if p['mag'] <= 6.75 else self.COEFF['large']
-        self._ln_resp = np.array([calc_ln_resp(*c) for c in coeff])
+        return ln_resp
 
-        # Equation 4 on page 1168
-        self._ln_std = (
+    def _calc_ln_std(self):
+        """Calculate the logarithmic standard deviation.
+
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.params
+        ln_std = (
             1.18 + 0.035 *
             np.log(np.clip(self.PERIODS, 0.05, 3.0)) -
             0.06 * np.clip(p['mag'], 5.0, 7.5)
         )
+        return ln_std
