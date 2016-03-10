@@ -78,11 +78,12 @@ class Idriss2014(model.Model):
             flag_mech = 0
 
         f_mag = (
-            c['a1'] + c['a2'] * p['mag'] + c['a3'] * (8.5 - p['mag']) ** 2)
-        f_dst = (-(c['b1'] + c['b2'] * p['mag']) * np.log(
-            p['dist_rup'] + 10) + c['g'] * p['dist_rup'])
-        f_ste = c['e'] * np.log(p['v_s30'])
-        f_mec = c['p'] * flag_mech
+            c.alpha_1 + c.alpha_2 * p['mag'] +
+            c.alpha_3 * (8.5 - p['mag']) ** 2)
+        f_dst = (-(c.beta_1 + c.beta_2 * p['mag']) * np.log(
+            p['dist_rup'] + 10) + c.gamma * p['dist_rup'])
+        f_ste = c.epsilon * np.log(p['v_s30'])
+        f_mec = c.phi * flag_mech
 
         ln_resp = f_mag + f_dst + f_ste + f_mec
 

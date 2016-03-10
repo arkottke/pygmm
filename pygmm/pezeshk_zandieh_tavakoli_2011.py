@@ -59,25 +59,25 @@ class PezeshkZandiehTavakoli2011(model.Model):
         p = self.params
         c = self.COEFF
 
-        dist = np.sqrt(p['dist_rup'] ** 2 + c['c11'] ** 2)
+        dist = np.sqrt(p['dist_rup'] ** 2 + c.c_11 ** 2)
 
         log10_resp = (
-            c['c1'] +
-            c['c2'] * p['mag'] +
-            c['c3'] * p['mag'] ** 2 +
-            (c['c4'] + c['c5'] * p['mag']) * np.minimum(
+            c.c_1 +
+            c.c_2 * p['mag'] +
+            c.c_3 * p['mag'] ** 2 +
+            (c.c_4 + c.c_5 * p['mag']) * np.minimum(
                 np.log10(dist),
                 np.log10(70.)
             ) +
-            (c['c6'] + c['c7'] * p['mag']) *
+            (c.c_6 + c.c_7 * p['mag']) *
             np.maximum(
                 np.minimum(
                     np.log10(dist / 70.),
                     np.log10(140. / 70.)
-                ), 0. ) +
-            (c['c8'] + c['c9'] * p['mag']) * np.maximum(
+                ), 0.) +
+            (c.c_8 + c.c_9 * p['mag']) * np.maximum(
                 np.log10(dist / 140.), 0) +
-            c['c10'] * dist
+            c.c_10 * dist
         )
 
         ln_resp = np.log(np.power(10, log10_resp))
@@ -94,9 +94,9 @@ class PezeshkZandiehTavakoli2011(model.Model):
         c = self.COEFF
 
         if p['mag'] <= 7.:
-            ln_std_mean = c['c12'] * p['mag'] + c['c13']
+            ln_std_mean = c.c_12 * p['mag'] + c.c_13
         else:
-            ln_std_mean = -6.95e-3 * p['mag'] + c['c14']
+            ln_std_mean = -6.95e-3 * p['mag'] + c.c_14
 
         ln_std = np.sqrt(ln_std_mean ** 2 + c['sigma_reg'] ** 2)
 

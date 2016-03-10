@@ -1,4 +1,4 @@
-# Atkinson and Boore (2006) 
+# Atkinson and Boore (2006)
 # Coefficients for BC boundary conditions (Vs30=760 m/s).
 #period,c_1,c_2,c_3,c_4,c_5,c_6,c_7,c_8,c_9,c_10
 -2,-3.090E+00,8.280E-01,-8.541E-03,-2.381E+00,1.782E-01,-1.643E+00,1.628E-01,5.810E-01,-1.450E-01,-2.337E-04

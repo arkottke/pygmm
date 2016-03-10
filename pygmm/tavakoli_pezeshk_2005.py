@@ -61,26 +61,26 @@ class TavakoliPezeshk05(model.Model):
         c = self.COEFF
 
         # Magnitude scaling
-        f1 = c['c1'] + c['c2'] * p['mag'] + c['c3'] * (8.5 - p['mag']) ** 2.5
+        f1 = c.c_1 + c.c_2 * p['mag'] + c.c_3 * (8.5 - p['mag']) ** 2.5
 
         # Distance scaling
-        f2 = c['c9'] * np.log(p['dist_rup'] + 4.5)
+        f2 = c.c_9 * np.log(p['dist_rup'] + 4.5)
 
         if p['dist_rup'] > 70:
-            f2 += c['c10'] * np.log(p['dist_rup'] / 70.)
+            f2 += c.c_10 * np.log(p['dist_rup'] / 70.)
 
         if p['dist_rup'] > 130:
-            f2 += c['c11'] * np.log(p['dist_rup'] / 130.)
+            f2 += c.c_11 * np.log(p['dist_rup'] / 130.)
 
         # Calculate scaled, magnitude dependent distance R for use when
         # calculating f3
         dist = np.sqrt(
             p['dist_rup'] ** 2 +
-            (c['c5'] * np.exp(c['c6'] * p['mag'] +
-                              c['c7'] * (8.5 - p['mag']) ** 2.5)) ** 2)
+            (c.c_5 * np.exp(c.c_6 * p['mag'] +
+                            c.c_7 * (8.5 - p['mag']) ** 2.5)) ** 2)
 
-        f3 = ((c['c4'] + c['c13'] * p['mag']) * np.log(dist) +
-              (c['c8'] + c['c12'] * p['mag']) * dist)
+        f3 = ((c.c_4 + c.c_13 * p['mag']) * np.log(dist) +
+              (c.c_8 + c.c_12 * p['mag']) * dist)
 
         # Compute the ground motion
         ln_resp = f1 + f2 + f3
@@ -97,8 +97,8 @@ class TavakoliPezeshk05(model.Model):
         c = self.COEFF
 
         if p['mag'] < 7.2:
-            ln_std = c['c14'] + c['c15'] * p['mag']
+            ln_std = c.c_14 + c.c_15 * p['mag']
         else:
-            ln_std = c['c16']
+            ln_std = c.c_16
 
         return ln_std

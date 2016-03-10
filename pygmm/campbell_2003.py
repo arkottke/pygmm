@@ -55,13 +55,13 @@ class Campbell2003(model.Model):
         p = self.params
         c = self.COEFF
 
-        f_1 = c['c2'] * p['mag'] + c['c3'] * (8.5 - p['mag']) ** 2
+        f_1 = c.c_2 * p['mag'] + c.c_3 * (8.5 - p['mag']) ** 2
 
         # Distance scaling
-        f_2 = (c['c4'] * np.log(
+        f_2 = (c.c_4 * np.log(
             np.sqrt( p['dist_rup'] ** 2 +
-                     (c['c7'] * np.exp(c['c8'] * p['mag'])) ** 2)) +
-               (c['c5'] + c['c6'] * p['mag']) * p['dist_rup'])
+                     (c.c_7 * np.exp(c.c_8 * p['mag'])) ** 2)) +
+               (c.c_5 + c.c_6 * p['mag']) * p['dist_rup'])
 
         # Geometric attenuation
         r_1 = 70.0
@@ -69,13 +69,13 @@ class Campbell2003(model.Model):
         if p['dist_rup'] <= r_1:
             f_3 = 0.
         else:
-            f_3 = c['c9'] * (np.log(p['dist_rup']) - np.log(r_1))
+            f_3 = c.c_9 * (np.log(p['dist_rup']) - np.log(r_1))
 
             if r_2 < p['dist_rup']:
-                f_3 += c['c10'] * (np.log(p['dist_rup']) - np.log(r_2))
+                f_3 += c.c_10 * (np.log(p['dist_rup']) - np.log(r_2))
 
         # Compute the ground motion
-        ln_resp = c['c1'] + f_1 + f_2 + f_3
+        ln_resp = c.c_1 + f_1 + f_2 + f_3
 
         return ln_resp
 
@@ -89,8 +89,8 @@ class Campbell2003(model.Model):
         c = self.COEFF
 
         if p['mag'] < 7.16:
-            ln_std = c['c11'] + c['c12'] * p['mag']
+            ln_std = c.c_11 + c.c_12 * p['mag']
         else:
-            ln_std = c['c13']
+            ln_std = c.c_13
 
         return ln_std
