@@ -56,94 +56,112 @@ class AtkinsonBoore2006(model.Model):
         """
         super(AtkinsonBoore2006, self).__init__(**kwds)
         p = self.params
+        self._ln_resp = self._calc_ln_resp()
+        self._ln_std = self._calc_ln_std()
 
-        def compute_log10_resp(period, c_1, c_2, c_3, c_4, c_5, c_6, c_7,
-                               c_8, c_9, c_10):
-            del period
-            R0 = 10.0
-            R1 = 70.0
-            R2 = 140.0
+    def _calc_ln_resp(self):
+        """Calculate the natural logarithm of the response.
 
-            f0 = max(np.log10(R0 / p['dist_rup']), 0)
-            f1 = min(np.log10(p['dist_rup']), np.log10(R1))
-            f2 = max(np.log10(p['dist_rup'] / R2), 0)
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        p = self.params
+        c = self.COEFF['bc'] if p['v_s30'] else self.COEFF['rock']
 
-            log10_resp = (c_1 +
-                          c_2 * p['mag'] +
-                          c_3 * p['mag'] ** 2 +
-                          (c_4 + c_5 * p['mag']) * f1 +
-                          (c_6 + c_7 * p['mag']) * f2 +
-                          (c_8 + c_9 * p['mag']) * f0 +
-                          c_10 * p['dist_rup']
-                          )
+        # Compute the response at the reference condition
+        R0 = 10.0
+        R1 = 70.0
+        R2 = 140.0
 
-            return log10_resp
-
-        def compute_log10_site(pga_bc, period, b_lin, b_1, b_2):
-            del period
-            VS_1 = 180.
-            VS_2 = 300.
-            VS_REF = 760.
-
-            if p['v_s30'] <= VS_1:
-                b_nl = b_1
-            elif VS_1 < p['v_s30'] <= VS_2:
-                b_nl = ((b_1 - b_2) * np.log(p['v_s30'] / VS_2) /
-                        np.log(VS_1 / VS_2))
-            elif VS_2 < p['v_s30'] <= VS_REF:
-                b_nl = (b_2 * np.log(p['v_s30'] / VS_REF) /
-                        np.log(VS_2 / VS_REF))
-            else:
-                # Vs30 > VS_REF
-                b_nl = 0
-
-            pga_bc = max(pga_bc, 60.)
-
-            log10_site = np.log10(
-                np.exp(b_lin * np.log(p['v_s30'] / VS_REF) + b_nl *
-                       np.log(pga_bc / 100.)))
-
-            return log10_site
-
-        def compute_log10_stress_factor(stress_drop, period, delta, m1, mh):
-            del period
-            foo = delta + 0.05
-            bar = 0.05 + delta * max(p['mag'] - m1, 0) / (mh - m1)
-            log10_stress_factor = min(2., stress_drop / 140.) * min(foo, bar)
-
-            return log10_stress_factor
-
-        COEFF = self.COEFF['bc'] if p['v_s30'] else self.COEFF['rock']
+        f0 = np.maximum(np.log10(R0 / p['dist_rup']), 0)
+        f1 = np.minimum(np.log10(p['dist_rup']), np.log10(R1))
+        f2 = np.maximum(np.log10(p['dist_rup'] / R2), 0)
 
         # Compute the log10 PSA in units of cm/sec/sec
-        log10_resp = np.array([compute_log10_resp(*c) for c in COEFF])
+        log10_resp = (
+            c.c_1 +
+            c.c_2 * p['mag'] +
+            c.c_3 * p['mag'] ** 2 +
+            (c.c_4 + c.c_5 * p['mag']) * f1 +
+            (c.c_6 + c.c_7 * p['mag']) * f2 +
+            (c.c_8 + c.c_9 * p['mag']) * f0 +
+            c.c_10 * p['dist_rup']
+        )
 
-        # Apply the stress correction factor as recommended by Atkinson and
-        # Boore (2011)
-        if p['mag'] >= 5:
-            stress_drop = 10. ** (3.45 - 0.2 * p['mag'])
-            log10_stress_factor = [compute_log10_stress_factor(stress_drop, *c)
-                                   for c in self.COEFF_SF]
-            log10_resp += np.interp(COEFF.period,
-                                    self.COEFF_SF.period, log10_stress_factor)
+        # Apply stress drop correction
+        log10_resp += self._calc_stress_factor()
 
         if p['v_s30']:
             # Compute the site amplification
             pga_bc = (10 ** log10_resp[self.INDEX_PGA])
 
-            log10_site = [compute_log10_site(pga_bc, *c)
-                          for c in self.COEFF_SITE]
+            log10_site = self._calc_log10_site(pga_bc)
 
-            # Amplification is specified at periods the differ from the ground
-            # motion model so we have to interpolate to a common period
-            # spacing before adding the influence of the site
-            log10_site = np.interp(COEFF.period,
-                                   self.COEFF_SITE.period, log10_site)
             log10_resp += log10_site
 
         # Convert from cm/sec/sec to gravity
         log10_resp -= np.log10(980.665)
 
-        # Convert to log-base 10
-        self._ln_resp = np.log(10 ** log10_resp)
-        self._ln_std = 0.30
+        ln_resp = np.log(10 ** log10_resp)
+        return ln_resp
+
+    def _calc_ln_std(self):
+        """Calculate the logarithmic standard deviation.
+
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        ln_std = np.ones_like(self.PERIODS) * 0.30
+        return ln_std
+
+    def _calc_stress_factor(self):
+        """Calculate the stress correction factor proposed by Atkinson and
+        Boore (2011) :cite:`atkinson11`.
+
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.params
+        c = self.COEFF_SF
+
+        stress_drop = 10. ** (3.45 - 0.2 * p['mag'])
+        foo = c.delta + 0.05
+        bar = (0.05 + c.delta * np.maximum(p['mag'] - c.m_1, 0) /
+               (c.m_h - c.m_1))
+
+        log10_stress_factor = (np.minimum(2., stress_drop / 140.) *
+                               np.minimum(foo, bar))
+
+        return np.interp(self.PERIODS, c.period, log10_stress_factor)
+
+    def _calc_log10_site(self, pga_bc):
+        """Calculate the log10 of the site amplification.
+
+        Returns:
+            :class:`np.array`: Log10 site amplification.
+        """
+        p = self.params
+        c = self.COEFF_SITE
+        VS_1 = 180.
+        VS_2 = 300.
+        VS_REF = 760.
+
+        if p['v_s30'] <= VS_1:
+            b_nl = c.b_1
+        elif VS_1 < p['v_s30'] <= VS_2:
+            b_nl = ((c.b_1 - c.b_2) * np.log(p['v_s30'] / VS_2) /
+                    np.log(VS_1 / VS_2))
+        elif VS_2 < p['v_s30'] <= VS_REF:
+            b_nl = (c.b_2 * np.log(p['v_s30'] / VS_REF) /
+                    np.log(VS_2 / VS_REF))
+        else:
+            # Vs30 > VS_REF
+            b_nl = 0
+
+        pga_bc = max(pga_bc, 60.)
+
+        log10_site = np.log10(
+            np.exp(c.b_lin * np.log(p['v_s30'] / VS_REF) + b_nl *
+                   np.log(pga_bc / 100.)))
+
+        return np.interp(self.PERIODS, c.period, log10_site)
