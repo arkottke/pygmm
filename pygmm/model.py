@@ -245,10 +245,11 @@ class Parameter(object):
 
 
 class NumericParameter(Parameter):
-    def __init__(self, name, required=False, min=None, max=None, default=None):
+    def __init__(self, name, required=False, min_=None, max_=None,
+                 default=None):
         super(NumericParameter, self).__init__(name, required, default)
-        self._min = min
-        self._max = max
+        self._min = min_
+        self._max = max_
 
     @property
     def min(self):
