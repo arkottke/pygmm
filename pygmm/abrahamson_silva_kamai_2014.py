@@ -165,10 +165,10 @@ class AbrahamsonSilvaKamai2014(model.Model):
         # Depth to top of rupture term
         f6 = c.a15 * np.clip(p['depth_tor'] / 20, 0, 1)
         # Style of faulting
-        if p['mechanism'] == 'NS':
+        if p['mechanism'] == 'RS':
             f7 = c.a11 * np.clip(p['mag'] - 4, 0, 1)
             f8 = 0
-        elif p['mechanism'] == 'RS':
+        elif p['mechanism'] == 'NS':
             f7 = 0
             f8 = c.a12 * np.clip(p['mag'] - 4, 0, 1)
         else:
