@@ -8,6 +8,7 @@ numpy
 pytest
 pytest-cov
 pytest-flake8
+scipy
 sphinx
 sphinxcontrib-bibtex
 watchdog

@@ -6,6 +6,7 @@
 from __future__ import division
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 from . import model
 
@@ -27,11 +28,6 @@ class AbrahamsonSilvaKamai2014(model.Model):
     COEFF = model.load_data_file('abrahamson_silva_kamai_2014.csv', 2)
 
     PERIODS = COEFF['period']
-
-    # Period independent model coefficients
-    COEFF_A7 = 0
-    COEFF_M2 = 5
-    COEFF_N = 1.5
 
     INDICES_PSA = np.arange(22)
     INDEX_PGA = -2
@@ -133,204 +129,149 @@ class AbrahamsonSilvaKamai2014(model.Model):
                 then  the model average is used.
         """
         super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
+
+        # Compute the response at the reference velocity
+        resp_ref = np.exp(self._calc_ln_resp(self.V_REF, np.nan))
+
+        self._ln_resp = self._calc_ln_resp(self.params['v_s30'], resp_ref)
+        self._ln_std = self._calc_ln_std(resp_ref)
+
+    def _calc_ln_resp(self, v_s30, resp_ref):
+        """Calculate the natural logarithm of the response.
+
+        Args:
+            v_s30 (float): site condition. Set `v_s30` to the reference
+                velocity (e.g., 1180 m/s) for the reference response.
+
+            resp_ref (Optional[:class:`np.array`]): response at the reference
+                condition. Required if `v_s30` is not equal to reference
+                velocity.
+
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        c = self.COEFF
         p = self.params
-        flag_nm = 1 if p['mechanism'] == 'NS' else 0
-        flag_rv = 1 if p['mechanism'] == 'RS' else 0
 
-        def calc_f1(mag, dist_rup, m1, a1, a2, a3, a4, a5, a6, a8, a17, c4):
-            # Magnitude dependent taper
-            m2 = self.COEFF_M2
-            a7 = self.COEFF_A7
-            c4_mag = c4 - (c4 - 1) * np.clip(5 - mag, 0, 1)
-            dist = np.sqrt(dist_rup ** 2 + c4_mag ** 2)
+        # Magnitude scaling
+        f1 = self._calc_f1()
 
-            # Magnitude scaling
-            base = a1
-            if mag <= m2:
-                base += (
-                    a4 * (m2 - m1) + a8 * (8.5 - m2) ** 2 +
-                    a6 * (mag - m2) + a7 * (mag - m2) +
-                    (a2 + a3 * (m2 - m1)) * np.log(dist) + a17 * dist_rup
-                )
+        if p['on_hanging_wall']:
+            # Hanging-wall term
+            f4 = self._calc_f4()
+        else:
+            f4 = 0
+
+        # Depth to top of rupture term
+        f6 = c.a15 * np.clip(p['depth_tor'] / 20, 0, 1)
+        # Style of faulting
+        if p['mechanism'] == 'NS':
+            f7 = c.a11 * np.clip(p['mag'] - 4, 0, 1)
+            f8 = 0
+        elif p['mechanism'] == 'RS':
+            f7 = 0
+            f8 = c.a12 * np.clip(p['mag'] - 4, 0, 1)
+        else:
+            f7, f8 = 0, 0
+
+        # Site term
+        ###########
+        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) +
+                     np.log(1500))
+
+        vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
+        # Linear site model
+        f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
+        # Nonlinear model
+        mask = vs_ratio < 1
+        f5[mask] = (
+            c.a10 * np.log(vs_ratio) -
+            c.b * np.log(resp_ref + c.c) +
+            c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
+        )[mask]
+
+        # Basin term
+        if v_s30 == self.V_REF or p['depth_1_0'] is None:
+            # No basin response
+            f10 = 0
+        else:
+            # Ratio between site depth_1_0 and model center
+            ln_depth_ratio = np.log(
+                (p['depth_1_0'] + 0.01) /
+                (self.calc_depth_1_0(v_s30, p['region']) + 0.01)
+            )
+            slope = interp1d(
+                [150, 250, 400, 700],
+                np.c_[c.a43, c.a44, c.a45, c.a46],
+                copy=False,
+                bounds_error=False,
+                fill_value=(c.a43, c.a46),
+            )(v_s30)
+            f10 = slope * ln_depth_ratio
+
+        # Aftershock term
+        if p['is_aftershock']:
+            f11 = c.a14 * np.clip(1 - (p['dist_crjb'] - 5) / 10, 0, 1)
+        else:
+            f11 = 0
+
+        if p['region'] == 'taiwan':
+            freg = c.a31 * np.log(vs_ratio) + c.a25 * p['dist_rup']
+        elif p['region'] == 'china':
+            freg = c.a28 * p['dist_rup']
+        elif p['region'] == 'japan':
+            f13 = interp1d(
+                [150, 250, 350, 450, 600, 850, 1150],
+                np.c_[c.a36, c.a37, c.a38, c.a39, c.a40, c.a41, c.a42],
+                copy=False,
+                bounds_error=False,
+                fill_value=(c.a36, c.a42),
+            )(v_s30)
+            freg = f13 + c.a29 * p['dist_rup']
+        else:
+            freg = 0
+
+        return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + freg
+
+    def _calc_ln_std(self, psa_ref):
+        """Calculate the logarithmic standard deviation.
+
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.params
+        c = self.COEFF
+
+        if p['region'] == 'japan':
+            phi_al = c.s5 + (c.s6 - c.s5) * np.clip((p['dist_rup'] - 30) / 50,
+                                                    0, 1)
+        else:
+            transition = np.clip((p['mag'] - 4) / 2, 0, 1)
+            if p['vs_source'] == 'measured':
+                phi_al = c.s1m + (c.s2m - c.s1m) * transition
             else:
-                if mag <= m1:
-                    base += a4 * (mag - m1)
-                else:
-                    base += a5 * (mag - m1)
+                phi_al = c.s1e + (c.s2e - c.s1e) * transition
 
-                base += (a8 * (8.5 - mag) ** 2 + (a2 + a3 * (mag - m1)) *
-                         np.log(dist) + a17 * dist_rup)
+        tau_al = c.s3 + (c.s4 - c.s3) * np.clip((p['mag'] - 5) / 2, 0, 1)
+        tau_b = tau_al
 
-            return base
+        # Remove period independent site amplification uncertainty of 0.4
+        phi_amp = 0.4
+        phi_b = np.sqrt(phi_al ** 2 - phi_amp ** 2)
 
-        def calc_f4(dist_jb, dist_x, dist_y0, width, dip, depth_tor, mag, a13):
+        # The partial derivative of the amplification with respect to
+        # the reference intensity
+        deriv = ((-c.b * psa_ref) / (psa_ref + c.c) +
+                 (c.b * psa_ref) /
+                 (psa_ref + c.c * (p['v_s30'] / c.v_lin) ** c.n))
+        deriv[p['v_s30'] >= c.v_lin] = 0
 
-            t1 = min(90 - dip, 60) / 45
+        tau = tau_b * (1 + deriv)
+        phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
 
-            # Constant from page 1041
-            a2hw = 0.2
-            if mag <= 5.5:
-                t2 = 0
-            elif mag < 6.5:
-                t2 = 1 + a2hw * (mag - 6.5) - (1 - a2hw) * (mag - 6.5) ** 2
-            else:
-                t2 = 1 + a2hw * (mag - 6.5)
+        ln_std = np.sqrt(phi ** 2 + tau ** 2)
 
-            # Constants defined on page 1040
-            r1 = width * np.cos(np.radians(dip))
-            r2 = 3 * r1
-            h1 = 0.25
-            h2 = 1.5
-            h3 = -0.75
-            if dist_x < r1:
-                t3 = h1 + h2 * (dist_x / r1) + h3 * (dist_x / r1) ** 2
-            elif dist_x < r2:
-                t3 = 1 - ((dist_x - r1) / (r2 - r1))
-            else:
-                t3 = 0
-
-            t4 = np.clip(1 - depth_tor ** 2 / 100, 0, 1)
-
-            if dist_y0 is None:
-                t5 = np.clip(1 - dist_jb / 30, 0, 1)
-            else:
-                dist_y1 = dist_x * np.tan(np.radians(20))
-                t5 = np.clip(1 - (dist_y0 - dist_y1) / 5, 0, 1)
-
-            return a13 * t1 * t2 * t3 * t4 * t5
-
-        def calc_region(region, v_s30, dist_rup, vs_ratio, a25, a28,
-                        a29, a31, a36, a37, a38, a39, a40, a41, a42):
-            if region == 'taiwan':
-                return a31 * np.log(vs_ratio) + a25 * dist_rup
-            elif region == 'china':
-                return a28 * dist_rup
-            elif region == 'japan':
-                f13 = np.interp(
-                    v_s30,
-                    [150, 250, 350, 450, 600, 850, 1150],
-                    [a36, a37, a38, a39, a40, a41, a42],
-                    a36, a42
-                )
-                return f13 + a29 * dist_rup
-            else:
-                return 0
-
-        def calc_ln_resp(v_s30, psa_ref, period, m1, v_lin, b, c, c4, a1, a2,
-                         a3, a4, a5, a6, a8, a10, a11, a12, a13, a14, a15,
-                         a17, a43, a44, a45, a46, a25, a28, a29, a31, a36,
-                         a37, a38, a39, a40, a41, a42, s1e, s2e, s3, s4, s1m,
-                         s2m, s5, s6):
-            del s1e, s2e, s3, s4, s1m, s2m, s5, s6
-
-            f1 = calc_f1(p['mag'], p['dist_rup'],
-                         m1, a1, a2, a3, a4, a5, a6, a8, a17, c4)
-
-            # Style of faulting
-            f7 = a11 * np.clip(p['mag'] - 4, 0, 1) * flag_rv
-            f8 = a12 * np.clip(p['mag'] - 4, 0, 1) * flag_nm
-
-            # Site term
-            if period <= 0.5:
-                v_1 = 1500
-            elif period < 3:
-                v_1 = np.exp(-0.35 * np.log(period / 0.5) + np.log(1500))
-            else:
-                v_1 = 800
-
-            vs_ratio = min(v_s30, v_1) / v_lin
-            if vs_ratio < 1.:
-                f5 = (a10 * np.log(vs_ratio) -
-                      b * np.log(psa_ref + c) +
-                      b * np.log(psa_ref + c * vs_ratio ** self.COEFF_N)
-                      )
-            else:
-                f5 = (a10 + b * self.COEFF_N) * np.log(vs_ratio)
-
-            if p['on_hanging_wall']:
-                # Hanging-wall term
-                f4 = calc_f4(p['dist_jb'], p['dist_x'], p['dist_y0'],
-                             p['width'], p['dip'], p['depth_tor'], p['mag'],
-                             a13)
-            else:
-                f4 = 0
-
-            # Depth to top of rupture term
-            f6 = a15 * np.clip(p['depth_tor'] / 20, 0, 1)
-
-            # Basin term
-            if v_s30 == self.V_REF or p['depth_1_0'] is None:
-                # No basin response
-                f10 = 0
-            else:
-                depth_1_0_ref = self.calc_depth_1_0(v_s30, p['region'])
-                ln_depth_ratio = np.log(
-                    (p['depth_1_0'] + 0.01) / (depth_1_0_ref + 0.01))
-                slope = np.interp(v_s30,
-                                  [150, 250, 400, 700],
-                                  [a43, a44, a45, a46],
-                                  a43, a46)
-                f10 = slope * ln_depth_ratio
-
-            # Aftershock term
-            if p['is_aftershock']:
-                f11 = a14 * np.clip(1 - (p['dist_crjb'] - 5) / 10, 0, 1)
-            else:
-                f11 = 0
-
-            region = calc_region(p['region'], v_s30, p['dist_rup'],
-                                 vs_ratio, a25, a28, a29, a31, a36, a37,
-                                 a38, a39, a40, a41, a42)
-
-            return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + region
-
-        def calc_ln_std(psa_ref, period, m1, v_lin, b, c, c4, a1, a2,
-                        a3, a4, a5, a6, a8, a10, a11, a12, a13, a14, a15,
-                        a17, a43, a44, a45, a46, a25, a28, a29, a31, a36,
-                        a37, a38, a39, a40, a41, a42, s1e, s2e, s3, s4, s1m,
-                        s2m, s5, s6):
-            del (period, m1, c4, a1, a2, a3, a4, a5, a6, a8, a10, a11, a12,
-                 a13, a14, a15, a17, a43, a44, a45, a46, a25, a28, a29, a31,
-                 a36, a37, a38, a39, a40, a41, a42)
-
-            if p['region'] == 'japan':
-                phi_al = s5 + (s6 - s5) * np.clip((p['dist_rup'] - 30) / 50,
-                                                  0, 1)
-            else:
-                transition = np.clip((p['mag'] - 4) / 2, 0, 1)
-                if p['vs_source'] == 'measured':
-                    phi_al = s1m + (s2m - s1m) * transition
-                else:
-                    phi_al = s1e + (s2e - s1e) * transition
-
-            tau_al = s3 + (s4 - s3) * np.clip((p['mag'] - 5) / 2, 0, 1)
-            tau_b = tau_al
-
-            # Remove period independent site amplification uncertainty of 0.4
-            phi_amp = 0.4
-            phi_b = np.sqrt(phi_al ** 2 - phi_amp ** 2)
-
-            # The partial derivative of the amplification with respect to
-            # the reference intensity
-            if p['v_s30'] >= v_lin:
-                deriv = 0
-            else:
-                deriv = ((-b * psa_ref) / (psa_ref + c) +
-                         (b * psa_ref) /
-                         (psa_ref + c * (p['v_s30'] / v_lin) ** self.COEFF_N))
-
-            tau = tau_b * (1 + deriv)
-            phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
-
-            return np.sqrt(phi ** 2 + tau ** 2)
-
-        psa_ref = np.exp(
-            [calc_ln_resp(self.V_REF, None, *c) for c in self.COEFF])
-
-        self._ln_resp = np.array([calc_ln_resp(p['v_s30'], psa_ref_i, *c)
-                                  for psa_ref_i, c in zip(psa_ref, self.COEFF)])
-        self._ln_std = np.array([calc_ln_std(psa_ref_i, *c)
-                                 for psa_ref_i, c in zip(psa_ref, self.COEFF)])
+        return ln_std
 
     @staticmethod
     def calc_width(mag, dip):
@@ -376,8 +317,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         Keyword Args:
             region (Optional[str]): region of basin model. Valid options:
-                "california", "japan". If *None*, then "california" is used as the
-                default value.
+                "california", "japan". If *None*, then "california" is used as
+                the default value.
 
         Returns:
             float: depth to a shear-wave velocity of 1,000 m/sec
@@ -397,3 +338,92 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
                                      (1360. ** power + v_ref ** power))) / 1000
+
+    def _calc_f1(self):
+        """Calculate the magnitude scaling parameter f1.
+
+        Returns:
+            :class:`np.array`: Model parameter f1.
+        """
+        c = self.COEFF
+        p = self.params
+
+        # Magnitude dependent taper
+        dist = np.sqrt(
+            p['dist_rup'] ** 2 +
+            (c.c4 - (c.c4 - 1) * np.clip(5 - p['mag'], 0, 1)) ** 2
+        )
+
+        # Magnitude scaling
+
+        # Need to copy c.a1 to that it isn't modified during the following
+        # operations.
+        f1 = np.array(c.a1)
+        ma1 = (p['mag'] <= c.m2)
+        f1[ma1] += (
+            c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 +
+            c.a6 * (p['mag'] - c.m2) +
+            c.a7 * (p['mag'] - c.m2) +
+            (c.a2 + c.a3 * (c.m2 - c.m1)) * np.log(dist) +
+            c.a17 * p['dist_rup']
+        )[ma1]
+
+        f1[~ma1] += (
+            c.a8 * (8.5 - p['mag']) ** 2 +
+            (c.a2 + c.a3 * (p['mag'] - c.m1)) * np.log(dist) +
+            c.a17 * p['dist_rup']
+        )[~ma1]
+
+        ma2 = np.logical_and(~ma1, p['mag'] <= c.m1)
+        f1[ma2] += (c.a4 * (p['mag'] - c.m1))[ma2]
+
+        ma3 = np.logical_and(~ma1, p['mag'] > c.m1)
+        f1[ma3] += (c.a5 * (p['mag'] - c.m1))[ma3]
+
+        return f1
+
+    def _calc_f4(self):
+        """Calculate the hanging-wall parameter f4.
+
+        Returns:
+            :class:`np.array`: Model parameter f4.
+        """
+        # Move this into a decorator?
+        c = self.COEFF
+        p = self.params
+
+        t1 = min(90 - p['dip'], 60) / 45
+        # Constant from page 1041
+        a2hw = 0.2
+        if p['mag'] <= 5.5:
+            t2 = 0
+        elif p['mag'] < 6.5:
+            t2 = (1 + a2hw * (p['mag'] - 6.5) -
+                  (1 - a2hw) * (p['mag'] - 6.5) ** 2)
+        else:
+            t2 = 1 + a2hw * (p['mag'] - 6.5)
+
+        # Constants defined on page 1040
+        r1 = p['width'] * np.cos(np.radians(p['dip']))
+        r2 = 3 * r1
+        h1 = 0.25
+        h2 = 1.5
+        h3 = -0.75
+        if p['dist_x'] < r1:
+            t3 = h1 + h2 * (p['dist_x'] / r1) + h3 * (p['dist_x'] / r1) ** 2
+        elif p['dist_x'] < r2:
+            t3 = 1 - ((p['dist_x'] - r1) / (r2 - r1))
+        else:
+            t3 = 0
+
+        t4 = np.clip(1 - p['depth_tor'] ** 2 / 100, 0, 1)
+
+        if p['dist_y0'] is None:
+            t5 = np.clip(1 - p['dist_jb'] / 30, 0, 1)
+        else:
+            dist_y1 = p['dist_x'] * np.tan(np.radians(20))
+            t5 = np.clip(1 - (p['dist_y0'] - dist_y1) / 5, 0, 1)
+
+        f4 = c.a13 * t1 * t2 * t3 * t4 * t5
+
+        return f4
