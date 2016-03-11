@@ -122,7 +122,7 @@ class Model(object):
         """
 
         if self.INDEX_PGA is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._resp(self.INDEX_PGA)
 
@@ -135,12 +135,11 @@ class Model(object):
             :class:`float`
 
         Raises:
-            NotImplementedError
-                If model does not provide an estimate.
+            NotImplementedError: If model does not provide an estimate.
         """
 
         if self.INDEX_PGA is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._ln_std[self.INDEX_PGA]
 
@@ -152,11 +151,10 @@ class Model(object):
             :class:`float`
 
         Raises:
-            NotImplementedError
-                If model does not provide an estimate.
+            NotImplementedError: If model does not provide an estimate.
         """
         if self.INDEX_PGV is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._resp(self.INDEX_PGV) * self.PGV_SCALE
 
@@ -169,11 +167,10 @@ class Model(object):
             :class:`float`
 
         Raises:
-            NotImplementedError
-                If model does not provide an estimate.
+            NotImplementedError: If model does not provide an estimate.
         """
         if self.INDEX_PGV is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._ln_std[self.INDEX_PGV]
 
@@ -185,11 +182,10 @@ class Model(object):
             :class:`float`
 
         Raises:
-            NotImplementedError
-                If model does not provide an estimate.
+            NotImplementedError: If model does not provide an estimate.
         """
         if self.INDEX_PGD is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._resp(self.INDEX_PGD) * self.PGD_SCALE
 
@@ -202,12 +198,11 @@ class Model(object):
             :class:`float`
 
         Raises:
-            NotImplementedError
-                If model does not provide an estimate.
+            NotImplementedError: If model does not provide an estimate.
         """
 
         if self.INDEX_PGD is None:
-            return NotImplementedError
+            raise NotImplementedError
         else:
             return self._ln_std[self.INDEX_PGD]
 

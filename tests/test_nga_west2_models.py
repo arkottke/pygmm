@@ -55,7 +55,7 @@ def test_spec_accels(model, params, expected):
 
 
 @pytest.mark.parametrize('model,params,expected', testdata)
-@pytest.mark.parametrize('key', ['pga', 'pga_ln_std', 'pgv', 'pgv_ln_std'])
+@pytest.mark.parametrize('key', ['pga', 'ln_std_pga', 'pgv', 'ln_std_pgv'])
 def test_im_values(model, params, expected, key):
     if expected[key] is None:
         return
