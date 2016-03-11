@@ -19,8 +19,7 @@ models = [
     pygmm.Idriss2014,
 ]
 
-# Relative tolerance
-# See http://docs.scipy.org/doc/numpy-1.10.1/reference/generated/numpy.testing.assert_allclose.html#numpy.testing.assert_allclose
+# Relative tolerance for all tests
 RTOL = 1e-2
 
 # Load the tests
