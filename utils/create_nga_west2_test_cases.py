@@ -8,7 +8,7 @@ import sys
 import xlwings as xw
 
 sys.path.insert(0, '..')
-import gmmpy
+import pygmm
 
 def iter_parameters(parameters):
     max_len = max(len(p) for p in parameters.values())
@@ -110,7 +110,7 @@ def get_results(wb, abbrev):
 
 wb_fname = os.path.abspath(os.path.join(
     os.path.dirname(__file__),
-    'NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected_Edited.xlsm'))
+    'NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected.xlsm'))
 
 # Parameters
 params_site = {
@@ -218,11 +218,11 @@ RESULT_COLUMNS = dict(
 )
 
 models = [
-    gmmpy.AbrahamsonSilvaKamai2014,
-    gmmpy.BooreStewartSeyhanAtkinson2014,
-    gmmpy.CampbellBozorgnia2014,
-    gmmpy.ChiouYoungs2014,
-    gmmpy.Idriss2014,
+    pygmm.AbrahamsonSilvaKamai2014,
+    pygmm.BooreStewartSeyhanAtkinson2014,
+    pygmm.CampbellBozorgnia2014,
+    pygmm.ChiouYoungs2014,
+    pygmm.Idriss2014,
 ]
 
 # Join the parameters of the site and fault
