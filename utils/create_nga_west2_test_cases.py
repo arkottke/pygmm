@@ -171,6 +171,19 @@ params_fault = [
         'width': 2,
     },
     {
+        'mag': 6.0,
+        'dist_rup': 5,
+        'dist_jb': 0.,
+        'dist_x': 0.1,
+        'dist_y0': None,
+        'mechanism': 'NS',
+        'on_hanging_wall': True,
+        'dip': 60,
+        'depth_tor': 4,
+        'depth_hyp': 5,
+        'width': 8,
+    },
+    {
         'mag': 6.5,
         'dist_rup': 100,
         'dist_jb': 100,
@@ -250,7 +263,7 @@ for p in iter_parameters(parameters):
         'results': results
     })
 
-fname = '../gmmpy/tests/data/ngaw2_tests.json.gz'
+fname = '../tests/data/ngaw2_tests.json.gz'
 with gzip.open(fname, 'wt') as fp:
     json.dump(tests, fp, indent=4)
 
