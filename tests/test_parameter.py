@@ -21,7 +21,8 @@ def numeric_parameter():
 
 @pytest.fixture
 def categorical_parameter():
-    return CategoricalParameter('test', required=True, options=['spam', 'eggs'])
+    return CategoricalParameter(
+        'test', required=True, options=['spam', 'eggs'])
 
 
 # See https://github.com/pytest-dev/pytest/issues/349
@@ -33,4 +34,3 @@ def param(request):
 def test_required(param):
     with pytest.raises(ValueError):
         param.check(None)
-
