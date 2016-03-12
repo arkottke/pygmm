@@ -57,14 +57,14 @@ def test_spec_accels(model, params, expected):
 @pytest.mark.parametrize('model,params,expected', testdata)
 @pytest.mark.parametrize('key', ['pga', 'ln_std_pga', 'pgv', 'ln_std_pgv'])
 def test_im_values(model, params, expected, key):
-    if expected[key] is None:
+    if expected.get(key, None) is None:
         return
 
     m = model(**params)
 
     try:
         value = getattr(m, key)
-    except AttributeError:
+    except NotImplementedError:
         return
 
     if value is None:
