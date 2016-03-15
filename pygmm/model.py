@@ -299,7 +299,7 @@ class CategoricalParameter(Parameter):
         return value
 
 
-# FIXME return a list of records
 def load_data_file(name, skip_header=None):
     fname = os.path.join(os.path.dirname(__file__), 'data', name)
-    return np.recfromcsv(fname, skip_header=skip_header).view(np.recarray)
+    return np.recfromcsv(fname, skip_header=skip_header,
+                         case_sensitive=True).view(np.recarray)
