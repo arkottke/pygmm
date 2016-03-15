@@ -150,190 +150,181 @@ class CampbellBozorgnia2014(model.Model):
         super(CampbellBozorgnia2014, self).__init__(**kwds)
         p = self.params
 
-        # Japan specific scaling
-        S_J = 1 if 'japan' in p['region'] else 0
+        pga_ref = np.exp(self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
 
-        flag_nm = flag_rv = 0
-        if p['mechanism'] == 'NS':
-            flag_nm = 1
-        elif p['mechanism'] == 'RS':
-            flag_rv = 1
+        self._ln_resp = self._calc_ln_resp(pga_ref, p['v_s30'])
+        self._ln_std = self._calc_ln_std(pga_ref)
 
-        def calc_ln_resp(pga_ref, v_s30, period, c_0, c_1, c_2, c_3, c_4,
-                         c_5, c_6, c_7, c_8, c_9, c_10, c_11, c_12, c_13,
-                         c_14, c_15, c_16, c_17, c_18, c_19, k_1, k_2, k_3,
-                         a_2, h_1, h_2, h_3, h_4, h_5, h_6, c_20, dc_20ca,
-                         dc_20jp, dc_20ch, tau_1, tau_2, phi_1, phi_2,
-                         phi_lnaf, phi_c, sigma_s, sigma_arbs, sigma_l,
-                         sigma_arbl, rho_lnpgalny):
-            # Calculate response
-            del (period, tau_1, tau_2, phi_1, phi_2, phi_lnaf, phi_c,
-                 sigma_s, sigma_arbs, sigma_l, sigma_arbl, rho_lnpgalny)
-            # Magnitude term
-            f_mag = c_0 + c_1 * p['mag']
-            for min_mag, slope in ([4.5, c_2], [5.5, c_3], [6.5, c_4]):
-                if min_mag < p['mag']:
-                    f_mag += slope * (p['mag'] - min_mag)
-                else:
-                    break
+    def _calc_ln_resp(self, pga_ref, v_s30):
+        """Calculate the natural logarithm of the response.
 
-            # Geometric attenuation term
-            f_dis = (c_5 + c_6 * p['mag']) * np.log(np.sqrt(
-                p['dist_rup'] ** 2 + c_7 ** 2
-            ))
+        Args:
+            pga_ref (float): peak ground acceleration (g) at the reference
+                condition. If :class:`np.nan`, then no site term is applied.
 
-            # Style of faulting term
-            f_fltF = c_8 * flag_rv + c_9 * flag_nm
-            f_fltM = np.clip(p['mag'] - 4.5, 0, 1)
+            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+                of the site (:math:`V_{s30}`, m/s).
 
-            f_flt = f_fltF * f_fltM
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        p = self.params
+        c = self.COEFF
 
-            # Hanging-wall term
-            R_1 = p['width'] * np.cos(np.radians(p['dip']))
-            R_2 = 62 * p['mag'] - 350
-            if p['dist_x'] < 0:
-                f_hngRx = 0
-            elif p['dist_x'] <= R_1:
-                ratio = p['dist_x'] / R_1
-                f_hngRx = h_1 + h_2 * ratio + h_3 * ratio ** 2
+        # Magnitude term
+        f_mag = c.c_0 + c.c_1 * p['mag']
+        for min_mag, slope in ([4.5, c.c_2], [5.5, c.c_3], [6.5, c.c_4]):
+            if min_mag < p['mag']:
+                f_mag += slope * (p['mag'] - min_mag)
             else:
-                ratio = (p['dist_x'] - R_1) / (R_2 - R_1)
-                f_hngRx = max(0, h_4 + h_5 * ratio + h_6 * ratio ** 2)
+                break
 
-            if p['dist_rup'] == 0:
-                f_hngRrup = 1
-            else:
-                f_hngRrup = (p['dist_rup'] - p['dist_jb']) / p['dist_rup']
+        # Geometric attenuation term
+        f_dis = (c.c_5 + c.c_6 * p['mag']) * np.log(np.sqrt(
+            p['dist_rup'] ** 2 + c.c_7 ** 2
+        ))
 
-            if p['mag'] <= 5.5:
-                f_hngM = 0
-            else:
-                f_hngM = min(p['mag'] - 5.5, 1) * (1 + a_2 * (p['mag'] - 6.5))
+        # Style of faulting term
+        taper = np.clip(p['mag'] - 4.5, 0, 1)
+        if p['mechanism'] == 'RS':
+            f_flt = c.c_8 * taper
+        elif p['mechanism'] == 'NS':
+            f_flt = c.c_9 * taper
+        else:
+            f_flt = 0
 
-            f_hngZ = 0 if p['depth_tor'] > 16.66 else 1 - 0.06 * p['depth_tor']
+        # Hanging-wall term
+        R_1 = p['width'] * np.cos(np.radians(p['dip']))
+        R_2 = 62 * p['mag'] - 350
+        if p['dist_x'] < 0:
+            f_hngRx = 0
+        elif p['dist_x'] <= R_1:
+            ratio = p['dist_x'] / R_1
+            f_hngRx = c.h_1 + c.h_2 * ratio + c.h_3 * ratio ** 2
+        else:
+            ratio = (p['dist_x'] - R_1) / (R_2 - R_1)
+            f_hngRx = np.maximum(0, c.h_4 + c.h_5 * ratio + c.h_6 * ratio ** 2)
 
-            f_hngDip = (90 - p['dip']) / 45
+        if p['dist_rup'] == 0:
+            f_hngRrup = 1
+        else:
+            f_hngRrup = (p['dist_rup'] - p['dist_jb']) / p['dist_rup']
 
-            f_hng = c_10 * f_hngRx * f_hngRrup * f_hngM * f_hngZ * f_hngDip
+        if p['mag'] <= 5.5:
+            f_hngM = 0
+        else:
+            f_hngM = \
+                np.minimum(p['mag'] - 5.5, 1) * (1 + c.a_2 * (p['mag'] - 6.5))
 
-            # Site term
-            v_s30_ratio = v_s30 / k_1
-            if v_s30 <= k_1:
-                f_siteG = c_11 * np.log(v_s30_ratio) + k_2 * (
-                    np.log(pga_ref + self.COEFF_C *
-                           v_s30_ratio ** self.COEFF_N) -
-                    np.log(pga_ref + self.COEFF_C)
+        f_hngZ = 0 if p['depth_tor'] > 16.66 else 1 - 0.06 * p['depth_tor']
+        f_hngDip = (90 - p['dip']) / 45
+
+        f_hng = c.c_10 * f_hngRx * f_hngRrup * f_hngM * f_hngZ * f_hngDip
+
+        # Site term
+        f_site = np.zeros_like(c.period)
+        vs_ratio = v_s30 / c.k_1
+        mask = (v_s30 <= c.k_1)
+        f_site[mask] = (
+            c.c_11 * np.log(vs_ratio) +
+            c.k_2 * (np.log(pga_ref +
+                            self.COEFF_C * vs_ratio ** self.COEFF_N) -
+                     np.log(pga_ref + self.COEFF_C))
+            )[mask]
+        f_site[~mask] = (
+            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
+        )[~mask]
+
+        if p['region'] == 'japan':
+            # Apply regional correction for Japan
+            if v_s30 <= 200:
+                f_site += (
+                    (c.c_12 + c.k_2 * self.COEFF_N) *
+                    (np.log(vs_ratio) - np.log(200 / c.k_1))
                 )
             else:
-                f_siteG = (c_11 + k_2 * self.COEFF_N) * np.log(v_s30_ratio)
+                f_site += (c.c_13 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
 
-            if v_s30 <= 200:
-                f_siteJ = (c_12 + k_2 * self.COEFF_N) * (np.log(v_s30_ratio) -
-                                                         np.log(200 / k_1))
-            else:
-                f_siteJ = (c_13 + k_2 * self.COEFF_N) * np.log(v_s30_ratio)
+        # Basin response term
+        if np.isnan(pga_ref):
+            # Use model to compute depth_2_5 for the reference velocity case
+            depth_2_5 = self.calc_depth_2_5(v_s30, p['region'])
+        else:
+            depth_2_5 = p['depth_2_5']
 
-            f_site = f_siteG + S_J * f_siteJ
+        if depth_2_5 <= 1:
+            f_sed = c.c_14 * (depth_2_5 - 1)
+            if p['region'] == 'japan':
+                f_sed += c.c_15 * (depth_2_5 - 1)
+        elif depth_2_5 <= 3:
+            f_sed = 0
+        else:
+            f_sed = (c.c_16 * c.k_3 * np.exp(-0.75) *
+                     (1 - np.exp(-0.25 * (depth_2_5 - 3))))
 
-            # Basin response term
-            if pga_ref is None:
-                # Use model to compute depth_2_5 for the reference velocity case
-                depth_2_5 = self.calc_depth_2_5(v_s30, p['region'])
-            else:
-                depth_2_5 = p['depth_2_5']
+        # Hypocentral depth term
+        f_hypH = np.clip(p['depth_hyp'] - 7, 0, 13)
+        f_hypM = c.c_17 + (c.c_18 - c.c_17) * np.clip(p['mag'] - 5.5, 0, 1)
+        f_hyp = f_hypH * f_hypM
 
-            if depth_2_5 <= 1:
-                f_sed = (c_14 + c_15 * S_J) * (depth_2_5 - 1)
-            elif depth_2_5 <= 3:
-                f_sed = 0
-            else:
-                f_sed = (c_16 * k_3 * np.exp(-0.75) *
-                         (1 - np.exp(-0.25 * (depth_2_5 - 3))))
+        # Fault dip term
+        f_dip = c.c_19 * p['dip'] * np.clip(5.5 - p['mag'], 0, 1)
 
-            # Hypocentral depth term
-            f_hypH = np.clip(p['depth_hyp'] - 7, 0, 13)
-            f_hypM = c_17 + (c_18 - c_17) * np.clip(p['mag'] - 5.5, 0, 1)
+        # Anaelastic attenuation term
+        if p['region'] in ['japan', 'italy']:
+            dc_20 = c.dc_20jp
+        elif p['region'] == ['china']:
+            dc_20 = c.dc_20ch
+        else:
+            dc_20 = c.dc_20ca
 
-            f_hyp = f_hypH * f_hypM
+        f_atn = (c.c_20 + dc_20) * max(p['dist_rup'] - 80, 0)
 
-            # Fault dip term
-            f_dip = c_19 * p['dip'] * np.clip(5.5 - p['mag'], 0, 1)
+        ln_resp = (f_mag + f_dis + f_flt + f_hng + f_site + f_sed + f_hyp +
+                   f_dip + f_atn)
+        return ln_resp
 
-            # Anaelastic attenuation term
-            if p['region'] in ['japan', 'italy']:
-                dc_20 = dc_20jp
-            elif p['region'] == ['china']:
-                dc_20 = dc_20ch
-            else:
-                dc_20 = dc_20ca
+    def _calc_ln_std(self, pga_ref):
+        """Calculate the logarithmic standard deviation.
 
-            f_atn = (c_20 + dc_20) * max(p['dist_rup'] - 80, 0)
+        Args:
+            pga_ref (float): peak ground acceleration (g) at the reference
+                condition.
 
-            ln_resp = (f_mag + f_dis + f_flt + f_hng + f_site + f_sed + f_hyp +
-                       f_dip + f_atn)
-            return ln_resp
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        p = self.params
+        c = self.COEFF
 
-        def calc_tau_lnY(tau_1, tau_2):
-            # Equation 27
-            return tau_2 + (tau_1 - tau_2) * np.clip(5.5 - p['mag'], 0, 1)
+        tau_lnY = c.tau_2 + (c.tau_1 - c.tau_2) * np.clip(5.5 - p['mag'], 0, 1)
+        phi_lnY = c.phi_2 + (c.phi_1 - c.phi_2) * np.clip(5.5 - p['mag'], 0, 1)
 
-        def calc_phi_lnY(phi_1, phi_2):
-            # Equation 28
-            return phi_2 + (phi_1 - phi_2) * np.clip(5.5 - p['mag'], 0, 1)
+        vs_ratio = p['v_s30'] / c.k_1
+        alpha = np.zeros_like(c.period)
+        mask = p['v_s30'] < c.k_1
+        alpha[mask] = (
+            c.k_2 * pga_ref * (
+                (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1) -
+                (pga_ref + self.COEFF_C) ** -1)
+        )[mask]
 
-        def calc_ln_std(pga_ref, tau_lnPGA, phi_lnPGA, period, c_0, c_1, c_2,
-                        c_3, c_4, c_5, c_6, c_7, c_8, c_9, c_10, c_11, c_12,
-                        c_13, c_14, c_15, c_16, c_17, c_18, c_19, k_1, k_2, k_3,
-                        a_2, h_1, h_2, h_3, h_4, h_5, h_6, c_20, dc_20ca,
-                        dc_20jp, dc_20ch, tau_1, tau_2, phi_1, phi_2,
-                        phi_lnAF, phi_c, sigma_s, sigma_arbs, sigma_l,
-                        sigma_arbl, rho_lnPGAlny):
-            # Compute standard deviation
-            del (period, c_0, c_1, c_2, c_3, c_4, c_5, c_6, c_7, c_8, c_9,
-                 c_10, c_11, c_12, c_13, c_14, c_15, c_16, c_17, c_18, c_19,
-                 k_3, a_2, h_1, h_2, h_3, h_4, h_5, h_6, c_20, dc_20ca,
-                 dc_20jp, dc_20ch, phi_c, sigma_s, sigma_arbs, sigma_l,
-                 sigma_arbl)
-            tau_lnY = calc_tau_lnY(tau_1, tau_2)
-            phi_lnY = calc_phi_lnY(phi_1, phi_2)
+        tau_lnPGA = tau_lnY[self.INDEX_PGA]
+        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 +
+                      2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
 
-            v_s30_ratio = p['v_s30'] / k_1
-            if p['v_s30'] < k_1:
-                alpha = k_2 * pga_ref * (
-                    (pga_ref +
-                     self.COEFF_C * v_s30_ratio ** self.COEFF_N) ** (-1) -
-                    (pga_ref + self.COEFF_C) ** -1)
-            else:
-                alpha = 0
+        phi_lnPGA = phi_lnY[self.INDEX_PGA]
+        phi_lnAF_PGA = self.COEFF['phi_lnAF'][self.INDEX_PGA]
+        phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
+        phi_lnY_B = np.sqrt(phi_lnY ** 2 - c.phi_lnAF ** 2)
 
-            tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 +
-                          2 * alpha * rho_lnPGAlny * tau_lnY * tau_lnPGA)
+        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 +
+                      alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) +
+                      2 * alpha * c.rho_lnPGAlnY * phi_lnY_B * phi_lnPGA_B)
 
-            phi_lnAF_PGA = self.COEFF['phi_lnaf'][self.INDEX_PGA]
-            phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
-            phi_lnY_B = np.sqrt(phi_lnY ** 2 - phi_lnAF ** 2)
+        ln_std = np.sqrt(phi ** 2 + tau ** 2)
 
-            phi = np.sqrt(phi_lnY_B ** 2 + phi_lnAF ** 2 +
-                          alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) +
-                          2 * alpha * rho_lnPGAlny * phi_lnY_B * phi_lnPGA_B)
-
-            ln_std = np.sqrt(phi ** 2 + tau ** 2)
-
-            return ln_std
-
-        pga_ref = np.exp(
-            calc_ln_resp(None, self.V_REF, *self.COEFF[self.INDEX_PGA]))
-        self._ln_resp = np.array(
-            [calc_ln_resp(pga_ref, p['v_s30'], *c) for c in self.COEFF])
-
-        tau_lnPGA = calc_tau_lnY(self.COEFF.tau_1[self.INDEX_PGA],
-                                 self.COEFF.tau_2[self.INDEX_PGA])
-        phi_lnPGA = calc_phi_lnY(self.COEFF.phi_1[self.INDEX_PGA],
-                                 self.COEFF.phi_2[self.INDEX_PGA])
-
-        self._ln_std = np.array(
-            [calc_ln_std(pga_ref, tau_lnPGA, phi_lnPGA, *c)
-             for c in self.COEFF])
+        return ln_std
 
     @staticmethod
     def calc_depth_2_5(v_s30, region='global', depth_1_0=None):
