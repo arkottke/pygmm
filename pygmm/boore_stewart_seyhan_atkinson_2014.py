@@ -129,107 +129,9 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
                 specified, then "global" is used as default.
         """
         super(BooreStewartSeyhanAtkinson2014, self).__init__(**kwds)
-        p = self.params
-
-        U = SS = NS = RS = 0
-        if p['mechanism'] == 'U':
-            U = 1
-        elif p['mechanism'] == 'SS':
-            SS = 1
-        elif p['mechanism'] == 'NS':
-            NS = 1
-        elif p['mechanism'] == 'RS':
-            RS = 1
-        else:
-            raise NotImplementedError
-
-        def calc_ln_resp(pga_ref, period, e_0, e_1, e_2, e_3, e_4,
-                         e_5, e_6, M_h, c_1, c_2, c_3, M_ref, R_ref, h,
-                         dc_3global, dc_3ct, dc_3ij, c, V_c, V_ref, f_1, f_3,
-                         f_4, f_5, f_6, f_7, R_1, R_2, dphi_R, dphi_V, V_1,
-                         V_2, phi_1, phi_2, tau_1, tau_2):
-            del (R_1, R_2, dphi_R, dphi_V, V_1, V_2, phi_1, phi_2, tau_1,
-                 tau_2)
-            # Compute the event term
-            event = e_0 * U + e_1 * SS + e_2 * NS + e_3 * RS
-            if p['mag'] <= M_h:
-                event += e_4 * (p['mag'] - M_h) + e_5 * (p['mag'] - M_h) ** 2
-            else:
-                event += e_6 * (p['mag'] - M_h)
-
-            # Compute the distance terms
-            R = np.sqrt(p['dist_jb'] ** 2 + h ** 2)
-
-            if p['region'] in ['global', 'california', 'new_zealand', 'taiwan']:
-                dc_3 = dc_3global
-            elif p['region'] in ['china', 'turkey']:
-                dc_3 = dc_3ct
-            elif p['region'] in ['italy', 'japan']:
-                dc_3 = dc_3ij
-            else:
-                raise NotImplementedError
-
-            path = ((c_1 + c_2 * (p['mag'] - M_ref)) * np.log(R / R_ref) +
-                    (c_3 + dc_3) * (R - R_ref))
-
-            if pga_ref is not None:
-                # Compute the site term
-                f_lin = c * np.log(min(p['v_s30'], V_c) / V_ref)
-
-                # Add the nonlinearity to the site term
-                f_2 = f_4 * (np.exp(f_5 * (min(p['v_s30'], 760) - 360.)) -
-                             np.exp(f_5 * (760. - 360.)))
-                f_nl = f_1 + f_2 * np.log((pga_ref + f_3) / f_3)
-
-                # Add the basin effect to the site term
-                if period >= 0.65:
-                    # Compute the average from the Chiou and Youngs (2014)
-                    # model convert from m to km.
-                    ln_mz1 = np.log(
-                        CY14.calc_depth_1_0(p['v_s30'], p['region']))
-
-                    if p.get('depth_1_0', None) is not None:
-                        dz1 = p['depth_1_0'] - np.exp(ln_mz1)
-                    else:
-                        dz1 = 0.
-                    F_dz1 = min(f_6 * dz1, f_7)
-                else:
-                    F_dz1 = 0
-
-                site = f_lin + f_nl + F_dz1
-            else:
-                site = 0
-
-            return event + path + site
-
-        def calc_ln_std(period, e_0, e_1, e_2, e_3, e_4, e_5, e_6, M_h, c_1,
-                        c_2, c_3, M_ref, R_ref, h, dc_3global, dc_3ct,
-                        dc_3ij, c, V_c, V_ref, f_1, f_3, f_4, f_5, f_6, f_7,
-                        R_1, R_2, dphi_R, dphi_V, V_1, V_2, phi_1, phi_2,
-                        tau_1, tau_2):
-            del (period, e_0, e_1, e_2, e_3, e_4, e_5, e_6, M_h, c_1, c_2,
-                 c_3, M_ref, R_ref, h, dc_3global, dc_3ct, dc_3ij, c, V_c,
-                 V_ref, f_1, f_3, f_4, f_5, f_6, f_7)
-            # Uncertainty model
-            tau = tau_1 + (tau_2 - tau_1) * (np.clip(p['mag'], 4.5, 5.5) - 4.5)
-            phi = phi_1 + (phi_2 - phi_1) * (np.clip(p['mag'], 4.5, 5.5) - 4.5)
-
-            # Modify phi for Vs30
-            phi -= dphi_V * np.clip(np.log(V_2 / p['v_s30']) /
-                                    np.log(V_2 / V_1), 0, 1)
-
-            # Modify phi for R
-            phi += dphi_R * np.clip(np.log(p['dist_jb'] / R_1) /
-                                    np.log(R_2 / R_1), 0, 1)
-
-            return np.sqrt(phi ** 2 + tau ** 2)
-
-        pga_ref = np.exp(
-            calc_ln_resp(None, *self.COEFF[self.INDEX_PGA]))
-        self._ln_resp = np.array(
-            [calc_ln_resp(pga_ref, *c) for c in self.COEFF])
-        self._ln_std = np.array(
-            [calc_ln_std(*c) for c in self.COEFF])
+        pga_ref = np.exp(self._calc_ln_resp(np.nan)[self.INDEX_PGA])
+        self._ln_resp = self._calc_ln_resp(pga_ref)
+        self._ln_std = self._calc_ln_std()
 
     def _check_inputs(self):
         super(BooreStewartSeyhanAtkinson2014, self)._check_inputs()
@@ -251,3 +153,112 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
                     ' for a normal-slip earthquake!',
                     self.params['mag'], _min, _max
                 )
+
+    def _calc_ln_resp(self, pga_ref):
+        """Calculate the natural logarithm of the response.
+
+        Args:
+            pga_ref (float): peak ground acceleration (g) at the reference
+                condition. If :class:`np.nan`, then no site term is applied.
+
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        p = self.params
+        c = self.COEFF
+
+        # Compute the event term
+        ########################
+        if p['mechanism'] == 'SS':
+            event = np.array(c.e_1)
+        elif p['mechanism'] == 'NS':
+            event = np.array(c.e_2)
+        elif p['mechanism'] == 'RS':
+            event = np.array(c.e_3)
+        else:
+            # Unspecified
+            event = np.array(c.e_0)
+
+        mask = p['mag'] <= c.M_h
+        event[mask] += (
+            c.e_4 * (p['mag'] - c.M_h) + \
+            c.e_5 * (p['mag'] - c.M_h) ** 2
+        )[mask]
+        event[~mask] += (c.e_6 * (p['mag'] - c.M_h))[~mask]
+
+        # Compute the distance terms
+        ############################
+        if p['region'] in ['china', 'turkey']:
+            dc_3 = c.dc_3ct
+        elif p['region'] in ['italy', 'japan']:
+            dc_3 = c.dc_3ij
+        else:
+            # p['region'] in 'global', 'california', 'new_zealand', 'taiwan'
+            dc_3 = c.dc_3global
+
+        dist = np.sqrt(p['dist_jb'] ** 2 + c.h ** 2)
+        path = (
+            (c.c_1 +
+             c.c_2 * (p['mag'] - c.M_ref)) * np.log(dist / c.R_ref) +
+            (c.c_3 + dc_3) * (dist - c.R_ref)
+        )
+
+        if np.isnan(pga_ref):
+            # Reference condition. No site effect
+            site = 0
+        else:
+            # Compute the site term
+            f_lin = c.c * np.log(np.minimum(p['v_s30'], c.V_c) / c.V_ref)
+
+            # Add the nonlinearity to the site term
+            f_2 = c.f_4 * (np.exp(c.f_5 * (min(p['v_s30'], 760) - 360.)) -
+                         np.exp(c.f_5 * (760. - 360.)))
+            f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
+
+            # Add the basin effect to the site term
+            F_dz1 = np.zeros_like(c.period)
+
+            # Compute the average from the Chiou and Youngs (2014)
+            # model convert from m to km.
+            ln_mz1 = np.log(
+                CY14.calc_depth_1_0(p['v_s30'], p['region']))
+
+            if p.get('depth_1_0', None) is not None:
+                delta_depth_1_0 = p['depth_1_0'] - np.exp(ln_mz1)
+            else:
+                delta_depth_1_0 = 0.
+
+            mask = (c.period >= 0.65)
+            F_dz1[mask] = np.minimum(c.f_6 * delta_depth_1_0, c.f_7)[mask]
+
+            site = f_lin + f_nl + F_dz1
+
+        ln_resp = event + path + site
+        return ln_resp
+
+    def _calc_ln_std(self):
+        """Calculate the logarithmic standard deviation.
+
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        c = self.COEFF
+        p = self.params
+
+        # Uncertainty model
+        tau = c.tau_1 + (c.tau_2 - c.tau_1) * \
+                        (np.clip(p['mag'], 4.5, 5.5) - 4.5)
+        phi = c.phi_1 + (c.phi_2 - c.phi_1) * \
+                        (np.clip(p['mag'], 4.5, 5.5) - 4.5)
+
+        # Modify phi for Vs30
+        phi -= c.dphi_V * np.clip(np.log(c.V_2 / p['v_s30']) /
+                                  np.log(c.V_2 / c.V_1), 0, 1)
+
+        # Modify phi for R
+        phi += c.dphi_R * np.clip(np.log(p['dist_jb'] / c.R_1) /
+                                  np.log(c.R_2 / c.R_1), 0, 1)
+
+        ln_std = np.sqrt(phi ** 2 + tau ** 2)
+
+        return ln_std
