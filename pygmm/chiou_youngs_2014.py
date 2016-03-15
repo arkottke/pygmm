@@ -321,9 +321,9 @@ class ChiouYoungs2014(model.Model):
         """
         if mechanism == 'RS':
             # Reverse and reverse-oblique faulting
-            foo = 2.704 - 1.226 * max(mag - 5.849, 0)
+            depth_tor = 2.704 - 1.226 * max(mag - 5.849, 0)
         else:
             # Combined strike-slip and normal faulting
-            foo = 2.673 - 1.136 * max(mag - 4.970, 0)
+            depth_tor = 2.673 - 1.136 * max(mag - 4.970, 0)
 
-        return max(foo, 0) ** 2
+        return max(depth_tor, 0) ** 2

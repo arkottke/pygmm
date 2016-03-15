@@ -352,12 +352,12 @@ class CampbellBozorgnia2014(model.Model):
             param = v_s30
             if region == 'japan':
                 # From equation 6.10 on page 63
-                foo = 5.359
-                bar = 1.102
+                intercept = 5.359
+                slope = 1.102
             else:
                 # From equation 6.9 on page 63
-                foo = 7.089
-                bar = 1.144
+                intercept = 7.089
+                slope = 1.144
 
             # Global model
             # Not supported by NGA-West2 spreadsheet, and therefore removed.
@@ -367,12 +367,12 @@ class CampbellBozorgnia2014(model.Model):
             param = depth_1_0
             if region == 'japan':
                 # From equation 6.13 on page 64
-                foo = 0.408
-                bar = 1.745
+                intercept = 0.408
+                slope = 1.745
             else:
                 # From equation 6.12 on page 64
-                foo = 1.392
-                bar = 1.798
+                intercept = 1.392
+                slope = 1.798
 
             # Global model
             # Not supported by NGA-West2 spreadsheet, and therefore removed.
@@ -381,7 +381,7 @@ class CampbellBozorgnia2014(model.Model):
         else:
             raise NotImplementedError
 
-        return np.exp(foo - bar * np.log(param))
+        return np.exp(intercept - slope * np.log(param))
 
     @staticmethod
     def calc_depth_hyp(mag, dip, depth_tor, depth_bor):
