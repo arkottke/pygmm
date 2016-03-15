@@ -79,20 +79,21 @@ class ChiouYoungs2014(model.Model):
             dip (float): fault dip angle (:math:`\phi`, deg).
 
             dpp_centered (Optional[float]): direct point parameter for
-                directivity effect (see Chiou and Spudich (2014)) centered on the
-                earthquake-specific average DPP for California. If *None*,
+                directivity effect (see Chiou and Spudich (2014)) centered on
+                the earthquake-specific average DPP for California. If *None*,
                 then value of 0 used to provide the average directivity.
 
             mag (float): moment magnitude of the event (:math:`M_w`)
 
-            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS", "RS".
+            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS",
+                "RS".
 
             on_hanging_wall (Optional[bool]): If the site is located on the
                 hanging wall of the fault. If *None*, then *False* is assumed.
 
             region (Optional[str]): region. Valid options: "california",
-                "china", "italy", "japan". If *None*, then "california" is used as
-                a default value.
+                "china", "italy", "japan". If *None*, then "california" is used
+                as a default value.
 
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).
@@ -102,158 +103,153 @@ class ChiouYoungs2014(model.Model):
 
         """
         super(ChiouYoungs2014, self).__init__(**kwds)
+        ln_resp_ref = self._calc_ln_resp_ref()
+        self._ln_resp = self._calc_ln_resp_site(ln_resp_ref)
+        self._ln_std = self._calc_ln_std(np.exp(ln_resp_ref))
+
+    def _calc_ln_resp_ref(self):
+        """Calculate the natural logarithm of the response at the reference
+        site condition.
+
+        Returns:
+            :class:`np.array`: Natural logarithm of the response.
+        """
+        c = self.COEFF
         p = self.params
 
-        flag_nm = 1 if p['mechanism'] == 'NS' else 0
-        flag_rv = 1 if p['mechanism'] == 'RS' else 0
-        flag_meas = 1 if p['vs_source'] == 'measured' else 0
-        flag_hw = int(p['on_hanging_wall'])
+        cosh_mag = np.cosh(2 * max(p['mag'] - 4.5, 0))
+        ln_resp = np.array(c.c_1)
 
-        # Difference between requested and model centered values
+        if p['mechanism'] == 'RS':
+            # Reverse fault term
+            ln_resp += (c.c_1a + c.c_1c / cosh_mag)
+        elif p['mechanism'] == 'NS':
+            # Normal fault term
+            ln_resp += (c.c_1b + c.c_1d / cosh_mag)
+
+        # Magnitude scaling
+        ln_resp += c.c_2 * (p['mag'] - 6)
+        ln_resp += (c.c_2 - c.c_3) / c.c_n * np.log(
+            1 + np.exp(c.c_n * (c.c_m - p['mag'])))
+
+        # Top of rupture term relative to model average
         diff_depth_tor = (p['depth_tor'] -
                           self.calc_depth_tor(p['mag'], p['mechanism']))
+        ln_resp += (c.c_7 + c.c_7b / cosh_mag) * diff_depth_tor
+
+        # Dip angle term
+        ln_resp += (c.c_11 + c.c_11b / cosh_mag) * np.cos(
+            np.radians(p['dip'])) ** 2
+
+        # Distance terms
+        ln_resp += c.c_4 * np.log(
+            p['dist_rup'] +
+            c.c_5 * np.cosh(c.c_6 * np.maximum(p['mag'] - c.c_hm, 0)))
+        ln_resp += (c.c_4a - c.c_4) * np.log(
+            np.sqrt(p['dist_rup'] ** 2 + c.c_rb ** 2))
+
+        # Regional adjustment
+        if p['region'] in ['japan', 'italy'] and (6 < p['mag'] < 6.9):
+            scale = c.gamma_ji
+        elif p['region'] in ['china']:
+            scale = c.gamma_c
+        else:
+            scale = 1.
+        ln_resp += (scale *
+                    (c.c_gamma1 + c.c_gamma2 / np.cosh(
+                        np.maximum(p['mag'] - c.c_gamma3, 0))) * p['dist_rup'])
+
+        # Directivity term
+        ln_resp += (c.c_8 *
+                    max(1 - max(p['dist_rup'] - 40, 0) / 30, 0) *
+                    min(max(p['mag'] - 5.5, 0) / 0.8, 1) *
+                    np.exp(-c.c_8a * (p['mag'] - c.c_8b) ** 2) *
+                    p['dpp_centered'])
+
+        # Hanging wall term
+        if p['on_hanging_wall']:
+            ln_resp += (
+                c.c_9 * np.cos(np.radians(p['dip'])) *
+                (c.c_9a + (1 - c.c_9a) * np.tanh(p['dist_x'] / c.c_9b)) *
+                (1 - np.sqrt(p['dist_jb'] ** 2 + p['depth_tor'] ** 2) /
+                 (p['dist_rup'] + 1))
+            )
+
+        return ln_resp
+
+    def _calc_ln_resp_site(self, ln_resp_ref):
+        """Calculate the natural logarithm of the response including site
+        effects.
+
+        Args:
+            ln_resp_ref (:class:`np.array`): Natural logarithm of the
+            response at the reference site condition at each of the periods
+            specified by the model coefficients.
+
+        Returns:
+            :class:`np.array`: Natural log of the response.
+        """
+        c = self.COEFF
+        p = self.params
+        if p['region'] in ['japan']:
+            phi_1 = c.phi_1jp
+            phi_5 = c.phi_5jp
+            phi_6 = c.phi_6jp
+        else:
+            phi_1 = c.phi_1
+            phi_5 = c.phi_5
+            phi_6 = c.phi_6
+
+        ln_resp = np.array(ln_resp_ref)
+        ln_resp += phi_1 * min(np.log(p['v_s30'] / 1130.), 0)
+
+        ln_resp += (
+            c.phi_2 * (np.exp(c.phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
+                       np.exp(c.phi_3 * (1130. - 360.))) *
+            np.log((np.exp(ln_resp_ref) + c.phi_4) / c.phi_4)
+        )
+
         diff_depth_1_0 = 1000 * (p['depth_1_0'] -
                                  self.calc_depth_1_0(p['v_s30'], p['region']))
+        ln_resp += phi_5 * (1 - np.exp(-diff_depth_1_0 / phi_6))
 
-        def calc_ln_resp_ref(
-                period, c_1, c_1a, c_1b, c_1c, c_1d, c_2, c_3, c_4, c_4a, c_5,
-                c_6, c_7, c_7b, c_8, c_8a, c_8b, c_9, c_9a, c_9b, c_11, c_11b,
-                c_hm, c_m, c_n, c_rb, c_gamma1, c_gamma2, c_gamma3, gamma_ji,
-                gamma_c, phi_1, phi_1jp, phi_2, phi_3, phi_4, phi_5, phi_5jp,
-                phi_6, phi_6jp, tau_1, tau_2, sigma_1, sigma_2, sigma_2jp,
-                sigma_3):
-            # Compute the response for the reference velocity
+        return ln_resp
 
-            del (period, phi_1, phi_1jp, phi_2, phi_3, phi_4,
-                 phi_5, phi_5jp, phi_6, phi_6jp, tau_1, tau_2, sigma_1, sigma_2,
-                 sigma_2jp, sigma_3)
+    def _calc_ln_std(self, resp_ref):
+        """Calculate the logarithmic standard deviation.
 
-            cosh_mag = np.cosh(2 * max(p['mag'] - 4.5, 0))
+        Args:
+            resp_ref (:class:`np.array`): Response at the reference site
+            condition at each of the periods specified by the model
+            coefficients.
 
-            ln_resp = c_1
+        Returns:
+            :class:`np.array`: Logarithmic standard deviation.
+        """
+        c = self.COEFF
+        p = self.params
 
-            # Reverse fault term
-            ln_resp += (c_1a + c_1c / cosh_mag) * flag_rv
+        if p['region'] in ['japan']:
+            sigma_2 = c.sigma_2jp
+        else:
+            sigma_2 = c.sigma_2
 
-            # Normal fault term
-            ln_resp += (c_1b + c_1d / cosh_mag) * flag_nm
+        clipped_mag = np.clip(p['mag'], 5., 6.5) - 5.
+        tau = c.tau_1 + (c.tau_2 - c.tau_1) / 1.5 * clipped_mag
 
-            # Magnitude scaling
-            ln_resp += c_2 * (p['mag'] - 6)
-            ln_resp += (c_2 - c_3) / c_n * np.log(
-                1 + np.exp(c_n * (c_m - p['mag'])))
+        nl_0 = (c.phi_2 * (np.exp(c.phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
+                           np.exp(c.phi_3 * (1130. - 360.))) *
+                (resp_ref / (resp_ref + c.phi_4)))
 
-            # Top of rupture term relative to model average
-            ln_resp += (c_7 + c_7b / cosh_mag) * diff_depth_tor
+        flag_meas = 1 if p['vs_source'] == 'measured' else 0
+        phi_nl = (
+            (c.sigma_1 + (sigma_2 - c.sigma_1) / 1.5 * clipped_mag) *
+            np.sqrt(c.sigma_3 * (1 - flag_meas) + 0.7 * flag_meas +
+                    (1 + nl_0) ** 2))
 
-            # Dip angle term
-            ln_resp += (c_11 + c_11b / cosh_mag) * np.cos(
-                np.radians(p['dip'])) ** 2
+        ln_std = np.sqrt((1 + nl_0) ** 2 * tau ** 2 + phi_nl ** 2)
 
-            # Distance terms
-            ln_resp += c_4 * np.log(
-                p['dist_rup'] + c_5 * np.cosh(c_6 * max(p['mag'] - c_hm, 0)))
-            ln_resp += (c_4a - c_4) * np.log(
-                np.sqrt(p['dist_rup'] ** 2 + c_rb ** 2))
-
-            # Regional adjustment
-            if p['region'] in ['japan', 'italy'] and (6 < p['mag'] < 6.9):
-                scale = gamma_ji
-            elif p['region'] in ['china']:
-                scale = gamma_c
-            else:
-                scale = 1.
-            ln_resp += (scale *
-                        (c_gamma1 + c_gamma2 / np.cosh(
-                            max(p['mag'] - c_gamma3, 0))) * p['dist_rup'])
-
-            # Directivity term
-            ln_resp += (c_8 *
-                        max(1 - max(p['dist_rup'] - 40, 0) / 30, 0) *
-                        min(max(p['mag'] - 5.5, 0) / 0.8, 1) *
-                        np.exp(-c_8a * (p['mag'] - c_8b) ** 2) *
-                        p['dpp_centered'])
-
-            # Hanging wall term
-            ln_resp += (c_9 * flag_hw * np.cos(np.radians(p['dip'])) *
-                        (c_9a + (1 - c_9a) * np.tanh(p['dist_x'] / c_9b)) *
-                        (1 - np.sqrt(p['dist_jb'] ** 2 + p['depth_tor'] ** 2) /
-                         (p['dist_rup'] + 1)))
-
-            return ln_resp
-
-        def calc_ln_resp(
-                ln_resp_ref, period, c_1, c_1a, c_1b, c_1c, c_1d, c_2, c_3,
-                c_4, c_4a, c_5, c_6, c_7, c_7b, c_8, c_8a, c_8b, c_9, c_9a,
-                c_9b, c_11, c_11b, c_hm, c_m, c_n, c_rb, c_gamma1, c_gamma2,
-                c_gamma3, gamma_ji, gamma_c, phi_1, phi_1jp, phi_2, phi_3,
-                phi_4, phi_5, phi_5jp, phi_6, phi_6jp, tau_1, tau_2,
-                sigma_1, sigma_2, sigma_2jp, sigma_3):
-            # Calculate response for the site condition
-
-            del (period, c_1, c_1a, c_1b, c_1c, c_1d, c_2, c_3, c_4, c_4a, c_5,
-                c_6, c_7, c_7b, c_8, c_8a, c_8b, c_9, c_9a, c_9b, c_11, c_11b,
-                c_hm, c_m, c_n, c_rb, c_gamma1, c_gamma2, c_gamma3, gamma_ji,
-                gamma_c, tau_1, tau_2, sigma_1, sigma_2, sigma_2jp, sigma_3)
-
-            if p['region'] in ['japan']:
-                phi_1 = phi_1jp
-                phi_5 = phi_5jp
-                phi_6 = phi_6jp
-
-            ln_resp = ln_resp_ref
-            ln_resp += phi_1 * min(np.log(p['v_s30'] / 1130.), 0)
-
-            ln_resp += (phi_2 * (np.exp(phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
-                                 np.exp(phi_3 * (1130. - 360.))) *
-                        np.log((np.exp(ln_resp_ref) + phi_4) / phi_4))
-
-            ln_resp += phi_5 * (1 - np.exp(-diff_depth_1_0 / phi_6))
-
-            return ln_resp
-
-        def calc_ln_std(
-                ln_resp_ref, period, c_1, c_1a, c_1b, c_1c, c_1d, c_2, c_3,
-                c_4, c_4a, c_5, c_6, c_7, c_7b, c_8, c_8a, c_8b, c_9, c_9a,
-                c_9b, c_11, c_11b, c_hm, c_m, c_n, c_rb, c_gamma1, c_gamma2,
-                c_gamma3, gamma_ji, gamma_c, phi_1, phi_1jp, phi_2, phi_3,
-                phi_4, phi_5, phi_5jp, phi_6, phi_6jp, tau_1, tau_2,
-                sigma_1, sigma_2, sigma_2jp, sigma_3):
-
-            # Calculate the standard deviation
-
-            del (period, c_1, c_1a, c_1b, c_1c, c_1d, c_2, c_3, c_4, c_4a, c_5,
-                 c_6, c_7, c_7b, c_8, c_8a, c_8b, c_9, c_9a, c_9b, c_11, c_11b,
-                 c_hm, c_m, c_n, c_rb, c_gamma1, c_gamma2, c_gamma3, gamma_ji,
-                 gamma_c, phi_1, phi_1jp, phi_5, phi_5jp, phi_6, phi_6jp)
-
-            if p['region'] in ['japan']:
-                sigma_2 = sigma_2jp
-
-            clipped_mag = np.clip(p['mag'], 5., 6.5) - 5.
-            resp_ref = np.exp(ln_resp_ref)
-
-            tau = tau_1 + (tau_2 - tau_1) / 1.5 * clipped_mag
-
-            nl_0 = (phi_2 * (np.exp(phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
-                             np.exp(phi_3 * (1130. - 360.))) *
-                    (resp_ref / (resp_ref + phi_4)))
-
-            phi_nl = (
-                (sigma_1 + (sigma_2 - sigma_1) / 1.5 * clipped_mag) *
-                np.sqrt(sigma_3 * (1 - flag_meas) + 0.7 * flag_meas +
-                        (1 + nl_0) ** 2))
-
-            ln_std = np.sqrt((1 + nl_0) ** 2 * tau ** 2 + phi_nl ** 2)
-
-            return ln_std
-
-        ln_resp_ref = [calc_ln_resp_ref(*c) for c in self.COEFF]
-
-        self._ln_resp = np.array([calc_ln_resp(lrr, *c)
-                                  for (lrr, c) in zip(ln_resp_ref, self.COEFF)])
-        self._ln_std = np.array([calc_ln_std(lrr, *c)
-                                 for (lrr, c) in zip(ln_resp_ref, self.COEFF)])
+        return ln_std
 
     def _check_inputs(self):
         super(ChiouYoungs2014, self)._check_inputs()
@@ -314,7 +310,8 @@ class ChiouYoungs2014(model.Model):
         Args:
             mag (float): moment magnitude of the event (:math:`M_w`)
 
-            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS", "RS".
+            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS",
+                "RS".
 
         Returns:
             float: estimated depth to top of rupture (km)
