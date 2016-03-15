@@ -10,6 +10,7 @@ import xlwings as xw
 sys.path.insert(0, '..')
 import pygmm
 
+
 def iter_parameters(parameters):
     max_len = max(len(p) for p in parameters.values())
 
