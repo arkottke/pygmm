@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 """Create test cases for the NGA West2 models."""
 
 import gzip
