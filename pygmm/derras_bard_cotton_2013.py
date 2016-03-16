@@ -103,4 +103,5 @@ class DerrasBardCotton2013(model.Model):
             np.r_[0.01, self.GRAVITY * np.ones(self.PERIODS.size - 1)])
 
         self._ln_resp = np.log(10 ** (log10_resp - scale))
+        self._ln_std = np.log(10 ** np.array(c['log10_std']['total']))
 

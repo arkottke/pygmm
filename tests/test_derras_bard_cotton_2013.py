@@ -48,3 +48,27 @@ def test_im_values(params, expected, key):
         expected[key] / scale,
         rtol=RTOL,
     )
+
+
+@pytest.fixture
+def model():
+    """Instance of the DBC13 model."""
+    return DBC13(dist_jb=10, mag=6, v_s30=600, depth_hyp=10, mechanism='SS')
+
+
+def test_ln_std(model):
+    # Log10 total standard deviations from the paper
+    expected = [0.298, 0.309, 0.31, 0.313, 0.319, 0.323, 0.325, 0.328, 0.335,
+                0.338, 0.338, 0.337, 0.338, 0.337, 0.335, 0.334, 0.333, 0.33,
+                0.328, 0.328, 0.326, 0.325, 0.322, 0.322, 0.326, 0.328, 0.329,
+                0.33, 0.33, 0.329, 0.327, 0.328, 0.328, 0.327, 0.33, 0.331,
+                0.332, 0.332, 0.332, 0.331, 0.33, 0.331, 0.333, 0.335, 0.339,
+                0.343, 0.346, 0.353, 0.356, 0.359, 0.362, 0.365, 0.368, 0.368,
+                0.37, 0.37, 0.373, 0.375, 0.377, 0.378, 0.378, 0.376, 0.375,
+                0.375]
+
+    np.testing.assert_allclose(
+        np.log10(np.exp(model._ln_std)),
+        expected,
+        rtol=RTOL
+    )
