@@ -1,14 +1,13 @@
+-r ./requirements.txt
+
 bumpversion
 coveralls
 cryptography
 flake8
 invoke
-matplotlib
-numpy
 pytest
 pytest-cov
 pytest-flake8
-scipy>=0.17.0
 sphinx
 sphinxcontrib-bibtex
 watchdog
