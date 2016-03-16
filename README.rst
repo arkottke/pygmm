@@ -11,10 +11,10 @@ pyGMM
     :alt: Build Status
 
 .. image:: https://readthedocs.org/projects/pygmm/badge/?version=latest&style=flat
-    :target: https://pygmm.rtfd.org
+    :target: https://pygmm.readthedocs.org
     :alt: Documentation Status
 
-.. image:: https://coveralls.io/repos/github/arkottke/pygmm/badge.svg?branch=master 
+.. image:: https://coveralls.io/repos/github/arkottke/pygmm/badge.svg?branch=master
     :target: https://coveralls.io/github/arkottke/pygmm?branch=master
     :alt: Test Coverage
 
@@ -34,7 +34,7 @@ Features
 
 Models currently supported:
 
-* Atkinson & Boore (2006) 
+* Atkinson & Boore (2006)
 
 * Abrahamson, Silva, & Kamai (2014) with unit tests
 
