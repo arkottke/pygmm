@@ -46,6 +46,8 @@ Models currently supported:
 
 * Chiou & Youngs (2014) with unit tests
 
+* Derras, Bard & Cotton (2013) with unit tests
+
 * Idriss (2014) with unit tests
 
 * Pezeshk, Zandieh, & Tavakoli (2001)

@@ -75,8 +75,10 @@ class Model(object):
                 pseudo-spectral accelerations.
 
         """
-
-        return np.interp(np.log(periods),
+        if self._ln_std is None:
+            raise NotImplementedError
+        else:
+            return np.interp(np.log(periods),
                          np.log(self.periods), self._ln_std[self.INDICES_PSA])
 
     @property
@@ -106,8 +108,10 @@ class Model(object):
         Returns:
             :class:`numpy.array`
         """
-
-        return self._ln_std[self.INDICES_PSA]
+        if self._ln_std is None:
+            raise NotImplementedError
+        else:
+            return self._ln_std[self.INDICES_PSA]
 
     @property
     def pga(self):

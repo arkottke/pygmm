@@ -9,6 +9,7 @@ from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
 from .campbell_2003 import Campbell2003
 from .campbell_bozorgnia_2014 import CampbellBozorgnia2014
 from .chiou_youngs_2014 import ChiouYoungs2014
+from .derras_bard_cotton_2013 import DerrasBardCotton2013
 from .idriss_2014 import Idriss2014
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
@@ -20,6 +21,7 @@ __all__ = [
     'Campbell2003',
     'CampbellBozorgnia2014',
     'ChiouYoungs2014',
+    'DerrasBardCotton2013',
     'Idriss2014',
     'PezeshkZandiehTavakoli2011',
     'TavakoliPezeshk05',
