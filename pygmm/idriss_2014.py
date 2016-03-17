@@ -52,8 +52,8 @@ class Idriss2014(model.Model):
             mag (float): moment magnitude of the event (:math:`M_w`)
 
             mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-                *SS* and *NS* mechanism are treated the same with :math:`F=0` in
-                the model.
+                *SS* and *NS* mechanism are treated the same with :math:`F=0`
+                in the model.
 
             v_s30 (float): time-averaged shear-wave velocity over the top 30 m
                 of the site (:math:`V_{s30}`, m/s).

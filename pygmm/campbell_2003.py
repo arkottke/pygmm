@@ -59,8 +59,8 @@ class Campbell2003(model.Model):
 
         # Distance scaling
         f_2 = (c.c_4 * np.log(
-            np.sqrt( p['dist_rup'] ** 2 +
-                     (c.c_7 * np.exp(c.c_8 * p['mag'])) ** 2)) +
+            np.sqrt(p['dist_rup'] ** 2 +
+                    (c.c_7 * np.exp(c.c_8 * p['mag'])) ** 2)) +
                (c.c_5 + c.c_6 * p['mag']) * p['dist_rup'])
 
         # Geometric attenuation

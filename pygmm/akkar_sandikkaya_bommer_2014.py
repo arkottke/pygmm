@@ -13,6 +13,7 @@ from . import model
 
 __author__ = 'Albert Kottke'
 
+
 class AkkarSandikkayaBommer2014(model.Model):
     """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar13`) model.
     """

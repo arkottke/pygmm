@@ -85,12 +85,12 @@ class CampbellBozorgnia2014(model.Model):
                 p['mag'], p['dip'], p['depth_tor'], p['depth_bot'])
 
         if p['depth_bor'] is None:
-            p['depth_bor'] = self.calc_depth_bor(p['depth_tor'], p['dip'], p['width'])
+            p['depth_bor'] = self.calc_depth_bor(
+                p['depth_tor'], p['dip'], p['width'])
 
         if p['depth_hyp'] is None:
             p['depth_hyp'] = CampbellBozorgnia2014.calc_depth_hyp(
                 p['mag'], p['dip'], p['depth_tor'], p['depth_bor'])
-
 
     def __init__(self, **kwds):
         """Compute the response predicted the Campbell and Bozorgnia (2014)
@@ -150,7 +150,8 @@ class CampbellBozorgnia2014(model.Model):
         super(CampbellBozorgnia2014, self).__init__(**kwds)
         p = self.params
 
-        pga_ref = np.exp(self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
+        pga_ref = np.exp(
+            self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
 
         self._ln_resp = self._calc_ln_resp(pga_ref, p['v_s30'])
         self._ln_std = self._calc_ln_std(pga_ref)

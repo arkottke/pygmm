@@ -124,9 +124,9 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
                 "RS"
 
             region (Optional[str]): region for distance attenuation and basin
-                model.  Valid options: "global", "california", "china", "italy",
-                "japan", "new_zealand", "taiwan", "turkey".  If *None* is
-                specified, then "global" is used as default.
+                model.  Valid options: "global", "california", "china",
+                "italy", "japan", "new_zealand", "taiwan", "turkey".  If
+                *None* is specified, then "global" is used as default.
         """
         super(BooreStewartSeyhanAtkinson2014, self).__init__(**kwds)
         pga_ref = np.exp(self._calc_ln_resp(np.nan)[self.INDEX_PGA])
@@ -181,7 +181,7 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
 
         mask = p['mag'] <= c.M_h
         event[mask] += (
-            c.e_4 * (p['mag'] - c.M_h) + \
+            c.e_4 * (p['mag'] - c.M_h) +
             c.e_5 * (p['mag'] - c.M_h) ** 2
         )[mask]
         event[~mask] += (c.e_6 * (p['mag'] - c.M_h))[~mask]
@@ -212,7 +212,7 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
 
             # Add the nonlinearity to the site term
             f_2 = c.f_4 * (np.exp(c.f_5 * (min(p['v_s30'], 760) - 360.)) -
-                         np.exp(c.f_5 * (760. - 360.)))
+                           np.exp(c.f_5 * (760. - 360.)))
             f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
 
             # Add the basin effect to the site term

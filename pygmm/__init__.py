@@ -48,11 +48,13 @@ logging.getLogger(__name__).addHandler(NullHandler())
 
 models = [
     AbrahamsonSilvaKamai2014,
+    AkkarSandikkayaBommer2014,
     AtkinsonBoore2006,
     BooreStewartSeyhanAtkinson2014,
     Campbell2003,
     CampbellBozorgnia2014,
     ChiouYoungs2014,
+    DerrasBardCotton2014,
     Idriss2014,
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,

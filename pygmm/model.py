@@ -78,8 +78,9 @@ class Model(object):
         if self._ln_std is None:
             raise NotImplementedError
         else:
-            return np.interp(np.log(periods),
-                         np.log(self.periods), self._ln_std[self.INDICES_PSA])
+            return np.interp(
+                np.log(periods), np.log(self.periods),
+                self._ln_std[self.INDICES_PSA])
 
     @property
     def periods(self):

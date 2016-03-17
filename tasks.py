@@ -2,9 +2,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import print_function
 
+import os
+
 from invoke import run, task
 from invoke.util import log
 
+use_pty = True if os.name == 'posix' else False
 
 @task
 def clean():
@@ -23,7 +26,7 @@ def clean():
 @task
 def test():
     """test - run the test runner."""
-    run('py.test --flake8 --cov-report html --cov pygmm tests/', pty=True)
+    run('py.test --flake8 --cov-report html --cov pygmm tests/', pty=use_pty)
     run('open htmlcov/index.html')
 
 
@@ -36,7 +39,7 @@ def lint():
 @task(clean)
 def publish():
     """publish - package and upload a release to the cheeseshop."""
-    run('python setup.py sdist upload', pty=True)
-    run('python setup.py bdist_wheel upload', pty=True)
+    run('python setup.py sdist upload', pty=use_pty)
+    run('python setup.py bdist_wheel upload', pty=use_pty)
 
     log.info('published new release')

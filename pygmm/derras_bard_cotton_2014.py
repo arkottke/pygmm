@@ -74,7 +74,8 @@ class DerrasBardCotton2014(model.Model):
         p['mechanism'] = dict(NS=1, RS=3, SS=4)[p['mechanism']]
 
         # Create the normalized parameter matrix
-        keys = ['log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp', 'mechanism']
+        keys = ['log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp',
+                'mechanism']
         values = np.array([p[k] for k in keys])
         limits = np.rec.array([c['min_max'][k] for k in keys], names='min,max')
         p_n = np.matrix(
@@ -103,5 +104,5 @@ class DerrasBardCotton2014(model.Model):
             np.r_[0.01, self.GRAVITY * np.ones(self.PERIODS.size - 1)])
 
         self._ln_resp = np.log(10 ** (log10_resp - scale))
-        self._ln_std = np.log(10 ** np.array(c['log10_std']['total']))
-
+        self._ln_std = np.log(
+            10 ** np.array(c['log10_std']['total']))
