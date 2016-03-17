@@ -113,9 +113,7 @@ class Model(object):
 
         Returns:
             (:class:`numpy.array`): pseudo-spectral accelerations.
-
         """
-
         return np.exp(np.interp(
             np.log(periods),
             np.log(self.periods),
@@ -133,6 +131,9 @@ class Model(object):
             :class:`numpy.array`
                 pseudo-spectral accelerations.
 
+        Raises:
+            NotImplementedError
+                If model does not provide an estimate.
         """
         if self._ln_std is None:
             raise NotImplementedError
@@ -148,7 +149,6 @@ class Model(object):
         Returns:
             :class:`numpy.array`
         """
-
         return self.PERIODS[self.INDICES_PSA]
 
     @property
@@ -158,7 +158,6 @@ class Model(object):
         Returns:
             :class:`numpy.array`
         """
-
         return self._resp(self.INDICES_PSA)
 
     @property
@@ -167,6 +166,10 @@ class Model(object):
 
         Returns:
             :class:`numpy.array`
+
+        Raises:
+            NotImplementedError
+                If model does not provide an estimate.
         """
         if self._ln_std is None:
             raise NotImplementedError
@@ -184,7 +187,6 @@ class Model(object):
             NotImplementedError
                 If model does not provide an estimate.
         """
-
         if self.INDEX_PGA is None:
             raise NotImplementedError
         else:
@@ -201,7 +203,6 @@ class Model(object):
         Raises:
             NotImplementedError: If model does not provide an estimate.
         """
-
         if self.INDEX_PGA is None:
             raise NotImplementedError
         else:
@@ -264,7 +265,6 @@ class Model(object):
         Raises:
             NotImplementedError: If model does not provide an estimate.
         """
-
         if self.INDEX_PGD is None:
             raise NotImplementedError
         else:
