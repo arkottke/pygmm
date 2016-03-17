@@ -34,6 +34,8 @@ Features
 
 Models currently supported:
 
+* Akkar, Sandikkaya, & Bommer (2014) with unit tests
+
 * Atkinson & Boore (2006)
 
 * Abrahamson, Silva, & Kamai (2014) with unit tests
