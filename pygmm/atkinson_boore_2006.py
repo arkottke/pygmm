@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-"""Model for the Atkinson and Boore (2006) ground motion model."""
-
 from __future__ import division
 
 import numpy as np
@@ -13,7 +11,7 @@ __author__ = 'Albert Kottke'
 
 
 class AtkinsonBoore2006(model.Model):
-    """Atkinson and Boore (2006) :cite:`atkinson06` ground motion prediction model.
+    """Atkinson and Boore (2006, :cite:`atkinson06`) model.
 
     Developed for the Eastern North America with a reference velocity of 760
     or 2000 m/s.

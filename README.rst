@@ -23,6 +23,8 @@ pyGMM
     :alt: Code Health
 
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
+    :target: https://github.com/arkottke/pygmm/blob/master/LICENSE
+    :alt: License
 
 Ground motion models implemented in Python.
 

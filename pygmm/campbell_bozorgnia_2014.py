@@ -16,8 +16,10 @@ __author__ = 'Albert Kottke'
 
 
 class CampbellBozorgnia2014(model.Model):
-    """Campbell and Bozorgnia (2014) :cite:`campbell14` ground motion model
-    for active tectonic regions.
+    """Campbell and Bozorgnia (2014, :cite:`campbell14`) model.
+
+    This model was developed for active tectonic regions as part of the
+    NGA-West2 effort.
     """
 
     NAME = 'Campbell & Bozorgnia (2014)'

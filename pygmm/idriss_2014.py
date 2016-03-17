@@ -13,7 +13,10 @@ __author__ = 'Albert Kottke'
 
 
 class Idriss2014(model.Model):
-    """Idriss (2014) :cite:`idriss14` ground motion model.
+    """Idriss (2014, :cite:`idriss14`) model.
+
+    This model was developed for active tectonic regions as part of the
+    NGA-West2 effort.
     """
 
     NAME = 'Idriss (2014)'
@@ -43,7 +46,7 @@ class Idriss2014(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Initialize the ground motion model.
+        """Initialize the model.
 
         Keyword Args:
             dist_rup (float): Closest distance to the rupture plane

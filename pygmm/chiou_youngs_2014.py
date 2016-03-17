@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-
-"""Chiou and Youngs (2014) ground motion model."""
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 from __future__ import division
 
@@ -15,7 +13,10 @@ __author__ = 'Albert Kottke'
 
 
 class ChiouYoungs2014(model.Model):
-    """Chiou and Youngs (2014) :cite:`chiou14` model.
+    """Chiou and Youngs (2014, :cite:`chiou14`) model.
+
+    This model was developed for active tectonic regions as part of the
+    NGA-West2 effort.
     """
     NAME = 'Chiou and Youngs (2014)'
     ABBREV = 'CY14'
@@ -54,8 +55,7 @@ class ChiouYoungs2014(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Chiou and Youngs (2014) ground
-        motion model.
+        """Initialize the model.
 
         Keyword Args:
             depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave

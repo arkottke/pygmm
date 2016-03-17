@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-"""Derras, Bard and Cotton (2014) ground motion model."""
-
 from __future__ import division
 
 import json
@@ -16,7 +14,7 @@ __author__ = 'Albert Kottke'
 
 
 class DerrasBardCotton2014(model.Model):
-    """Derras, Bard and Cotton (2014) :cite:`derras14` model.
+    """Derras, Bard and Cotton (2014, :cite:`derras14`) model.
     """
     NAME = 'Derras, Bard & Cotton (2014)'
     ABBREV = 'DBC13'
@@ -45,9 +43,7 @@ class DerrasBardCotton2014(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Derras, Bard and Cotton (2014)
-        ground motion model.
-
+        """Initialize the model.
 
         Keyword Args:
             depth_hyp (float): depth of the hypocenter (km).

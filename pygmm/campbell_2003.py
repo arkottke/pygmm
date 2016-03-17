@@ -13,7 +13,9 @@ __author__ = 'Albert Kottke'
 
 
 class Campbell2003(model.Model):
-    """Campbell (2003) :cite:`campbell03` ground motion model for Eastern US.
+    """Campbell (2003, :cite:`campbell03`) model.
+
+    This model was developed for the Eastern US.
     """
 
     NAME = 'Campbell (2003)'
@@ -33,7 +35,7 @@ class Campbell2003(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Initialize the ground motion model.
+        """Initialize the model.
 
         Keyword Args:
             mag (float): moment magnitude of the event (:math:`M_w`)
@@ -50,7 +52,7 @@ class Campbell2003(model.Model):
         """Calculate the natural logarithm of the response.
 
         Returns:
-            :class:`np.array`: Natural log of the response.
+            :class:`np.array`: Natural logarithm of the response.
         """
         p = self.params
         c = self.COEFF

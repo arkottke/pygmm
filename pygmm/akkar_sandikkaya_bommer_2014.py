@@ -1,8 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-"""Akkar, Sandikkaya, & Bommer (2014) ground motion model."""
-
 from __future__ import division
 
 import collections
@@ -15,7 +13,7 @@ __author__ = 'Albert Kottke'
 
 
 class AkkarSandikkayaBommer2014(model.Model):
-    """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar13`) model.
+    """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model.
     """
     NAME = 'Akkar, Sandikkaya, & Bommer (2014)'
     ABBREV = 'ASB13'
@@ -45,18 +43,21 @@ class AkkarSandikkayaBommer2014(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Akkar, Sandikkaya, & Bommer (
-        2014, :cite:`akkar14`) model.
+        """Initialize the model.
 
-        The model is specified for three different distance metrics. They are
-        used in the following order:
+        The model is specified for three different distance metrics. However,
+        the implementation uses only one distance metric. They are used in
+        the following order:
 
-        # `dist_jb`
-        # `dist_hyp`
-        # `dist_epi`
+            1. `dist_jb`
 
-        This order is based on the total standard deviation. If only one
-        distance metric is provided, then only it is used.
+            2. `dist_hyp`
+
+            3. `dist_epi`
+
+        This order was selected based on evaluation of the total standard
+        deviation. To compute the response for differing metrics, call the
+        model multiple times with different keywords.
 
         Keyword Args:
             dist_jb (float): Joyner-Boore distance to the rupture plane
@@ -65,7 +66,7 @@ class AkkarSandikkayaBommer2014(model.Model):
             dist_epi (float): Epicentral distance to the rupture plane
                 (:math:`R_\\text{epi}`, km)
 
-            dist_hyp (float): Joyner-Boore distance to the rupture plane
+            dist_hyp (float): Hypocentral distance to the rupture plane
                 (:math:`R_\\text{hyp}`, km).
 
             mag (float): moment magnitude of the event (:math:`M_w`)

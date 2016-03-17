@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-"""Pezeshk, Zandieh, and Tavakoli (2011) ground motion model."""
-
 from __future__ import division
 
 import numpy as np
@@ -13,8 +11,7 @@ __author__ = 'Albert Kottke'
 
 
 class PezeshkZandiehTavakoli2011(model.Model):
-    """Pezeshk, Zandieh, and Tavakoli (2011) :cite:`pezeshk11` ground motion
-    prediction model.
+    """Pezeshk, Zandieh, and Tavakoli (2011, :cite:`pezeshk11`) model.
 
     Developed for the Eastern North America with a reference velocity of 2000
     m/s.

@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-"""Abrahamson, Silva, and Kamai (2014) ground motion model."""
-
 from __future__ import division
 
 import numpy as np
@@ -14,8 +12,10 @@ __author__ = 'Albert Kottke'
 
 
 class AbrahamsonSilvaKamai2014(model.Model):
-    """The Abrahamson, Silva, and Kamai (2014) :cite:`abrahamson14` ground
-    motion model for active tectonic regions.
+    """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model.
+
+    This model was developed for active tectonic regions as part of the
+    NGA-West2 effort.
     """
 
     NAME = 'Abrahamson, Silva, & Kamai (2014)'

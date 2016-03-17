@@ -16,11 +16,10 @@ __author__ = 'Albert Kottke'
 
 
 class BooreStewartSeyhanAtkinson2014(model.Model):
-    """Boore, Stewart, Seyhan, and Atkinson (2014) :cite:`boore14` ground
-    motion model.
+    """Boore, Stewart, Seyhan, and Atkinson (2014, :cite:`boore14`) model.
 
-    Developed for the California and other active tectonic environments.
-
+    This model was developed for active tectonic regions as part of the
+    NGA-West2 effort.
 
     The BSSA14 model defines the following distance attenuation models:
 
@@ -104,8 +103,7 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Boore, Stewart, Seyhan,
-        and Atkinson (2014) ground motion model.
+        """Initialize the model.
 
         Keyword Args:
             mag (float): moment magnitude of the event (:math:`M_w`)

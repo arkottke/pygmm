@@ -1,4 +1,5 @@
-"""Class definition from which all models are based on."""
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 from __future__ import division
 
@@ -11,9 +12,65 @@ import numpy as np
 class Model(object):
     """Abstract class for ground motion prediction models.
 
-    Compute the response predicted the model.
+    A common set of keywords is used for all ground motion models.
 
-    No default implementation.
+    Keyword Args:
+        depth_1_0 (float): depth to the 1.0 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{1.0}` in (km).
+
+        depth_2_5 (float): depth to the 2.5 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{2.5}` in (km).
+
+        depth_tor (float): depth to the top of the rupture plane
+            (:math:`Z_{tor}`, km).
+
+        depth_bor (float): depth to the bottom of the rupture plane
+            (:math:`Z_{bor}`, km).
+
+        depth_bot (float): depth to bottom of seismogenic crust (km).
+
+        dip (float): fault dip angle (:math:`\phi`, deg).
+
+        dist_jb (float): Joyner-Boore distance to the rupture plane
+            (:math:`R_\\text{JB}`, km)
+
+        dist_epi (float): Epicentral distance to the rupture plane
+            (:math:`R_\\text{epi}`, km)
+
+        dist_hyp (float): Hypocentral distance to the rupture plane
+            (:math:`R_\\text{hyp}`, km).
+
+        dist_rup (float): closest distance to the rupture plane
+            (:math:`R_\\text{rup}`, km)
+
+        dist_x (float): site coordinate measured perpendicular to the
+            fault strike from the fault line with the down-dip direction
+            being positive (:math:`R_x`, km).
+
+        dist_y0 (float): the horizontal distance off the end of the
+            rupture measured parallel to strike (:math:`R_{y0}`, km).
+
+        dpp_centered (float): direct point parameter (DPP) for directivity
+            effect (see Chiou and Spudich (2014, :cite:`spudich14`)) centered
+            on the earthquake-specific average DPP for California.
+
+        mag (float): moment magnitude of the event (:math:`M_w`)
+
+        mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS",
+            and "U". See Mechanism_ for more information
+
+        on_hanging_wall (bool): If the site is located on the hanging wall
+            of the fault. If *None*, then *False* is assumed.
+
+        region (str): region. Valid options are specified FIXME.
+
+        v_s30 (float): time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+
+        vs_source (str): source of the `v_s30` value.  Valid options:
+            "measured", "inferred"
+
+        width (float): Down-dip width of the fault.
     """
 
     NAME = ''
@@ -35,6 +92,8 @@ class Model(object):
     PGD_SCALE = 1.
 
     def __init__(self, **kwds):
+        """Initialize the model.
+        """
         super(Model, self).__init__()
 
         self._ln_resp = None
