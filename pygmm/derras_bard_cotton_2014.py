@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 
-"""Derras, Bard and Cotton (2013) ground motion model."""
+"""Derras, Bard and Cotton (2014) ground motion model."""
 
 from __future__ import division
 
@@ -15,10 +15,10 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class DerrasBardCotton2013(model.Model):
-    """Derras, Bard and Cotton (2013) :cite:`derras14` model.
+class DerrasBardCotton2014(model.Model):
+    """Derras, Bard and Cotton (2014) :cite:`derras14` model.
     """
-    NAME = 'Derras, Bard & Cotton (2013)'
+    NAME = 'Derras, Bard & Cotton (2014)'
     ABBREV = 'DBC13'
 
     # Load the coefficients for the model
@@ -27,7 +27,7 @@ class DerrasBardCotton2013(model.Model):
             os.path.join(
                 os.path.dirname(__file__),
                 'data',
-                'derras_bard_cotton_2013.json')
+                'derras_bard_cotton_2014.json')
         )
     )
     GRAVITY = 9.80665
@@ -45,7 +45,7 @@ class DerrasBardCotton2013(model.Model):
     ]
 
     def __init__(self, **kwds):
-        """Compute the response predicted the Derras, Bard and Cotton (2013)
+        """Compute the response predicted the Derras, Bard and Cotton (2014)
         ground motion model.
 
 
@@ -64,7 +64,7 @@ class DerrasBardCotton2013(model.Model):
                 of the site (:math:`V_{s30}`, m/s).
 
         """
-        super(DerrasBardCotton2013, self).__init__(**kwds)
+        super(DerrasBardCotton2014, self).__init__(**kwds)
         c = self.COEFF
         p = dict(self.params)
 

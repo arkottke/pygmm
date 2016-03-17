@@ -15,7 +15,7 @@ RTOL = 1e-2
 
 # Load the tests
 fname = os.path.join(
-    os.path.dirname(__file__), 'data', 'dbc13_tests.json.gz')
+    os.path.dirname(__file__), 'data', 'dbc14_tests.json.gz')
 with gzip.open(fname, 'rt') as fp:
     tests = json.load(fp)
 

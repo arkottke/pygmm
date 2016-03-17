@@ -1,12 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-"""Create test cases for the DBC13 model."""
+"""Create test cases for the DBC14 model."""
 
 import gzip
 import json
 import os
-import sys
 
 import xlwings as xw
 
@@ -71,6 +70,6 @@ for p in iter_parameters(params):
         'results': get_results(wb)
     })
 
-fname = '../tests/data/dbc13_tests.json.gz'
+fname = '../tests/data/dbc14_tests.json.gz'
 with gzip.open(fname, 'wt') as fp:
     json.dump(tests, fp, indent=4)
