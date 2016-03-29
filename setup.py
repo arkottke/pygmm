@@ -31,7 +31,7 @@ setup(
     author_email='albert.kottke@gmail.com',
     url='https://github.com/arkottke/pygmm',
     packages=[
-        'pygmm',
+        'pygmm','pygmm.data'
     ],
     package_dir={'pygmm':
                  'pygmm'},
