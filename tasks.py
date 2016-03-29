@@ -9,6 +9,7 @@ from invoke.util import log
 
 use_pty = True if os.name == 'posix' else False
 
+
 @task
 def clean():
     """clean - remove build artifacts."""

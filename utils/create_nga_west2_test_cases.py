@@ -6,12 +6,8 @@
 import gzip
 import json
 import os
-import sys
 
 import xlwings as xw
-
-sys.path.insert(0, '..')
-import pygmm
 
 
 def iter_parameters(parameters):
@@ -93,7 +89,8 @@ def get_results(wb, abbrev):
     # Collect response spectrum
     d = {}
     for key, rc in zip(['periods', 'spec_accels', 'ln_stds'], result_columns):
-        d[key] = xw.Range(sheetname, '{col}6:{col}26'.format(col=rc), wkb=wb).value
+        d[key] = xw.Range(
+            sheetname, '{col}6:{col}26'.format(col=rc), wkb=wb).value
 
     # Collect the PGA and PGV
     for key, row in zip(['pga', 'pgv'], [28, 29]):
@@ -110,7 +107,6 @@ def get_results(wb, abbrev):
             d[key + subkey] = v
 
     return d
-
 
 wb_fname = os.path.abspath(os.path.join(
     os.path.dirname(__file__),
@@ -234,13 +230,7 @@ RESULT_COLUMNS = dict(
     I14='DLM',
 )
 
-models = [
-    pygmm.AbrahamsonSilvaKamai2014,
-    pygmm.BooreStewartSeyhanAtkinson2014,
-    pygmm.CampbellBozorgnia2014,
-    pygmm.ChiouYoungs2014,
-    pygmm.Idriss2014,
-]
+abbreviations = ['ASK14', 'BSSA14', 'CB14', 'CY14', 'I14']
 
 # Join the parameters of the site and fault
 parameters = dict(params_site)
@@ -255,7 +245,7 @@ for p in iter_parameters(parameters):
     wb = xw.Workbook(wb_fname)
     load_params(wb, **p)
 
-    results = {m.ABBREV: get_results(wb, m.ABBREV) for m in models}
+    results = {abb: get_results(wb, abb) for abb in abbreviations}
 
     if p['region'] == 'taiwan':
         # Load ASK14 specific values.
@@ -270,5 +260,3 @@ for p in iter_parameters(parameters):
 fname = '../tests/data/ngaw2_tests.json.gz'
 with gzip.open(fname, 'wt') as fp:
     json.dump(tests, fp, indent=4)
-
-
