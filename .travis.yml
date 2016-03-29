@@ -52,9 +52,10 @@ install:
     - conda install --yes numpy scipy matplotlib
     - pip install -r requirements_dev.txt
     - python setup.py install
+    - pip install -e .
 
 script:  
-    - py.test --flake8 --cov-report html --cov pygmm tests/
+    - py.test --flake8 --cov-report html --cov tests/
 
 after_success:
     coveralls
