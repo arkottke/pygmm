@@ -60,6 +60,7 @@ target/
 
 # Vim files
 *.swp
+*.*~
 /tags
 
 # PyCharm
