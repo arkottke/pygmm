@@ -35,7 +35,7 @@ setup(
     ],
     package_dir={'pygmm':
                  'pygymm'},
-    package_data={'pygmm': ['pygmm/data/*']},
+    package_data={'pygmm': ['data/*']},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
