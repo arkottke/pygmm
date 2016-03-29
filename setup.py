@@ -31,10 +31,11 @@ setup(
     author_email='albert.kottke@gmail.com',
     url='https://github.com/arkottke/pygmm',
     packages=[
-        'pygmm',
+        'pygmm'
     ],
     package_dir={'pygmm':
                  'pygmm'},
+    package_data={'pygmm': ['data/*']},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
