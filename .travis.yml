@@ -50,7 +50,6 @@ install:
     - conda create -q -n testenv --yes pip python=$TRAVIS_PYTHON_VERSION
     - source activate testenv
     - conda install --yes numpy scipy matplotlib
-    - pip install -r requirements_dev.txt
     - python setup.py install
     - pip install -e .
 
