@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import pkg_resources
 
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
@@ -33,7 +34,7 @@ __author__ = 'Albert Kottke'
 __copyright__ = 'Copyright 2016 Albert Kottke'
 __license__ = 'MIT'
 __title__ = 'pyGMM'
-__version__ = '0.3.0'
+__version__ = pkg_resources.get_distribution('pygmm').version
 
 
 # Set default logging handler to avoid "No handler found" warnings.

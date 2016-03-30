@@ -15,11 +15,15 @@ with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
 requirements = [
-    # TODO: put package requirements here
+    'matplotlib',
+    'numpy',
+    'scipy >= 0.17.0'
 ]
 
 test_requirements = [
-    # TODO: put package test requirements here
+    'pytest',
+    'pytest-cov',
+    'pytest-flake8'
 ]
 
 setup(
