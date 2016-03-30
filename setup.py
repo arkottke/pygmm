@@ -25,7 +25,7 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    'pytest',
+    'pytest >= 2.9.0',
     'pytest-cov',
     'pytest-flake8'
 ]
