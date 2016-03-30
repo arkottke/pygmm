@@ -32,7 +32,7 @@ test_requirements = [
 
 setup(
     name='pygmm',
-    version='0.3.0',
+    version='0.3.1',
     description="Ground motion models implemented in Python.",
     long_description=readme + '\n\n' + history,
     author="Albert Kottke",
