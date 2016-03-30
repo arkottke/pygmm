@@ -3,9 +3,16 @@ include CONTRIBUTING.rst
 include HISTORY.rst
 include LICENSE
 include README.rst
+include *.py
+include *.txt
+include Makefile
 
-recursive-include tests *
 recursive-exclude * __pycache__
 recursive-exclude * *.py[co]
 
-recursive-include docs *.rst conf.py Makefile make.bat
+recursive-include tests *
+recursive-include examples *.py
+recursive-include pygmm *.csv
+recursive-include pygmm *.json
+recursive-include utils *.py
+recursive-include docs *.rst conf.py Makefile make.bat *.bib *.txt *.gitkeep
