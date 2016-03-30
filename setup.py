@@ -20,6 +20,10 @@ requirements = [
     'scipy >= 0.17.0'
 ]
 
+setup_requirements = [
+    'pytest-runner',
+]
+
 test_requirements = [
     'pytest',
     'pytest-cov',
@@ -57,6 +61,7 @@ setup(
         'Topic :: Scientific/Engineering',
         'Intended Audience :: Science/Research',
     ],
+    setup_requires=setup_requirements,
     test_suite='tests',
     tests_require=test_requirements
 )

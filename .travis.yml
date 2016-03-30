@@ -54,8 +54,8 @@ install:
     - python setup.py install
     - pip install -e .
 
-script:  
-    - py.test --flake8 --cov-report html --cov tests/
+script:
+    - python setup.py test
 
 after_success:
     coveralls
