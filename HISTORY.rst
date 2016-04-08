@@ -5,7 +5,8 @@ History
 0.3.3 (unreleased)
 ------------------
 
-- Nothing changed yet.
+- Added Hermkes et al. (2014).
+- Improved documentation.
 
 
 0.3.2 (2016-03-30)
