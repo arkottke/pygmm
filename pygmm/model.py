@@ -109,7 +109,7 @@ class Model(object):
         at specified periods.
 
         Args:
-            period (:class:`numpy.array`): periods of interest (sec).
+            periods (:class:`numpy.array`): periods of interest (sec).
 
         Returns:
             (:class:`numpy.array`): pseudo-spectral accelerations.
@@ -125,7 +125,7 @@ class Model(object):
         damping at specified periods.
 
         Args:
-            period (:class:`numpy.array`): periods of interest (sec).
+            periods (:class:`numpy.array`): periods of interest (sec).
 
         Returns:
             :class:`numpy.array`
