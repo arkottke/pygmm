@@ -17,7 +17,8 @@ with open('HISTORY.rst') as history_file:
 requirements = [
     'matplotlib',
     'numpy',
-    'scipy >= 0.17.0'
+    'scipy >= 0.17.0',
+    'six'
 ]
 
 setup_requirements = [
@@ -62,6 +63,5 @@ setup(
         'Intended Audience :: Science/Research',
     ],
     setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements
+    tests_require=test_requirements,
 )
