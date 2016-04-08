@@ -103,7 +103,6 @@ class Model(object):
             method (Optional[str]): interpolation method. Default is
                 'linear'. Use 'cubic' for cubic spline interpolation. See
                 :ref:`scipy.interpolate.interp1d` for more information.
-
         Returns:
             :class:`numpy.array`: pseudo-spectral accelerations (g)
         """
@@ -128,7 +127,6 @@ class Model(object):
             method (Optional[str]): interpolation method. Default is
                 'linear'. Use 'cubic' for cubic spline interpolation. See
                 :ref:`scipy.interpolate.interp1d` for more information.
-
         Returns:
             :class:`numpy.array`: logarithmic standard deviation at requested
             periods.
