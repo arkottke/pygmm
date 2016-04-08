@@ -2,7 +2,7 @@
 History
 =======
 
-0.3.3 (unreleased)
+0.4.0 (2016-04-08)
 ------------------
 
 - Added Hermkes et al. (2014).
