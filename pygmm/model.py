@@ -7,6 +7,7 @@ import logging
 import os
 
 import numpy as np
+from scipy.interpolate import interp1d
 
 
 class Model(object):
@@ -104,28 +105,42 @@ class Model(object):
         self.params = {p.name: kwds.get(p.name, None) for p in self.PARAMS}
         self._check_inputs()
 
-    def interp_spec_accels(self, periods):
+    def interp_spec_accels(self, periods, method='linear'):
         """Return the pseudo-spectral acceleration at the provided damping
         at specified periods.
 
+        Interpolation is done in natural log space.
+
         Args:
             periods (:class:`numpy.array`): periods of interest (sec).
+            method (Optional[str]): interpolation method. Default is
+                'linear'. Use 'cubic' for cubic spline interpolation. See
+                :ref:`scipy.interpolate.interp1d` for more information.
 
         Returns:
             (:class:`numpy.array`): pseudo-spectral accelerations.
         """
-        return np.exp(np.interp(
-            np.log(periods),
-            np.log(self.periods),
-            self._ln_resp[self.INDICES_PSA]))
+        return np.exp(
+            interp1d(
+                np.log(self.periods),
+                self._ln_resp[self.INDICES_PSA],
+                kind=method,
+                copy=False,
+                bounds_error=False,
+                fill_value=np.nan,
+            )(np.log(periods))
+        )
 
-    def interp_ln_stds(self, periods):
+    def interp_ln_stds(self, periods, method='linear'):
         """Return the logarithmic standard deviation
         (:math:`\\sigma_{ \\ln}`) of spectral acceleration at the provided
         damping at specified periods.
 
         Args:
             periods (:class:`numpy.array`): periods of interest (sec).
+            method (Optional[str]): interpolation method. Default is
+                'linear'. Use 'cubic' for cubic spline interpolation. See
+                :ref:`scipy.interpolate.interp1d` for more information.
 
         Returns:
             :class:`numpy.array`
@@ -138,9 +153,14 @@ class Model(object):
         if self._ln_std is None:
             raise NotImplementedError
         else:
-            return np.interp(
-                np.log(periods), np.log(self.periods),
-                self._ln_std[self.INDICES_PSA])
+            return interp1d(
+                    np.log(self.periods),
+                    self._ln_std[self.INDICES_PSA],
+                    kind=method,
+                    copy=False,
+                    bounds_error=False,
+                    fill_value=np.nan,
+                )(np.log(periods))
 
     @property
     def periods(self):
