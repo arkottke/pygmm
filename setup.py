@@ -26,14 +26,14 @@ setup_requirements = [
 ]
 
 test_requirements = [
-    'pytest',
+    'pytest >= 2.9.0',
     'pytest-cov',
     'pytest-flake8'
 ]
 
 setup(
     name='pygmm',
-    version='0.3.0',
+    version='0.3.3.dev0',
     description="Ground motion models implemented in Python.",
     long_description=readme + '\n\n' + history,
     author="Albert Kottke",

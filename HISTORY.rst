@@ -2,7 +2,19 @@
 History
 =======
 
-0.1.0 (2016-03-04)
+0.3.3 (unreleased)
+------------------
+
+- Nothing changed yet.
+
+
+0.3.2 (2016-03-30)
+------------------
+
+- Nothing changed yet.
+
+
+0.3.1 (2016-03-30)
 ------------------
 
 * First release on PyPI.
