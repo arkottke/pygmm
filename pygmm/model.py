@@ -102,7 +102,7 @@ class Model(object):
             periods (:class:`numpy.array`): periods of interest (sec).
             method (Optional[str]): interpolation method. Default is
                 'linear'. Use 'cubic' for cubic spline interpolation. See
-                :ref:`scipy.interpolate.interp1d` for more information.
+                :func:`scipy.interpolate.interp1d` for more information.
         Returns:
             :class:`numpy.array`: pseudo-spectral accelerations (g)
         """
@@ -126,7 +126,8 @@ class Model(object):
             periods (:class:`numpy.array`): periods of interest (sec).
             method (Optional[str]): interpolation method. Default is
                 'linear'. Use 'cubic' for cubic spline interpolation. See
-                :ref:`scipy.interpolate.interp1d` for more information.
+                :func:`scipy.interpolate.interp1d` for more information.
+
         Returns:
             :class:`numpy.array`: logarithmic standard deviation at requested
             periods.
@@ -184,7 +185,7 @@ class Model(object):
         """Peak ground acceleration (PGA) computed by the model (g).
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError
@@ -201,7 +202,7 @@ class Model(object):
         peak ground acceleration computed by the model.
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError: If model does not provide an estimate.
@@ -216,7 +217,7 @@ class Model(object):
         """Peak ground velocity (PGV) computed by the model (cm/sec).
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError: If model does not provide an estimate.
@@ -232,7 +233,7 @@ class Model(object):
         peak ground velocity computed by the model.
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError: If model does not provide an estimate.
@@ -247,7 +248,7 @@ class Model(object):
         """Peak ground displacement (PGD) computed by the model (cm).
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError: If model does not provide an estimate.
@@ -263,7 +264,7 @@ class Model(object):
         peak ground displacement computed by the model.
 
         Returns:
-            :class:`float`
+            float
 
         Raises:
             NotImplementedError: If model does not provide an estimate.

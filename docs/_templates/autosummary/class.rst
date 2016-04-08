@@ -1,4 +1,4 @@
-{{ fullname }}
+{{ objname }}
 {{ underline }}
 
 .. currentmodule:: {{ module }}
@@ -9,7 +9,7 @@
    .. automethod:: __init__
 
    {% if methods %}
-   .. rubric:: Summary of Methods
+   .. rubric:: Methods
 
    .. autosummary::
    {% for item in methods %}
@@ -28,11 +28,3 @@
    {%- endfor %}
    {% endif %}
    {% endblock %}
-
-{% if methods %}
-.. rubric:: Details of Methods
-
-{% for item in methods if item not in ['__init__'] %}
-.. automethod:: {{ module }}.{{ name }}.{{ item }}
-{%- endfor %}
-{% endif %}

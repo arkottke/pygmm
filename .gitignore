@@ -54,6 +54,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+docs/_autosummary/
 
 # PyBuilder
 target/
@@ -62,9 +63,13 @@ target/
 *.swp
 *.*~
 /tags
+/tags.temp
 
 # PyCharm
 .idea/
 
 # Figures from testing
 figures/
+
+# Large data files
+pygmm/data/hermkes_kuehn_riggelsen_2014.npz

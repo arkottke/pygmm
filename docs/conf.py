@@ -45,15 +45,24 @@ sys.path.insert(0, project_root)
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autosummary',
-    'sphinx.ext.viewcode',
+    'sphinx.ext.intersphinx',
     'sphinx.ext.mathjax',
     'sphinx.ext.napoleon',
+    'sphinx.ext.viewcode',
     'matplotlib.sphinxext.plot_directive',
     'sphinxcontrib.bibtex',
 ]
 
-# Generate the autosummary
+# Configuration of extensions
+autodoc_member_order = 'bysource'
+autodoc_default_flags = ['members', 'show-inheritance']
 autosummary_generate = True
+intersphinx_mappings = {
+    'python': ('http://docs.python.org/3', None),
+    'numpy': ('http://docs.scipy.org/doc/numpy/', None),
+    'scipy': ('http://docs.scipy.org/doc/scipy/reference/', None),
+    'matplotlib': ('http://matplotlib.sourceforge.net/', None)
+}
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']

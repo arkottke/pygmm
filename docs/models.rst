@@ -19,15 +19,15 @@ values where possible. Details of this interface are provided in
    .. rubric:: Summary of Methods
 
    .. autosummary::
-   
+
       ~Model.__init__
       ~Model.interp_ln_stds
       ~Model.interp_spec_accels
-   
+
    .. rubric:: Attributes
 
    .. autosummary::
-   
+
       ~Model.ABBREV
       ~Model.INDEX_PGA
       ~Model.INDEX_PGD
@@ -75,23 +75,22 @@ provides the standard interface to access the calculated ground motion. The
 following models have been implemented.
 
 .. currentmodule:: pygmm
-
-.. automodule:: pygmm
 .. autosummary::
-    :toctree: 
+    :toctree: _autosummary
     :nosignatures:
 
-    AbrahamsonSilvaKamai2014
-    AkkarSandikkayaBommer2014
-    AtkinsonBoore2006
-    BooreStewartSeyhanAtkinson2014
-    Campbell2003
-    CampbellBozorgnia2014
-    ChiouYoungs2014
-    DerrasBardCotton2014
-    Idriss2014
-    PezeshkZandiehTavakoli2011
-    TavakoliPezeshk05
+    ~abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
+    ~akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
+    ~atkinson_boore_2006.AtkinsonBoore2006
+    ~boore_stewart_seyhan_atkinson_2014.BooreStewartSeyhanAtkinson2014
+    ~campbell_2003.Campbell2003
+    ~campbell_bozorgnia_2014.CampbellBozorgnia2014
+    ~chiou_youngs_2014.ChiouYoungs2014
+    ~derras_bard_cotton_2014.DerrasBardCotton2014
+    ~hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
+    ~idriss_2014.Idriss2014
+    ~pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
+    ~tavakoli_pezeshk_2005.TavakoliPezeshk05
 
 If you are interested in contributing another model to the collection please see
 :doc:`contributing`.
