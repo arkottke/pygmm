@@ -1,5 +1,6 @@
 matplotlib
 numpy
 scipy
+six
 sphinx
 sphinxcontrib-bibtex
