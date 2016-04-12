@@ -38,7 +38,7 @@ class DerrasBardCotton2014(model.Model):
         model.NumericParameter('dist_jb', True, 5, 200),
         model.NumericParameter('mag', True, 4, 7),
         model.NumericParameter('v_s30', True, 200, 800),
-        model.NumericParameter('depth_hyp', False, 0, 25),
+        model.NumericParameter('depth_hyp', True, 0, 25),
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
