@@ -336,7 +336,7 @@ class NumericParameter(Parameter):
             elif self.max is not None and self.max < value:
                 logging.warning(
                     '%s (%g) is greater than the recommended limit (%g).',
-                    self.name, value, self.min)
+                    self.name, value, self.max)
 
         return value
 
