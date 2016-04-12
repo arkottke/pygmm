@@ -61,7 +61,7 @@ class HermkesKuehnRiggelsen2014(model.Model):
     # Reference velocity (m/sec)
     V_REF = None
 
-    PERIODS = np.array([0.01, 0.1, 0.5, 1.0, 4.0])
+    PERIODS = np.array([-1, 0.01, 0.1, 0.5, 1.0, 4.0])
     INDICES_PSA = np.arange(1, 6)
     INDEX_PGA = 1
     INDEX_PGV = 0
