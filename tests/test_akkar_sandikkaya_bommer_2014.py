@@ -14,8 +14,7 @@ from pygmm import AkkarSandikkayaBommer2014 as ASB14
 RTOL = 1e-2
 
 # Load the tests
-fname = os.path.join(
-    os.path.dirname(__file__), 'data', 'asb14_tests.json.gz')
+fname = os.path.join(os.path.dirname(__file__), 'data', 'asb14_tests.json.gz')
 with gzip.open(fname, 'rt') as fp:
     tests = json.load(fp)
 
@@ -37,8 +36,7 @@ def test_spec_accels(dist, params, expected):
         m.interp_spec_accels(expected['periods']),
         expected['spec_accels'],
         rtol=RTOL,
-        err_msg='Spectral accelerations'
-    )
+        err_msg='Spectral accelerations')
 
 
 @pytest.mark.parametrize('dist,params,expected', testdata)
@@ -48,5 +46,4 @@ def test_im_values(dist, params, expected, key):
     np.testing.assert_allclose(
         getattr(m, key),
         expected[key],
-        rtol=RTOL,
-    )
+        rtol=RTOL, )

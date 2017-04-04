@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Move the predictor into a arrays for usage."""
 
 import os
@@ -8,8 +7,8 @@ import os
 import numpy as np
 
 periods = [
-    (-1,  'pgv'),
-    (0,   'pga'),
+    (-1, 'pgv'),
+    (0, 'pga'),
     (0.1, 'T0.1'),
     (0.5, 'T0.5'),
     (1.0, 'T1'),
@@ -34,8 +33,7 @@ predictions = []
 for period, period_name in periods:
     p = np.genfromtxt(
         os.path.join(path, period_name, fname),
-        delimiter=',',
-    )
+        delimiter=',', )
     predictions.append(p)
 
 # Convert to a recarray
@@ -46,8 +44,7 @@ predictions = np.array([p[:, i] for p in predictions for i in range(2)]).T
 np.savez_compressed(
     '../pygmm/data/hermkes_kuehn_riggelsen_2014.npz',
     events=events,
-    predictions=predictions
-)
+    predictions=predictions)
 
 # Print test cases
 for i in [0, 9470, 1245080, -1]:

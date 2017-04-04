@@ -13,10 +13,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 fname_data = os.path.join(
-    os.path.dirname(__file__),
-    'data',
-    'hermkes_kuehn_riggelsen_2014.npz'
-)
+    os.path.dirname(__file__), 'data', 'hermkes_kuehn_riggelsen_2014.npz')
 
 if not os.path.exists(fname_data):
     # Download the model data if not found.
@@ -28,19 +25,15 @@ if not os.path.exists(fname_data):
     try:
         urlretrieve(url, fname_data)
     except HTTPError:
-        print(
-            'Hermkes, Kuehn, and Riggelsen (2013) model data required, '
-            'which cannot be downloaded. Download the file from {url}'
-            'to this location: {loc}'.format(
-                url=url, loc=os.path.abspath(fname_data)
-            )
-        )
+        print('Hermkes, Kuehn, and Riggelsen (2013) model data required, '
+              'which cannot be downloaded. Download the file from {url}'
+              'to this location: {loc}'.format(
+                  url=url, loc=os.path.abspath(fname_data)))
         raise RuntimeError
 
 with np.load(fname_data) as data:
     # Need to transform the record arrays into flat numpy arrays
-    INTERPOLATOR = NearestNDInterpolator(
-        data['events'], data['predictions'])
+    INTERPOLATOR = NearestNDInterpolator(data['events'], data['predictions'])
 
 
 class HermkesKuehnRiggelsen2014(model.Model):

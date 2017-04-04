@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Create plots for visual comparison."""
 
 import os
@@ -28,8 +27,7 @@ DEFAULT_PROPS = dict(
     mechanism='SS',
     region='california',
     v_s30=500.,
-    width=10,
-)
+    width=10, )
 
 # Make the figure directory if needed
 if not os.path.exists('figures'):
@@ -77,9 +75,9 @@ def plot_model_with_param(model, key, values, label):
 def test_models():
     for m in pygmm.models:
         for key, values, label in [
-                ('mag', [5, 6, 7], 'Magnitude'),
-                (['dist', 'dist_rup', 'dist_jb', 'dist_x'], [10, 50, 100],
-                 'Distance (km)'),
-                ('v_s30', [300, 650, 1000], '$V_{s30}$ (m/s)'),
-                ]:
+            ('mag', [5, 6, 7], 'Magnitude'),
+            (['dist', 'dist_rup', 'dist_jb', 'dist_x'], [10, 50, 100],
+             'Distance (km)'),
+            ('v_s30', [300, 650, 1000], '$V_{s30}$ (m/s)'),
+        ]:
             yield plot_model_with_param, m, key, values, label

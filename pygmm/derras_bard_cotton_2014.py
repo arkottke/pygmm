@@ -23,11 +23,8 @@ class DerrasBardCotton2014(model.Model):
     COEFF = json.load(
         open(
             os.path.join(
-                os.path.dirname(__file__),
-                'data',
-                'derras_bard_cotton_2014.json')
-        )
-    )
+                os.path.dirname(__file__), 'data',
+                'derras_bard_cotton_2014.json')))
     GRAVITY = 9.80665
     PERIODS = np.array(COEFF['period'])
 
@@ -70,13 +67,13 @@ class DerrasBardCotton2014(model.Model):
         p['mechanism'] = dict(NS=1, RS=3, SS=4)[p['mechanism']]
 
         # Create the normalized parameter matrix
-        keys = ['log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp',
-                'mechanism']
+        keys = [
+            'log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp', 'mechanism'
+        ]
         values = np.array([p[k] for k in keys])
         limits = np.rec.array([c['min_max'][k] for k in keys], names='min,max')
-        p_n = np.matrix(
-            2 * (values - limits['min']) /
-            (limits['max'] - limits['min']) - 1).T
+        p_n = np.matrix(2 * (values - limits['min']) / (limits['max'] - limits[
+            'min']) - 1).T
 
         # Compute the normalized response
         b_1 = np.matrix(c['b_1']).T
@@ -88,17 +85,14 @@ class DerrasBardCotton2014(model.Model):
         log10_resp_n = (b_2 + w_2 * np.tanh(b_1 + w_1 * p_n)).A1
 
         # Convert from normalized values
-        log10_resp_limits = np.rec.array(c['min_max']['log10_resp'],
-                                         names='min,max')
-        log10_resp = (
-            0.5 * (log10_resp_n + 1) * (log10_resp_limits['max'] -
-                                        log10_resp_limits['min']) +
-            log10_resp_limits['min']
-        )
+        log10_resp_limits = np.rec.array(
+            c['min_max']['log10_resp'], names='min,max')
+        log10_resp = (0.5 * (log10_resp_n + 1) *
+                      (log10_resp_limits['max'] - log10_resp_limits['min']
+                       ) + log10_resp_limits['min'])
         # Convert from m/sec and m/sec² into cm/sec and g
         scale = np.log10(
             np.r_[0.01, self.GRAVITY * np.ones(self.PERIODS.size - 1)])
 
         self._ln_resp = np.log(10 ** (log10_resp - scale))
-        self._ln_std = np.log(
-            10 ** np.array(c['log10_std']['total']))
+        self._ln_std = np.log(10 ** np.array(c['log10_std']['total']))

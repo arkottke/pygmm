@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
 
 from __future__ import division
@@ -56,7 +55,6 @@ class CampbellBozorgnia2014(model.Model):
         model.NumericParameter('mag', True, 3.3, 8.5),
         model.NumericParameter('v_s30', True, 150, 1500),
         model.NumericParameter('width', False),
-
         model.CategoricalParameter(
             'region', False,
             ['global', 'california', 'japan', 'italy', 'china'], 'global'),
@@ -71,13 +69,11 @@ class CampbellBozorgnia2014(model.Model):
             if mech == p['mechanism'] and p['mag'] > limit:
                 logging.warning(
                     'Magnitude of %g is greater than the recommended limit of'
-                    '%g for %s style faults',
-                    p['mag'], limit, mech
-                )
+                    '%g for %s style faults', p['mag'], limit, mech)
 
         if p['depth_2_5'] is None:
-            p['depth_2_5'] = self.calc_depth_2_5(
-                p['v_s30'], p['region'], p['depth_1_0'])
+            p['depth_2_5'] = self.calc_depth_2_5(p['v_s30'], p['region'],
+                                                 p['depth_1_0'])
 
         if p['depth_tor'] is None:
             p['depth_tor'] = CY14.calc_depth_tor(p['mag'], p['mechanism'])
@@ -87,8 +83,8 @@ class CampbellBozorgnia2014(model.Model):
                 p['mag'], p['dip'], p['depth_tor'], p['depth_bot'])
 
         if p['depth_bor'] is None:
-            p['depth_bor'] = self.calc_depth_bor(
-                p['depth_tor'], p['dip'], p['width'])
+            p['depth_bor'] = self.calc_depth_bor(p['depth_tor'], p['dip'],
+                                                 p['width'])
 
         if p['depth_hyp'] is None:
             p['depth_hyp'] = CampbellBozorgnia2014.calc_depth_hyp(
@@ -183,9 +179,8 @@ class CampbellBozorgnia2014(model.Model):
                 break
 
         # Geometric attenuation term
-        f_dis = (c.c_5 + c.c_6 * p['mag']) * np.log(np.sqrt(
-            p['dist_rup'] ** 2 + c.c_7 ** 2
-        ))
+        f_dis = (c.c_5 + c.c_6 * p['mag']
+                 ) * np.log(np.sqrt(p['dist_rup'] ** 2 + c.c_7 ** 2))
 
         # Style of faulting term
         taper = np.clip(p['mag'] - 4.5, 0, 1)
@@ -229,22 +224,17 @@ class CampbellBozorgnia2014(model.Model):
         vs_ratio = v_s30 / c.k_1
         mask = (v_s30 <= c.k_1)
         f_site[mask] = (
-            c.c_11 * np.log(vs_ratio) +
-            c.k_2 * (np.log(pga_ref +
-                            self.COEFF_C * vs_ratio ** self.COEFF_N) -
-                     np.log(pga_ref + self.COEFF_C))
-            )[mask]
+            c.c_11 * np.log(vs_ratio) + c.k_2 *
+            (np.log(pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) -
+             np.log(pga_ref + self.COEFF_C)))[mask]
         f_site[~mask] = (
-            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
-        )[~mask]
+            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio))[~mask]
 
         if p['region'] == 'japan':
             # Apply regional correction for Japan
             if v_s30 <= 200:
-                f_site += (
-                    (c.c_12 + c.k_2 * self.COEFF_N) *
-                    (np.log(vs_ratio) - np.log(200 / c.k_1))
-                )
+                f_site += ((c.c_12 + c.k_2 * self.COEFF_N) *
+                           (np.log(vs_ratio) - np.log(200 / c.k_1)))
             else:
                 f_site += (c.c_13 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
 
@@ -306,24 +296,22 @@ class CampbellBozorgnia2014(model.Model):
         vs_ratio = p['v_s30'] / c.k_1
         alpha = np.zeros_like(c.period)
         mask = p['v_s30'] < c.k_1
-        alpha[mask] = (
-            c.k_2 * pga_ref * (
-                (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1) -
-                (pga_ref + self.COEFF_C) ** -1)
-        )[mask]
+        alpha[mask] = (c.k_2 * pga_ref *
+                       ((pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) **
+                        (-1) - (pga_ref + self.COEFF_C) ** -1))[mask]
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
-        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 +
-                      2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
+        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 + 2 * alpha *
+                      c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
 
         phi_lnPGA = phi_lnY[self.INDEX_PGA]
         phi_lnAF_PGA = self.COEFF['phi_lnAF'][self.INDEX_PGA]
         phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
         phi_lnY_B = np.sqrt(phi_lnY ** 2 - c.phi_lnAF ** 2)
 
-        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 +
-                      alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) +
-                      2 * alpha * c.rho_lnPGAlnY * phi_lnY_B * phi_lnPGA_B)
+        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 + alpha ** 2 * (
+            phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) + 2 * alpha * c.rho_lnPGAlnY *
+                      phi_lnY_B * phi_lnPGA_B)
 
         ln_std = np.sqrt(phi ** 2 + tau ** 2)
 
@@ -406,10 +394,8 @@ class CampbellBozorgnia2014(model.Model):
         """
         # Equations 35, 36, and 37 of journal article
         ln_dZ = min(
-            min(-4.317 + 0.984 * mag, 2.325) +
-            min(0.0445 * (dip - 40), 0),
-            np.log(0.9 * (depth_bor - depth_tor))
-        )
+            min(-4.317 + 0.984 * mag, 2.325) + min(0.0445 * (dip - 40), 0),
+            np.log(0.9 * (depth_bor - depth_tor)))
 
         depth_hyp = depth_tor + np.exp(ln_dZ)
 
@@ -437,8 +423,7 @@ class CampbellBozorgnia2014(model.Model):
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
-            (depth_bot - depth_tor) / np.sin(np.radians(dip))
-        )
+            (depth_bot - depth_tor) / np.sin(np.radians(dip)))
 
     @staticmethod
     def calc_depth_bor(depth_tor, dip, width):

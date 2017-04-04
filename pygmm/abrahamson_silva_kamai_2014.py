@@ -38,7 +38,6 @@ class AbrahamsonSilvaKamai2014(model.Model):
         model.NumericParameter('dist_jb', True),
         model.NumericParameter('mag', True, 3, 8.5),
         model.NumericParameter('v_s30', True, 180, 1000),
-
         model.NumericParameter('depth_1_0', False),
         model.NumericParameter('depth_tor', False),
         model.NumericParameter('dip', True),
@@ -46,19 +45,17 @@ class AbrahamsonSilvaKamai2014(model.Model):
         model.NumericParameter('dist_x', False),
         model.NumericParameter('dist_y0', False),
         model.NumericParameter('width', False),
-
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
         model.CategoricalParameter(
             'region', False,
             ['global', 'california', 'china', 'italy', 'japan', 'taiwan'],
-            'global'
-        ),
-        model.CategoricalParameter(
-            'vs_source', False, ['measured', 'inferred'], 'measured'),
-        model.CategoricalParameter(
-            'is_aftershock', False, [True, False], False),
-        model.CategoricalParameter('on_hanging_wall', False,
-                                   [True, False], False),
+            'global'),
+        model.CategoricalParameter('vs_source', False,
+                                   ['measured', 'inferred'], 'measured'),
+        model.CategoricalParameter('is_aftershock', False, [True, False],
+                                   False),
+        model.CategoricalParameter('on_hanging_wall', False, [True, False],
+                                   False),
     ]
 
     def _check_inputs(self, **kwds):
@@ -176,19 +173,16 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         # Site term
         ###########
-        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) +
-                     np.log(1500))
+        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(
+            1500))
 
         vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
         # Linear site model
         f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
         # Nonlinear model
         mask = vs_ratio < 1
-        f5[mask] = (
-            c.a10 * np.log(vs_ratio) -
-            c.b * np.log(resp_ref + c.c) +
-            c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
-        )[mask]
+        f5[mask] = (c.a10 * np.log(vs_ratio) - c.b * np.log(resp_ref + c.c) +
+                    c.b * np.log(resp_ref + c.c * vs_ratio ** c.n))[mask]
 
         # Basin term
         if v_s30 == self.V_REF or p['depth_1_0'] is None:
@@ -198,15 +192,13 @@ class AbrahamsonSilvaKamai2014(model.Model):
             # Ratio between site depth_1_0 and model center
             ln_depth_ratio = np.log(
                 (p['depth_1_0'] + 0.01) /
-                (self.calc_depth_1_0(v_s30, p['region']) + 0.01)
-            )
+                (self.calc_depth_1_0(v_s30, p['region']) + 0.01))
             slope = interp1d(
                 [150, 250, 400, 700],
                 np.c_[c.a43, c.a44, c.a45, c.a46],
                 copy=False,
                 bounds_error=False,
-                fill_value=(c.a43, c.a46),
-            )(v_s30)
+                fill_value=(c.a43, c.a46), )(v_s30)
             f10 = slope * ln_depth_ratio
 
         # Aftershock term
@@ -225,8 +217,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
                 np.c_[c.a36, c.a37, c.a38, c.a39, c.a40, c.a41, c.a42],
                 copy=False,
                 bounds_error=False,
-                fill_value=(c.a36, c.a42),
-            )(v_s30)
+                fill_value=(c.a36, c.a42), )(v_s30)
             freg = f13 + c.a29 * p['dist_rup']
         else:
             freg = 0
@@ -243,8 +234,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
         c = self.COEFF
 
         if p['region'] == 'japan':
-            phi_al = c.s5 + (c.s6 - c.s5) * np.clip((p['dist_rup'] - 30) / 50,
-                                                    0, 1)
+            phi_al = c.s5 + (c.s6 - c.s5) * np.clip(
+                (p['dist_rup'] - 30) / 50, 0, 1)
         else:
             transition = np.clip((p['mag'] - 4) / 2, 0, 1)
             if p['vs_source'] == 'measured':
@@ -261,8 +252,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         # The partial derivative of the amplification with respect to
         # the reference intensity
-        deriv = ((-c.b * psa_ref) / (psa_ref + c.c) +
-                 (c.b * psa_ref) /
+        deriv = ((-c.b * psa_ref) / (psa_ref + c.c) + (c.b * psa_ref) /
                  (psa_ref + c.c * (p['v_s30'] / c.v_lin) ** c.n))
         deriv[p['v_s30'] >= c.v_lin] = 0
 
@@ -286,10 +276,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         Returns:
             float: estimated fault width (:math:`W`, km)
         """
-        return min(
-            18 / np.sin(np.radians(dip)),
-            10 ** (-1.75 + 0.45 * mag)
-        )
+        return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 
     @staticmethod
     def calc_depth_tor(mag):
@@ -349,10 +336,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
         p = self.params
 
         # Magnitude dependent taper
-        dist = np.sqrt(
-            p['dist_rup'] ** 2 +
-            (c.c4 - (c.c4 - 1) * np.clip(5 - p['mag'], 0, 1)) ** 2
-        )
+        dist = np.sqrt(p['dist_rup'] ** 2 + (c.c4 - (c.c4 - 1) * np.clip(5 - p[
+            'mag'], 0, 1)) ** 2)
 
         # Magnitude scaling
 
@@ -361,18 +346,15 @@ class AbrahamsonSilvaKamai2014(model.Model):
         f1 = np.array(c.a1)
         ma1 = (p['mag'] <= c.m2)
         f1[ma1] += (
-            c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 +
-            c.a6 * (p['mag'] - c.m2) +
-            c.a7 * (p['mag'] - c.m2) +
-            (c.a2 + c.a3 * (c.m2 - c.m1)) * np.log(dist) +
-            c.a17 * p['dist_rup']
-        )[ma1]
+            c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 + c.a6 *
+            (p['mag'] - c.m2) + c.a7 * (p['mag'] - c.m2) +
+            (c.a2 + c.a3 *
+             (c.m2 - c.m1)) * np.log(dist) + c.a17 * p['dist_rup'])[ma1]
 
         f1[~ma1] += (
             c.a8 * (8.5 - p['mag']) ** 2 +
-            (c.a2 + c.a3 * (p['mag'] - c.m1)) * np.log(dist) +
-            c.a17 * p['dist_rup']
-        )[~ma1]
+            (c.a2 + c.a3 *
+             (p['mag'] - c.m1)) * np.log(dist) + c.a17 * p['dist_rup'])[~ma1]
 
         ma2 = np.logical_and(~ma1, p['mag'] <= c.m1)
         f1[ma2] += (c.a4 * (p['mag'] - c.m1))[ma2]
@@ -398,8 +380,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
         if p['mag'] <= 5.5:
             t2 = 0
         elif p['mag'] < 6.5:
-            t2 = (1 + a2hw * (p['mag'] - 6.5) -
-                  (1 - a2hw) * (p['mag'] - 6.5) ** 2)
+            t2 = (1 + a2hw * (p['mag'] - 6.5) - (1 - a2hw) *
+                  (p['mag'] - 6.5) ** 2)
         else:
             t2 = 1 + a2hw * (p['mag'] - 6.5)
 

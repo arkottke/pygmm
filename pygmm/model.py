@@ -113,9 +113,7 @@ class Model(object):
                 kind=method,
                 copy=False,
                 bounds_error=False,
-                fill_value=np.nan,
-            )(np.log(periods))
-        )
+                fill_value=np.nan, )(np.log(periods)))
 
     def interp_ln_stds(self, periods, method='linear'):
         """Return the logarithmic standard deviation
@@ -138,13 +136,12 @@ class Model(object):
             raise NotImplementedError
         else:
             return interp1d(
-                    np.log(self.periods),
-                    self._ln_std[self.INDICES_PSA],
-                    kind=method,
-                    copy=False,
-                    bounds_error=False,
-                    fill_value=np.nan,
-                )(np.log(periods))
+                np.log(self.periods),
+                self._ln_std[self.INDICES_PSA],
+                kind=method,
+                copy=False,
+                bounds_error=False,
+                fill_value=np.nan, )(np.log(periods))
 
     @property
     def periods(self):
@@ -308,7 +305,11 @@ class Parameter(object):
 
 
 class NumericParameter(Parameter):
-    def __init__(self, name, required=False, min_=None, max_=None,
+    def __init__(self,
+                 name,
+                 required=False,
+                 min_=None,
+                 max_=None,
                  default=None):
         super(NumericParameter, self).__init__(name, required, default)
         self._min = min_
@@ -358,16 +359,14 @@ class CategoricalParameter(Parameter):
             value = self.default
         elif value not in self.options:
             alert = logging.error if self._required else logging.warning
-            alert(
-                '%s value of "%s" is not one of the options. The following'
-                ' options are possible: %s',
-                self._name, value, ', '.join([str(o) for o in self._options])
-            )
+            alert('%s value of "%s" is not one of the options. The following'
+                  ' options are possible: %s', self._name, value,
+                  ', '.join([str(o) for o in self._options]))
 
         return value
 
 
 def load_data_file(name, skip_header=None):
     fname = os.path.join(os.path.dirname(__file__), 'data', name)
-    return np.recfromcsv(fname, skip_header=skip_header,
-                         case_sensitive=True).view(np.recarray)
+    return np.recfromcsv(
+        fname, skip_header=skip_header, case_sensitive=True).view(np.recarray)

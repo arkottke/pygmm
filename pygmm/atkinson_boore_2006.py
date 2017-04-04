@@ -23,8 +23,7 @@ class AtkinsonBoore2006(model.Model):
     # Load the coefficients for the model
     COEFF = dict(
         bc=model.load_data_file('atkinson_boore_2006-bc.csv', 2),
-        rock=model.load_data_file('atkinson_boore_2006-rock.csv', 2),
-    )
+        rock=model.load_data_file('atkinson_boore_2006-rock.csv', 2), )
 
     PERIODS = COEFF['bc']['period']
 
@@ -75,15 +74,10 @@ class AtkinsonBoore2006(model.Model):
         f2 = np.maximum(np.log10(p['dist_rup'] / r2), 0)
 
         # Compute the log10 PSA in units of cm/sec/sec
-        log10_resp = (
-            c.c_1 +
-            c.c_2 * p['mag'] +
-            c.c_3 * p['mag'] ** 2 +
-            (c.c_4 + c.c_5 * p['mag']) * f1 +
-            (c.c_6 + c.c_7 * p['mag']) * f2 +
-            (c.c_8 + c.c_9 * p['mag']) * f0 +
-            c.c_10 * p['dist_rup']
-        )
+        log10_resp = (c.c_1 + c.c_2 * p['mag'] + c.c_3 * p['mag'] ** 2 +
+                      (c.c_4 + c.c_5 * p['mag']) * f1 +
+                      (c.c_6 + c.c_7 * p['mag']) * f2 +
+                      (c.c_8 + c.c_9 * p['mag']) * f0 + c.c_10 * p['dist_rup'])
 
         # Apply stress drop correction
         log10_resp += self._calc_stress_factor()
@@ -158,7 +152,7 @@ class AtkinsonBoore2006(model.Model):
         pga_bc = max(pga_bc, 60.)
 
         log10_site = np.log10(
-            np.exp(c.b_lin * np.log(p['v_s30'] / VS_REF) + b_nl *
-                   np.log(pga_bc / 100.)))
+            np.exp(c.b_lin * np.log(p['v_s30'] / VS_REF) + b_nl * np.log(
+                pga_bc / 100.)))
 
         return np.interp(self.PERIODS, c.period, log10_site)

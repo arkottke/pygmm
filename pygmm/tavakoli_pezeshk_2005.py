@@ -71,10 +71,8 @@ class TavakoliPezeshk05(model.Model):
 
         # Calculate scaled, magnitude dependent distance R for use when
         # calculating f3
-        dist = np.sqrt(
-            p['dist_rup'] ** 2 +
-            (c.c_5 * np.exp(c.c_6 * p['mag'] +
-                            c.c_7 * (8.5 - p['mag']) ** 2.5)) ** 2)
+        dist = np.sqrt(p['dist_rup'] ** 2 + (c.c_5 * np.exp(c.c_6 * p[
+            'mag'] + c.c_7 * (8.5 - p['mag']) ** 2.5)) ** 2)
 
         f3 = ((c.c_4 + c.c_13 * p['mag']) * np.log(dist) +
               (c.c_8 + c.c_12 * p['mag']) * dist)

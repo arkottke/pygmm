@@ -11,7 +11,6 @@ from numpy.testing import assert_allclose
 
 from pygmm.baker_jayaram_2008 import calc_correl, calc_cond_mean_spectrum
 
-
 # def load_cases_correl():
 #     fpath = pathlib.Path(__file__).parent.joinpath(
 #         'data', 'baker_jayaram_2008-figure_4.csv')
@@ -33,8 +32,8 @@ from pygmm.baker_jayaram_2008 import calc_correl, calc_cond_mean_spectrum
 #                     case[key].append(float(parts[i]))
 #     return cases
 
-fpath = pathlib.Path(__file__).parent.joinpath(
-    'data', 'baker_jayaram_2008.json')
+fpath = pathlib.Path(__file__).parent.joinpath('data',
+                                               'baker_jayaram_2008.json')
 
 with fpath.open() as fp:
     data = json.load(fp)
@@ -64,8 +63,7 @@ def test_calc_cond_spectrum(case, param):
         np.log(model['psas']),
         model['ln_stds'],
         case['period_cond'],
-        np.log(case['psa_cond']),
-    )
+        np.log(case['psa_cond']), )
     # Need to go from ln_psa to psa
     actual = np.exp(results[0]) if param == 'psas_cms' else results[1]
     expected = case[param]

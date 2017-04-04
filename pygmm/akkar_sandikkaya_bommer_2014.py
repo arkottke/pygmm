@@ -23,10 +23,8 @@ class AkkarSandikkayaBommer2014(model.Model):
 
     # Load the coefficients for the model
     COEFF = collections.OrderedDict(
-        (k, model.load_data_file(
-            'akkar-sandikkaya-bommer-2014-%s.csv' % k, 2))
-        for k in ['dist_jb', 'dist_hyp', 'dist_epi']
-    )
+        (k, model.load_data_file('akkar-sandikkaya-bommer-2014-%s.csv' % k, 2))
+        for k in ['dist_jb', 'dist_hyp', 'dist_epi'])
     PERIODS = np.array(COEFF['dist_jb'].period)
 
     INDICES_PSA = np.arange(2, 64)
@@ -36,7 +34,6 @@ class AkkarSandikkayaBommer2014(model.Model):
         model.NumericParameter('dist_jb', False, 0, 200),
         model.NumericParameter('dist_epi', False, 0, 200),
         model.NumericParameter('dist_hyp', False, 0, 200),
-
         model.NumericParameter('mag', True, 4, 8),
         model.NumericParameter('v_s30', True, 150, 1200),
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
@@ -91,9 +88,8 @@ class AkkarSandikkayaBommer2014(model.Model):
         # Compute the reference response
         ln_resp_ref = (
             c.a_1 + c.a_3 * (8.5 - p['mag']) ** 2 +
-            (c.a_4 + c.a_5 * (p['mag'] - c.c_1)) *
-            np.log(np.sqrt(dist ** 2 + c.a_6 ** 2))
-        )
+            (c.a_4 + c.a_5 *
+             (p['mag'] - c.c_1)) * np.log(np.sqrt(dist ** 2 + c.a_6 ** 2)))
 
         mask = (p['mag'] <= c.c_1)
         ln_resp_ref[mask] += (c.a_2 * (p['mag'] - c.c_1))[mask]
@@ -109,10 +105,9 @@ class AkkarSandikkayaBommer2014(model.Model):
         # Compute the nonlinear site term
         if p['v_s30'] <= self.V_REF:
             vs_ratio = p['v_s30'] / self.V_REF
-            site = (c.b_1 * np.log(vs_ratio) +
-                    c.b_2 * np.log((pga_ref + c.c * vs_ratio ** c.n) /
-                                   ((pga_ref + c.c) * vs_ratio ** c.n))
-                    )
+            site = (c.b_1 * np.log(vs_ratio) + c.b_2 * np.log(
+                (pga_ref + c.c * vs_ratio ** c.n) / (
+                    (pga_ref + c.c) * vs_ratio ** c.n)))
         else:
             site = c.b_1 * np.log(np.minimum(p['v_s30'], c.v_con) / self.V_REF)
 

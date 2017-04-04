@@ -59,23 +59,13 @@ class PezeshkZandiehTavakoli2011(model.Model):
         dist = np.sqrt(p['dist_rup'] ** 2 + c.c_11 ** 2)
 
         log10_resp = (
-            c.c_1 +
-            c.c_2 * p['mag'] +
-            c.c_3 * p['mag'] ** 2 +
+            c.c_1 + c.c_2 * p['mag'] + c.c_3 * p['mag'] ** 2 +
             (c.c_4 + c.c_5 * p['mag']) * np.minimum(
-                np.log10(dist),
-                np.log10(70.)
-            ) +
-            (c.c_6 + c.c_7 * p['mag']) *
-            np.maximum(
-                np.minimum(
-                    np.log10(dist / 70.),
-                    np.log10(140. / 70.)
-                ), 0.) +
-            (c.c_8 + c.c_9 * p['mag']) * np.maximum(
-                np.log10(dist / 140.), 0) +
-            c.c_10 * dist
-        )
+                np.log10(dist), np.log10(70.)) +
+            (c.c_6 + c.c_7 * p['mag']) * np.maximum(
+                np.minimum(np.log10(dist / 70.), np.log10(140. / 70.)), 0.) +
+            (c.c_8 + c.c_9 * p['mag']) * np.maximum(np.log10(dist / 140.),
+                                                    0) + c.c_10 * dist)
 
         ln_resp = np.log(np.power(10, log10_resp))
 

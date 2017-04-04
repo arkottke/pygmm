@@ -43,10 +43,10 @@ class ChiouYoungs2014(model.Model):
         model.NumericParameter('depth_1_0', False),
         model.NumericParameter('dpp_centered', False, default=0),
         model.NumericParameter('dip', True),
-        model.CategoricalParameter('mechanism', False,
-                                   ['U', 'SS', 'NS', 'RS'], 'U'),
-        model.CategoricalParameter('on_hanging_wall', False,
-                                   [True, False], False),
+        model.CategoricalParameter('mechanism', False, ['U', 'SS', 'NS', 'RS'],
+                                   'U'),
+        model.CategoricalParameter('on_hanging_wall', False, [True, False],
+                                   False),
         model.CategoricalParameter('region', False,
                                    ['california', 'china', 'italy', 'japan'],
                                    'california'),
@@ -129,24 +129,23 @@ class ChiouYoungs2014(model.Model):
 
         # Magnitude scaling
         ln_resp += c.c_2 * (p['mag'] - 6)
-        ln_resp += (c.c_2 - c.c_3) / c.c_n * np.log(
-            1 + np.exp(c.c_n * (c.c_m - p['mag'])))
+        ln_resp += (c.c_2 - c.c_3
+                    ) / c.c_n * np.log(1 + np.exp(c.c_n * (c.c_m - p['mag'])))
 
         # Top of rupture term relative to model average
-        diff_depth_tor = (p['depth_tor'] -
-                          self.calc_depth_tor(p['mag'], p['mechanism']))
+        diff_depth_tor = (
+            p['depth_tor'] - self.calc_depth_tor(p['mag'], p['mechanism']))
         ln_resp += (c.c_7 + c.c_7b / cosh_mag) * diff_depth_tor
 
         # Dip angle term
-        ln_resp += (c.c_11 + c.c_11b / cosh_mag) * np.cos(
-            np.radians(p['dip'])) ** 2
+        ln_resp += (
+            c.c_11 + c.c_11b / cosh_mag) * np.cos(np.radians(p['dip'])) ** 2
 
         # Distance terms
-        ln_resp += c.c_4 * np.log(
-            p['dist_rup'] +
-            c.c_5 * np.cosh(c.c_6 * np.maximum(p['mag'] - c.c_hm, 0)))
-        ln_resp += (c.c_4a - c.c_4) * np.log(
-            np.sqrt(p['dist_rup'] ** 2 + c.c_rb ** 2))
+        ln_resp += c.c_4 * np.log(p['dist_rup'] + c.c_5 * np.cosh(
+            c.c_6 * np.maximum(p['mag'] - c.c_hm, 0)))
+        ln_resp += (c.c_4a - c.c_4
+                    ) * np.log(np.sqrt(p['dist_rup'] ** 2 + c.c_rb ** 2))
 
         # Regional adjustment
         if p['region'] in ['japan', 'italy'] and (6 < p['mag'] < 6.9):
@@ -155,25 +154,21 @@ class ChiouYoungs2014(model.Model):
             scale = c.gamma_c
         else:
             scale = 1.
-        ln_resp += (scale *
-                    (c.c_gamma1 + c.c_gamma2 / np.cosh(
-                        np.maximum(p['mag'] - c.c_gamma3, 0))) * p['dist_rup'])
+        ln_resp += (scale * (c.c_gamma1 + c.c_gamma2 / np.cosh(
+            np.maximum(p['mag'] - c.c_gamma3, 0))) * p['dist_rup'])
 
         # Directivity term
-        ln_resp += (c.c_8 *
-                    max(1 - max(p['dist_rup'] - 40, 0) / 30, 0) *
+        ln_resp += (c.c_8 * max(1 - max(p['dist_rup'] - 40, 0) / 30, 0) *
                     min(max(p['mag'] - 5.5, 0) / 0.8, 1) *
-                    np.exp(-c.c_8a * (p['mag'] - c.c_8b) ** 2) *
-                    p['dpp_centered'])
+                    np.exp(-c.c_8a * (p['mag'] - c.c_8b)
+                           ** 2) * p['dpp_centered'])
 
         # Hanging wall term
         if p['on_hanging_wall']:
-            ln_resp += (
-                c.c_9 * np.cos(np.radians(p['dip'])) *
-                (c.c_9a + (1 - c.c_9a) * np.tanh(p['dist_x'] / c.c_9b)) *
-                (1 - np.sqrt(p['dist_jb'] ** 2 + p['depth_tor'] ** 2) /
-                 (p['dist_rup'] + 1))
-            )
+            ln_resp += (c.c_9 * np.cos(np.radians(p['dip'])) * (
+                c.c_9a + (1 - c.c_9a) * np.tanh(p['dist_x'] / c.c_9b)) *
+                        (1 - np.sqrt(p['dist_jb'] ** 2 + p['depth_tor'] ** 2) /
+                         (p['dist_rup'] + 1)))
 
         return ln_resp
 
@@ -203,14 +198,14 @@ class ChiouYoungs2014(model.Model):
         ln_resp = np.array(ln_resp_ref)
         ln_resp += phi_1 * min(np.log(p['v_s30'] / 1130.), 0)
 
-        ln_resp += (
-            c.phi_2 * (np.exp(c.phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
-                       np.exp(c.phi_3 * (1130. - 360.))) *
-            np.log((np.exp(ln_resp_ref) + c.phi_4) / c.phi_4)
-        )
+        ln_resp += (c.phi_2 * (
+            np.exp(c.phi_3 *
+                   (min(p['v_s30'], 1130.) - 360.)) - np.exp(c.phi_3 *
+                                                             (1130. - 360.))) *
+                    np.log((np.exp(ln_resp_ref) + c.phi_4) / c.phi_4))
 
-        diff_depth_1_0 = 1000 * (p['depth_1_0'] -
-                                 self.calc_depth_1_0(p['v_s30'], p['region']))
+        diff_depth_1_0 = 1000 * (
+            p['depth_1_0'] - self.calc_depth_1_0(p['v_s30'], p['region']))
         ln_resp += phi_5 * (1 - np.exp(-diff_depth_1_0 / phi_6))
 
         return ln_resp
@@ -237,15 +232,16 @@ class ChiouYoungs2014(model.Model):
         clipped_mag = np.clip(p['mag'], 5., 6.5) - 5.
         tau = c.tau_1 + (c.tau_2 - c.tau_1) / 1.5 * clipped_mag
 
-        nl_0 = (c.phi_2 * (np.exp(c.phi_3 * (min(p['v_s30'], 1130.) - 360.)) -
-                           np.exp(c.phi_3 * (1130. - 360.))) *
+        nl_0 = (c.phi_2 * (
+            np.exp(c.phi_3 *
+                   (min(p['v_s30'], 1130.) - 360.)) - np.exp(c.phi_3 *
+                                                             (1130. - 360.))) *
                 (resp_ref / (resp_ref + c.phi_4)))
 
         flag_meas = 1 if p['vs_source'] == 'measured' else 0
-        phi_nl = (
-            (c.sigma_1 + (sigma_2 - c.sigma_1) / 1.5 * clipped_mag) *
-            np.sqrt(c.sigma_3 * (1 - flag_meas) + 0.7 * flag_meas +
-                    (1 + nl_0) ** 2))
+        phi_nl = ((c.sigma_1 + (sigma_2 - c.sigma_1) / 1.5 * clipped_mag) *
+                  np.sqrt(c.sigma_3 * (1 - flag_meas) + 0.7 * flag_meas + (
+                      1 + nl_0) ** 2))
 
         ln_std = np.sqrt((1 + nl_0) ** 2 * tau ** 2 + phi_nl ** 2)
 
@@ -262,9 +258,8 @@ class ChiouYoungs2014(model.Model):
         if not (_min <= self.params['mag'] <= _max):
             logging.warning(
                 'Magnitude (%g) exceeds recommended bounds (%g to %g)'
-                ' for a %s earthquake!',
-                self.params['mag'], _min, _max, self.params['mechanism']
-                )
+                ' for a %s earthquake!', self.params['mag'], _min, _max,
+                self.params['mechanism'])
 
         if self.params.get('depth_tor', None) is None:
             self.params['depth_tor'] = self.calc_depth_tor(

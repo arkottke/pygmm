@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Test calculation of ASK14 static methods."""
 
 from numpy.testing import assert_almost_equal
