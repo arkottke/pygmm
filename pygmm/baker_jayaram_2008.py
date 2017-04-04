@@ -27,18 +27,17 @@ def calc_correl(periods: ArrayLike, period_cond: float) -> np.ndarray:
                       np.log(periods_max / np.maximum(periods_min, 0.109))))
 
     c_2 = np.select(
-        [periods_max < 0.109, True],
+        [periods_max < 0.2, True],
         [
             1 - 0.105 * (1 - 1 / (1 + np.exp(100 * periods_max - 5))) *
             (periods_max - periods_min) / (periods_max - 0.0099),
             0
         ]
     )
-    c_2[periods_max >= 0.109] = 0
 
     c_3 = np.select(
         [periods_max < 0.109, True],
-        [c_1, c_2]
+        [c_2, c_1]
     )
 
     c_4 = (c_1 + 0.5 * (np.sqrt(c_3) - c_3) *
@@ -82,9 +81,16 @@ def calc_cond_mean_spectrum(periods: ArrayLike,
     ln_stds_cms: :class:`np.ndarray`
         Logarithmic standard deviation of conditional spectrum.
     """
+    periods = np.asarray(periods)
+    ln_psas = np.asarray(ln_psas)
+    ln_stds = np.asarray(ln_stds)
+
     correl = calc_correl(periods, period_cond)
-    epsilon = ln_psa_cond - np.interp(period_cond, periods, ln_psas)
+    epsilon = (
+        (ln_psa_cond - np.interp(period_cond, periods, ln_psas)) /
+        np.interp(period_cond, periods, ln_stds)
+    )
 
     ln_psa_cms = ln_psas + ln_stds * correl * epsilon
-    ln_stds_cms = ln_stds ** 2 * (1 - correl ** 2)
+    ln_stds_cms = np.sqrt(ln_stds ** 2 * (1 - correl ** 2))
     return ln_psa_cms, ln_stds_cms

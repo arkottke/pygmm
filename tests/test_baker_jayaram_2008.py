@@ -7,7 +7,7 @@ import pathlib
 import pytest
 import numpy as np
 
-from numpy.testing import assert_almost_equal
+from numpy.testing import assert_allclose
 
 from pygmm.baker_jayaram_2008 import calc_correl, calc_cond_mean_spectrum
 
@@ -41,34 +41,32 @@ with fpath.open() as fp:
 
 
 def idfn(case):
-    return 'T_2={period_cond}s'.format(**case)
+    if isinstance(case, dict):
+        return 'T_2={period_cond}s'.format(**case)
+    else:
+        return case
 
 
-@pytest.mark.parameterize('case', data['cases_correl'], ids=idfn)
+@pytest.mark.parametrize('case', data['cases_correl'], ids=idfn)
 def test_calc_correl(case):
     expected = case['correls']
     actual = calc_correl(case['periods'], case['period_cond']).tolist()
     # Points were digitized by hand so need to use larger tolerances
-    assert_almost_equal(actual, expected, atol=0.005, rtol=0.005)
+    assert_allclose(actual, expected, atol=0.005, rtol=0.005)
 
 
-@pytest.mark.parameterize('case', data['cases_cms'])
-@pytest.mark.parameterize('key,attr', [('psas_cms', 0), ('ln_stds_cms', 1)])
-def test_calc_cond_spectrum(case, key, attr):
+@pytest.mark.parametrize('case', data['cases_cms'], ids=idfn)
+@pytest.mark.parametrize('param', ['psas_cms', 'ln_stds_cms'])
+def test_calc_cond_spectrum(case, param):
+    model = data['model']
     results = calc_cond_mean_spectrum(
-        data['periods'],
-        np.log(data['psas']),
-        data['ln_stds'],
+        model['periods'],
+        np.log(model['psas']),
+        model['ln_stds'],
         case['period_cond'],
         np.log(case['psa_cond']),
     )
     # Need to go from ln_psa to psa
-    results = list(results)
-    results[0] = np.exp(results[0])
-
-    assert_almost_equal(
-        results[attr],
-        case[key],
-        atol=0.0001,
-        rtol=0.0005,
-    )
+    actual = np.exp(results[0]) if param == 'psas_cms' else results[1]
+    expected = case[param]
+    assert_allclose(actual, expected, atol=0.0001, rtol=0.0005)
