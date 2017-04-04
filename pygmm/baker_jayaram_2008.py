@@ -68,7 +68,7 @@ def calc_cond_mean_spectrum(periods: ArrayLike,
     -------
     ln_psas_cms: :class:`np.ndarray`
         Natural logarithm of the conditional 5%-damped spectral accelerations.
-        The spectral acceleration is equal to `ln_psa_cond` at `period_cond`.
+        The spectral acceleration is equal to `ln_psas_cond` at `period_cond`.
     ln_stds_cms: :class:`np.ndarray`
         Logarithmic standard deviation of conditional spectrum.
     """
