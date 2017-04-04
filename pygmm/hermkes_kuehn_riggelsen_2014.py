@@ -23,8 +23,8 @@ if not os.path.exists(fname_data):
     from six.moves.urllib.request import urlretrieve
     from six.moves.urllib.error import HTTPError
 
-    url = ('https://dl.dropboxusercontent.com/u/1401593/'
-           'hermkes_kuehn_riggelsen_2014.npz')
+    url = ('https://www.dropbox.com/s/1tu9ss1s3inctej/'
+           'hermkes_kuehn_riggelsen_2014.npz?dl=0')
     try:
         urlretrieve(url, fname_data)
     except HTTPError:
