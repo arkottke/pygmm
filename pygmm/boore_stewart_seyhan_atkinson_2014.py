@@ -65,6 +65,12 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
         | turkey      | china_turkey | global     |
         +-------------+--------------+------------+
 
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     NAME = 'Boore, Stewart, Seyhan, and Atkinson (2014)'
     ABBREV = 'BSSA14'
@@ -128,6 +134,7 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
         self._ln_std = self._calc_ln_std()
 
     def _check_inputs(self):
+        """ """
         super(BooreStewartSeyhanAtkinson2014, self)._check_inputs()
 
         # Mechanism specific limits
@@ -149,12 +156,17 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
     def _calc_ln_resp(self, pga_ref):
         """Calculate the natural logarithm of the response.
 
-        Args:
-            pga_ref (float): peak ground acceleration (g) at the reference
-                condition. If :class:`np.nan`, then no site term is applied.
+        Parameters
+        ----------
+        pga_ref : float
+            peak ground acceleration (g) at the reference
+            condition. If :class:`np.nan`, then no site term is applied.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+        Returns
+        -------
+
+            class:`np.array`: Natural log of the response.
+
         """
         p = self.params
         c = self.COEFF
@@ -228,8 +240,14 @@ class BooreStewartSeyhanAtkinson2014(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         c = self.COEFF
         p = self.params

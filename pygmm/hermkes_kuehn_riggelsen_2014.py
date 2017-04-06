@@ -31,9 +31,7 @@ if not os.path.exists(fname_data):
                   url=url, loc=os.path.abspath(fname_data)))
         raise RuntimeError
 
-with np.load(fname_data) as data:
-    # Need to transform the record arrays into flat numpy arrays
-    INTERPOLATOR = NearestNDInterpolator(data['events'], data['predictions'])
+INTERPOLATOR = None
 
 
 class HermkesKuehnRiggelsen2014(model.Model):
@@ -47,6 +45,13 @@ class HermkesKuehnRiggelsen2014(model.Model):
 
     This is to due to the large file size of the model data, which takes
     time to load.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     NAME = 'Hermkes, Kuehn, Riggelsen (2014)'
     ABBREV = 'HKR14'
@@ -97,7 +102,14 @@ class HermkesKuehnRiggelsen2014(model.Model):
         event = (p['mag'], p['depth_hyp'], flag_rs, flag_ss, flag_ns,
                  p['dist_jb'], p['v_s30'])
 
-        prediction = INTERPOLATOR(event)
+        global INTERPOLATOR
+        if INTERPOLATOR is None:
+            with np.load(fname_data) as data:
+                # Need to transform the record arrays into flat numpy arrays
+                INTERPOLATOR = NearestNDInterpolator(data['events'],
+                                                     data['predictions'])
+        else:
+            prediction = INTERPOLATOR(event)
 
         self._ln_resp = prediction[0::2]
         self._ln_std = np.sqrt(prediction[1::2])

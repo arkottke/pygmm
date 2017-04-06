@@ -15,6 +15,13 @@ class Campbell2003(model.Model):
     """Campbell (2003, :cite:`campbell03`) model.
 
     This model was developed for the Eastern US.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Campbell (2003)'
@@ -50,8 +57,14 @@ class Campbell2003(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural logarithm of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural logarithm of the response.
+
         """
         p = self.params
         c = self.COEFF
@@ -82,8 +95,14 @@ class Campbell2003(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         p = self.params
         c = self.COEFF

@@ -1,7 +1,7 @@
 import numpy as np
 
-from .baker_jayaram_2008 import calc_correl
-from . import ArrayLike
+from .baker_jayaram_2008 import calc_correls
+from .types import ArrayLike
 
 
 def calc_cond_mean_spectrum_vector(
@@ -9,37 +9,44 @@ def calc_cond_mean_spectrum_vector(
         ln_psas: ArrayLike,
         ln_stds: ArrayLike,
         ln_psas_cond: np.ma.masked_array, ) -> (np.ndarray, np.ndarray):
-    """Compute conditional mean spectrum vector (CMSV) proposed by Kishida
-    (2017).
+    """Conditional mean spectrum vector (CMSV) by Kishida (2017,
+    :cite:`kishida17`).
 
     Kishida (2017) proposed specifying the target spectral acceleration at
     multiple periods, rather than the single conditioning period by Cornell
-    and Baker (2008).
+    and Baker (2008). If this approach is used for a single period, then the
+    resulting spectrum is the same as computed by Cornell and Baker (2008) --
+    implemented by
+    :func:`~pygmm.baker_jayaram_2008.calc_cond_mean_spectrum`.
 
     Parameters
     ----------
-    periods: `array_like`
+    periods : array_like
         Spectral periods of the response spectrum [sec]. This array must be
         increasing.
-    ln_psas: `array_like`
+    ln_psas : array_like
         Natural logarithm of the spectral acceleration. Same length as
         `periods`.
-    ln_stds: `array_like`
+    ln_stds : array_like
         Logarithmic standard deviation of the spectral acceleration. Same
         length as `periods`.
-    ln_psas_cond: :class:`np.ma.masked_array`
+    ln_psas_cond : :class:`np.ma.masked_array`
         The vector of conditioning spectral accelerations. This is a masked
         array with the same length as `periods`. Masked values are not used
         for defining the CMSV.
 
     Returns
     -------
-    ln_psas_cmsv: :class:`np.ndarray`
-        Natural logarithm of the conditional 5%-damped spectral accelerations.
-        The spectral acceleration is equal to `ln_psas_cond` at each of the
-        conditioning periods.
-    ln_stds_cmsv: :class:`np.ndarray`
-        Logarithmic standard deviation of conditional spectrum.
+    ln_psas_cmsv : :class:`np.ndarray`
+        Natural logarithm of the conditional mean spectral accelerations.
+    ln_stds_cmsv : :class:`np.ndarray`
+        Logarithmic standard deviation of the conditional mean spectral
+        acceleration.
+
+    Raises
+    ------
+    ValueError
+        If `periods` are monotonically increasing.
     """
     periods = np.asarray(periods)
     ln_psas = np.asarray(ln_psas)
@@ -56,12 +63,12 @@ def calc_cond_mean_spectrum_vector(
     # Standard deviation matrix. Named V^{1/2} in Kishida, Equation (8)
     mat_ln_std = np.diag(np.r_[ln_stds[mask], ln_stds[~mask]])
     # Correlation matrix, Equation (9)
-    mat_correl = np.vstack([
-        calc_correl(periods_grouped, period_cond)
+    mat_correls = np.vstack([
+        calc_correls(periods_grouped, period_cond)
         for period_cond in periods_grouped
     ]).T
     # Covariance matrix, Equation (7)
-    mat_covar = mat_ln_std @ mat_correl @ mat_ln_std
+    mat_covar = mat_ln_std @ mat_correls @ mat_ln_std
     # Extract the submatrices, Equation (6)
     n = np.ma.count_masked(ln_psas_cond)
     mat_covar_11 = mat_covar[0:n, 0:n]

@@ -72,7 +72,7 @@ Specific Models
 
 Each supported ground motion model inherits from :class:`.Model`, which
 provides the standard interface to access the calculated ground motion. The
-following models have been implemented.
+following models have been implemented. 
 
 .. currentmodule:: pygmm
 .. autosummary::
@@ -94,3 +94,23 @@ following models have been implemented.
 
 If you are interested in contributing another model to the collection please see
 :doc:`contributing`.
+
+Conditional Spectrum Models
+---------------------------
+
+Conditional spectra models are used to create an acceleration response
+spectrum conditioned on the response at one or multiple spectral periods. The
+The :func:`~pygmm.baker_jayaram_2008.calc_cond_mean_spectrum`
+provides functions for developing conditional spectra based on one conditioning
+period, while the :func:`~pygmm.kishida_2017.calc_cond_mean_spectrum_vector`
+uses the same correlation structure and permits conditioning on multiple
+periods.
+
+.. currentmodule:: pygmm
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    ~baker_jayaram_2008.calc_correls
+    ~baker_jayaram_2008.calc_cond_mean_spectrum
+    ~kishida_2017.calc_cond_mean_spectrum_vector

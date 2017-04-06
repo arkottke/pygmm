@@ -15,6 +15,13 @@ class TavakoliPezeshk05(model.Model):
 
     Developed for the Eastern North America with a reference velocity of 2880
     m/s.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Tavakoli and Pezeshk (2005)'
@@ -51,8 +58,14 @@ class TavakoliPezeshk05(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural log of the response.
+
         """
         p = self.params
         c = self.COEFF
@@ -85,8 +98,14 @@ class TavakoliPezeshk05(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         p = self.params
         c = self.COEFF

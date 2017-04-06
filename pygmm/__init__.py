@@ -3,9 +3,6 @@
 
 import logging
 import pkg_resources
-import typing
-
-import numpy as np
 
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
@@ -64,5 +61,3 @@ models = [
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
 ]
-
-ArrayLike = typing.Union[typing.List[float], np.ndarray]

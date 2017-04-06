@@ -44,23 +44,23 @@ class AtkinsonBoore2006(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
-            dist_rup (float): Closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        dist_rup : float
+            closest distance to the rupture plane
+            (:math:`R_\\text{rup}`, km)
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
         """
         super(AtkinsonBoore2006, self).__init__(**kwds)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
-    def _calc_ln_resp(self):
-        """Calculate the natural logarithm of the response.
-
-        Returns:
-            :class:`np.array`: Natural log of the response.
-        """
+    def _calc_ln_resp(self) -> np.ndarray:
+        """Calculate the natural logarithm of the response."""
         p = self.params
         c = self.COEFF['bc'] if p['v_s30'] else self.COEFF['rock']
 
@@ -96,22 +96,14 @@ class AtkinsonBoore2006(model.Model):
         ln_resp = np.log(10 ** log10_resp)
         return ln_resp
 
-    def _calc_ln_std(self):
-        """Calculate the logarithmic standard deviation.
-
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
-        """
+    def _calc_ln_std(self) -> np.ndarray:
+        """Calculate the logarithmic standard deviation."""
         ln_std = np.ones_like(self.PERIODS) * 0.30
         return ln_std
 
     def _calc_stress_factor(self):
         """Calculate the stress correction factor proposed by Atkinson and
-        Boore (2011) :cite:`atkinson11`.
-
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
-        """
+        Boore (2011) :cite:`atkinson11`."""
         p = self.params
         c = self.COEFF_SF
 
@@ -125,11 +117,18 @@ class AtkinsonBoore2006(model.Model):
 
         return np.interp(self.PERIODS, c.period, log10_stress_factor)
 
-    def _calc_log10_site(self, pga_bc):
+    def _calc_log10_site(self, pga_bc: float) -> np.ndarray:
         """Calculate the log10 of the site amplification.
 
-        Returns:
-            :class:`np.array`: Log10 site amplification.
+        Parameters
+        ----------
+        pga_bc : float
+            Peak ground acceleration (PGA, g) at the B/C boundary.
+
+        Returns
+        -------
+        log_10_site : :class:`np.ndarray`
+            Log base 10 of the  site amplification.
         """
         p = self.params
         c = self.COEFF_SITE

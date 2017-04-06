@@ -14,8 +14,7 @@ __author__ = 'Albert Kottke'
 
 
 class DerrasBardCotton2014(model.Model):
-    """Derras, Bard and Cotton (2014, :cite:`derras14`) model.
-    """
+    """Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
     NAME = 'Derras, Bard & Cotton (2014)'
     ABBREV = 'DBC13'
 

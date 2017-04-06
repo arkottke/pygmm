@@ -14,6 +14,20 @@ __author__ = 'Albert Kottke'
 
 class AkkarSandikkayaBommer2014(model.Model):
     """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model.
+
+    The model is specified for three different distance metrics. However,
+    the implementation uses only one distance metric. They are used in
+    the following order:
+
+        1. `dist_jb`
+
+        2. `dist_hyp`
+
+        3. `dist_epi`
+
+    This order was selected based on evaluation of the total standard
+    deviation. To compute the response for differing metrics, call the
+    model multiple times with different keywords.
     """
     NAME = 'Akkar, Sandikkaya, & Bommer (2014)'
     ABBREV = 'ASB14'
@@ -42,36 +56,28 @@ class AkkarSandikkayaBommer2014(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        The model is specified for three different distance metrics. However,
-        the implementation uses only one distance metric. They are used in
-        the following order:
+        One distance metric must be provided. If multiple are provided, only
+        one will be used.
 
-            1. `dist_jb`
-
-            2. `dist_hyp`
-
-            3. `dist_epi`
-
-        This order was selected based on evaluation of the total standard
-        deviation. To compute the response for differing metrics, call the
-        model multiple times with different keywords.
-
-        Keyword Args:
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-
-            dist_epi (float): Epicentral distance to the rupture plane
-                (:math:`R_\\text{epi}`, km)
-
-            dist_hyp (float): Hypocentral distance to the rupture plane
-                (:math:`R_\\text{hyp}`, km).
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        dist_jb : float, optional
+            Joyner-Boore distance to the rupture plane
+            (:math:`R_\\text{JB}`, km)
+        dist_epi : float, optional
+            Epicentral distance to the rupture plane
+            (:math:`R_\\text{epi}`, km)
+        dist_hyp : float, optional
+            Hypocentral distance to the rupture plane
+            (:math:`R_\\text{hyp}`, km).
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        mechanism : str
+            fault mechanism. Valid options: "SS", "NS", "RS",
+            and "U". See :ref:`Mechanism` for more information.
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
         """
         super(AkkarSandikkayaBommer2014, self).__init__(**kwds)
 
@@ -82,8 +88,8 @@ class AkkarSandikkayaBommer2014(model.Model):
                 c = self.COEFF[k]
                 break
         else:
-            raise NotImplementedError("Must provide at least one distance "
-                                      "metric.")
+            raise NotImplementedError(
+                "Must provide at least one distance metric.")
 
         # Compute the reference response
         ln_resp_ref = (

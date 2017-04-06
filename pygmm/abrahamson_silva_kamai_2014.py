@@ -7,6 +7,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from . import model
+from .types import ArrayLike
 
 __author__ = 'Albert Kottke'
 
@@ -59,6 +60,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
     ]
 
     def _check_inputs(self, **kwds):
+        """Check the inputs."""
         super(AbrahamsonSilvaKamai2014, self)._check_inputs(**kwds)
 
         p = self.params
@@ -72,59 +74,55 @@ class AbrahamsonSilvaKamai2014(model.Model):
     def __init__(self, **kwds):
         """Initialize the model.
 
-        Keyword Args:
-            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
-                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
-                Used to estimate `depth_2_5`.
-
-            depth_2_5 (Optional[float]): depth to the 2.5 km∕s shear-wave
-                velocity horizon beneath the site, :math:`Z_{2.5}` in (km).
-                If *None*, then it is computed from `depth_1_0` or `v_s30`
-                and the `region` parameter.
-
-            depth_tor (Optional[float]): depth to the top of the rupture
-                plane (:math:`Z_{tor}`, km). If *None*, then  the average
-                model is used.
-
-            depth_bor (Optional[float]): depth to the bottom of the rupture
-                plane (:math:`Z_{bor}`, km). If *None*, then  the average
-                model is used.
-
-            dip (float): fault dip angle (:math:`\phi`, deg).
-
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-
-            dist_rup (float): closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
-
-            dist_x (float): site coordinate measured perpendicular to the
-                fault strike from the fault line with the down-dip direction
-                being positive (:math:`R_x`, km).
-
-            dist_y0 (Optional[float]): the horizontal distance off the end of
-                the rupture measured parallel to strike (:math:`R_{y0}`, km).
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-
-            on_hanging_wall (Optional[bool]): If the site is located on the
-                hanging wall of the fault. If *None*, then *False* is assumed.
-
-            region (Optional[str]): region. Valid options: "global",
-                "california", "china", "italy", "japan", "taiwan". If *None*,
-                then "global" is used as a default value.
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
-
-            vs_source (Optional[str]): source of the `v_s30` value.  Valid
-                options: "measured", "inferred"
-
-            width (Optional[float]): Down-dip width of the fault. If *None*,
-                then  the model average is used.
+        Parameters
+        ----------
+        depth_1_0 : float
+            depth to the 1.0 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{1.0}` in (km).
+        depth_2_5 : float
+            depth to the 2.5 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{2.5}` in (km).
+        depth_tor : float
+            depth to the top of the rupture plane
+            (:math:`Z_{tor}`, km).
+        depth_bor : float
+            depth to the bottom of the rupture plane
+            (:math:`Z_{bor}`, km).
+        dip : float
+            fault dip angle (:math:`\phi`, deg).
+        dist_jb : float
+            Joyner-Boore distance to the rupture plane
+            (:math:`R_\\text{JB}`, km)
+        dist_rup : float
+            closest distance to the rupture plane
+            (:math:`R_\\text{rup}`, km)
+        dist_x : float
+            site coordinate measured perpendicular to the
+            fault strike from the fault line with the down-dip direction
+            being positive (:math:`R_x`, km).
+        dist_y0 : float
+            the horizontal distance off the end of the
+            rupture measured parallel to strike (:math:`R_{y0}`, km).
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        mechanism : str
+            fault mechanism. Valid options: "SS", "NS", "RS",
+            and "U". See :ref:`Mechanism` for more information.
+        on_hanging_wall : bool
+            If the site is located on the hanging wall
+            of the fault. If *None*, then *False* is assumed.
+        region : str
+            region. Valid options are specified FIXME.
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+        vs_source : str
+            source of the `v_s30` value.  Valid options:
+            "measured", "inferred"
+        width : float
+            Down-dip width of the fault.
         """
+
         super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
 
         # Compute the response at the reference velocity
@@ -133,19 +131,23 @@ class AbrahamsonSilvaKamai2014(model.Model):
         self._ln_resp = self._calc_ln_resp(self.params['v_s30'], resp_ref)
         self._ln_std = self._calc_ln_std(resp_ref)
 
-    def _calc_ln_resp(self, v_s30, resp_ref):
+    def _calc_ln_resp(self, v_s30: float, resp_ref: ArrayLike) -> ArrayLike:
         """Calculate the natural logarithm of the response.
 
-        Args:
-            v_s30 (float): site condition. Set `v_s30` to the reference
-                velocity (e.g., 1180 m/s) for the reference response.
+        Parameters
+        ----------
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        resp_ref :  array_like, optional
+            response at the reference condition. Required if `v_s30` is not
+            equal to reference velocity.
 
-            resp_ref (Optional[:class:`np.array`]): response at the reference
-                condition. Required if `v_s30` is not equal to reference
-                velocity.
+        Returns
+        -------
+        ln_resp: :class:`np.ndarray`
+            Natural log of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
         """
         c = self.COEFF
         p = self.params
@@ -224,11 +226,18 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + freg
 
-    def _calc_ln_std(self, psa_ref):
+    def _calc_ln_std(self, psa_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+        psa_ref : array_like
+           Spectral accelerations at the reference condition
+
+        Returns
+        -------
+        ln_std :  :class:`np.ndarray`
+            Logarithmic standard deviation.
         """
         p = self.params
         c = self.COEFF
@@ -264,52 +273,65 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return ln_std
 
     @staticmethod
-    def calc_width(mag, dip):
+    def calc_width(mag: float, dip: float) -> float:
         """Compute the fault width based on equation in NGW2 spreadsheet.
 
         This equation is not provided in the paper.
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
-            dip (float): Fault dip angle (:math:`\phi`, deg)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        dip : float
+            Fault dip angle (:math:`\phi`, deg)
 
-        Returns:
-            float: estimated fault width (:math:`W`, km)
+        Returns
+        -------
+        width : float
+            estimated fault width (:math:`W`, km)
+
         """
         return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 
     @staticmethod
-    def calc_depth_tor(mag):
+    def calc_depth_tor(mag: float) -> float:
         """Calculate the depth to top of rupture (km).
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
 
-        Returns:
-            float: estimated depth (km)
+        Returns
+        -------
+        depth_tor : float
+            estimated depth to top of rupture (km)
         """
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30, region='california'):
+    def calc_depth_1_0(v_s30: float, region: str='california') -> float:
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
         This is based on equations 18 and 19 in the :cite:`abrahamson14`
         and differs from the equations in the :cite:`chiou14`.
 
-        Args:
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+            Keyword Args:
+        region : str, optional
+            region of basin model. Valid options: 'california', 'japan'. If
+            *None*, then 'california' is used as the default value.
 
-        Keyword Args:
-            region (Optional[str]): region of basin model. Valid options:
-                "california", "japan". If *None*, then "california" is used as
-                the default value.
-
-        Returns:
-            float: depth to a shear-wave velocity of 1,000 m/sec
-                (:math:`Z_{1.0}`, km).
+        Returns
+        -------
+        depth_1_0 : float
+            depth to a shear-wave velocity of 1,000 m/sec
+            (:math:`Z_{1.0}`, km).
 
         """
         if region in ['japan']:
@@ -326,12 +348,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
                                      (1360. ** power + v_ref ** power))) / 1000
 
-    def _calc_f1(self):
-        """Calculate the magnitude scaling parameter f1.
-
-        Returns:
-            :class:`np.array`: Model parameter f1.
-        """
+    def _calc_f1(self) -> np.ndarray:
+        """Calculate the magnitude scaling parameter f1."""
         c = self.COEFF
         p = self.params
 
@@ -364,12 +382,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1
 
-    def _calc_f4(self):
-        """Calculate the hanging-wall parameter f4.
-
-        Returns:
-            :class:`np.array`: Model parameter f4.
-        """
+    def _calc_f4(self) -> np.ndarray:
+        """Calculate the hanging-wall parameter f4."""
         # Move this into a decorator?
         c = self.COEFF
         p = self.params

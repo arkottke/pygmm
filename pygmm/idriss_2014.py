@@ -16,6 +16,13 @@ class Idriss2014(model.Model):
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Idriss (2014)'
@@ -63,8 +70,14 @@ class Idriss2014(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural log of the response.
+
         """
         p = self.params
         c = self.COEFF['small'] if p['mag'] <= 6.75 else self.COEFF['large']
@@ -89,8 +102,14 @@ class Idriss2014(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         p = self.params
         ln_std = (1.18 + 0.035 * np.log(np.clip(self.PERIODS, 0.05, 3.0)) -

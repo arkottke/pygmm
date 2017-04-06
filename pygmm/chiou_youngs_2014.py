@@ -17,6 +17,13 @@ class ChiouYoungs2014(model.Model):
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     NAME = 'Chiou and Youngs (2014)'
     ABBREV = 'CY14'
@@ -111,8 +118,14 @@ class ChiouYoungs2014(model.Model):
         """Calculate the natural logarithm of the response at the reference
         site condition.
 
-        Returns:
-            :class:`np.array`: Natural logarithm of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural logarithm of the response.
+
         """
         c = self.COEFF
         p = self.params
@@ -176,13 +189,25 @@ class ChiouYoungs2014(model.Model):
         """Calculate the natural logarithm of the response including site
         effects.
 
-        Args:
-            ln_resp_ref (:class:`np.array`): Natural logarithm of the
+        Parameters
+        ----------
+        ln_resp_ref ( :
+            class:`np.array`): Natural logarithm of the
+        ln_resp_ref ( :
+            class:`np.array`): Natural logarithm of the
+            response at the reference site condition at each of the periods
+        ln_resp_ref ( :
+            class:`np.array`): Natural logarithm of the
             response at the reference site condition at each of the periods
             specified by the model coefficients.
+        ln_resp_ref :
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+
+        Returns
+        -------
+
+            class:`np.array`: Natural log of the response.
+
         """
         c = self.COEFF
         p = self.params
@@ -213,13 +238,25 @@ class ChiouYoungs2014(model.Model):
     def _calc_ln_std(self, resp_ref):
         """Calculate the logarithmic standard deviation.
 
-        Args:
-            resp_ref (:class:`np.array`): Response at the reference site
+        Parameters
+        ----------
+        resp_ref ( :
+            class:`np.array`): Response at the reference site
+        resp_ref ( :
+            class:`np.array`): Response at the reference site
+            condition at each of the periods specified by the model
+        resp_ref ( :
+            class:`np.array`): Response at the reference site
             condition at each of the periods specified by the model
             coefficients.
+        resp_ref :
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         c = self.COEFF
         p = self.params
@@ -248,6 +285,7 @@ class ChiouYoungs2014(model.Model):
         return ln_std
 
     def _check_inputs(self):
+        """ """
         super(ChiouYoungs2014, self)._check_inputs()
 
         if self.params['mechanism'] in ['RS', 'NS']:
@@ -275,14 +313,19 @@ class ChiouYoungs2014(model.Model):
         """Calculate an estimate of the depth to 1 km/sec (:math:`Z_{1.0}`)
         based on :math:`V_{s30}` and region.
 
-        Args:
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+        region : str
+            basin region. Valid options: "california", "japan"
 
-            region (str): basin region. Valid options: "california", "japan"
+        Returns
+        -------
+        float
+            estimated depth to a shear-wave velocity of 1 km/sec (km)
 
-        Returns:
-            float: estimated depth to a shear-wave velocity of 1 km/sec (km)
         """
         if region in ['japan']:
             # Japan
@@ -302,14 +345,19 @@ class ChiouYoungs2014(model.Model):
     def calc_depth_tor(mag, mechanism):
         """Calculate an estimate of the depth to top of rupture (km).
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        mechanism : str
+            fault mechanism. Valid options: "U", "SS", "NS",
+            "RS".
 
-            mechanism (str): fault mechanism. Valid options: "U", "SS", "NS",
-                "RS".
+        Returns
+        -------
+        float
+            estimated depth to top of rupture (km)
 
-        Returns:
-            float: estimated depth to top of rupture (km)
         """
         if mechanism == 'RS':
             # Reverse and reverse-oblique faulting
