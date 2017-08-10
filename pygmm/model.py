@@ -3,6 +3,7 @@
 
 from __future__ import division
 
+import collections
 import logging
 import os
 
@@ -10,37 +11,17 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 
-class Model(object):
-    """Abstract class for ground motion prediction models.
-    """
+class Scenario(collections.UserDict):
+    """An eathquake scenario used in all ground motion models."""
 
-    #: Long name of the model
-    NAME = ''
-    #: Short name of the model
-    ABBREV = ''
-    #: Indices for the spectral accelerations
-    INDICES_PSA = np.array([])
-    #: Indices of the periods
-    PERIODS = np.array([])
-    #: Index of the peak ground acceleration
-    INDEX_PGA = None
-    #: Index of the peak ground velocity
-    INDEX_PGV = None
-    #: Index of the peak ground displacement
-    INDEX_PGD = None
-    #: Limits of model applicability
-    LIMITS = dict()
-    #: Model parameters
-    PARAMS = []
-    #: Scale factor to apply to get PGV in cm/sec
-    PGV_SCALE = 1.
-    #: Scale factor to apply to get PGD in cm
-    PGD_SCALE = 1.
+    KNOWN_KEYS = ['depth_1_0', 'depth_2_5', 'depth_tor', 'depth_bor',
+                  'depth_bot', 'depth_hyp', 'dip', 'dist_jb', 'dist_epi',
+                  'dist_hyp', 'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered',
+                  'mag', 'mechanism', 'on_hanging_wall', 'region', 'v_s30',
+                  'vs_source', 'width']
 
     def __init__(self, **kwds):
-        """Initialize the model.
-
-        A common set of keywords is used for all ground motion models.
+        """Initialize the scenario.
 
         Keyword Args:
             depth_1_0 (float): depth to the 1.0 km∕s shear-wave velocity
@@ -82,6 +63,46 @@ class Model(object):
                 "measured", "inferred"
             width (float): Down-dip width of the fault.
         """
+        super(Scenario, self).__init__(kwds)
+        for k in self.data:
+            if k not in self.KNOWN_KEYS:
+                raise Warning(f'{k} is not a recognized scenario key!')
+
+    def __getitem__(self, key):
+        return self.data[key]
+
+
+
+class Model(object):
+    """Abstract class for ground motion prediction models.
+    """
+
+    #: Long name of the model
+    NAME = ''
+    #: Short name of the model
+    ABBREV = ''
+    #: Indices for the spectral accelerations
+    INDICES_PSA = np.array([])
+    #: Indices of the periods
+    PERIODS = np.array([])
+    #: Index of the peak ground acceleration
+    INDEX_PGA = None
+    #: Index of the peak ground velocity
+    INDEX_PGV = None
+    #: Index of the peak ground displacement
+    INDEX_PGD = None
+    #: Limits of model applicability
+    LIMITS = dict()
+    #: Model parameters
+    PARAMS = []
+    #: Scale factor to apply to get PGV in cm/sec
+    PGV_SCALE = 1.
+    #: Scale factor to apply to get PGD in cm
+    PGD_SCALE = 1.
+
+    def __init__(self, scenario):
+        """Initialize the model.
+        """
         super(Model, self).__init__()
 
         self._ln_resp = None
@@ -89,7 +110,7 @@ class Model(object):
 
         # Select the used parameters and check them against the recommended
         # values
-        self.params = {p.name: kwds.get(p.name, None) for p in self.PARAMS}
+        self._scenario = {p.name: scenario.get(p.name, None) for p in self.PARAMS}
         self._check_inputs()
 
     def interp_spec_accels(self, periods, method='linear'):
@@ -280,7 +301,7 @@ class Model(object):
 
     def _check_inputs(self):
         for p in self.PARAMS:
-            self.params[p.name] = p.check(self.params.get(p.name, None))
+            self._scenario[p.name] = p.check(self._scenario[p.name])
 
 
 class Parameter(object):

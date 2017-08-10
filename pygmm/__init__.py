@@ -64,4 +64,4 @@ models = [
     TavakoliPezeshk05,
 ]
 
-ArrayLike = typing.Union(typing.List[float], np.ndarray)
+ArrayLike = typing.Union[typing.List[float], np.ndarray]

@@ -45,23 +45,13 @@ class Idriss2014(model.Model):
             'mechanism', True, ['SS', 'RS'], 'SS'),
     ]
 
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
-        Keyword Args:
-            dist_rup (float): Closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-                *SS* and *NS* mechanism are treated the same with :math:`F=0`
-                in the model.
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(Idriss2014, self).__init__(**kwds)
+        super(Idriss2014, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
@@ -71,21 +61,21 @@ class Idriss2014(model.Model):
         Returns:
             :class:`np.array`: Natural log of the response.
         """
-        p = self.params
-        c = self.COEFF['small'] if p['mag'] <= 6.75 else self.COEFF['large']
+        s = self._scenario
+        c = self.COEFF['small'] if s.mag <= 6.75 else self.COEFF['large']
 
-        if p['mechanism'] == 'RS':
+        if s.mechanism == 'RS':
             flag_mech = 1
         else:
             # SS/RS/U
             flag_mech = 0
 
         f_mag = (
-            c.alpha_1 + c.alpha_2 * p['mag'] +
-            c.alpha_3 * (8.5 - p['mag']) ** 2)
-        f_dst = (-(c.beta_1 + c.beta_2 * p['mag']) * np.log(
-            p['dist_rup'] + 10) + c.gamma * p['dist_rup'])
-        f_ste = c.epsilon * np.log(p['v_s30'])
+            c.alpha_1 + c.alpha_2 * s.mag +
+            c.alpha_3 * (8.5 - s.mag) ** 2)
+        f_dst = (-(c.beta_1 + c.beta_2 * s.mag) * np.log(
+            s.dist_rup + 10) + c.gamma * s.dist_rup)
+        f_ste = c.epsilon * np.log(s.v_s30)
         f_mec = c.phi * flag_mech
 
         ln_resp = f_mag + f_dst + f_ste + f_mec
@@ -98,10 +88,10 @@ class Idriss2014(model.Model):
         Returns:
             :class:`np.array`: Logarithmic standard deviation.
         """
-        p = self.params
+        s = self._scenario
         ln_std = (
             1.18 + 0.035 *
             np.log(np.clip(self.PERIODS, 0.05, 3.0)) -
-            0.06 * np.clip(p['mag'], 5.0, 7.5)
+            0.06 * np.clip(s.mag, 5.0, 7.5)
         )
         return ln_std

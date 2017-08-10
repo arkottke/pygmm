@@ -35,15 +35,13 @@ class PezeshkZandiehTavakoli2011(model.Model):
         model.NumericParameter('dist_rup', True, None, 1000),
     ]
 
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
-        Keyword Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
-            dist_rup (float): Closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(PezeshkZandiehTavakoli2011, self).__init__(**kwds)
+        super(PezeshkZandiehTavakoli2011, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
@@ -53,7 +51,7 @@ class PezeshkZandiehTavakoli2011(model.Model):
         Returns:
             :class:`np.array`: Natural log of the response.
         """
-        p = self.params
+        s = self._scenario
         c = self.COEFF
 
         dist = np.sqrt(p['dist_rup'] ** 2 + c.c_11 ** 2)

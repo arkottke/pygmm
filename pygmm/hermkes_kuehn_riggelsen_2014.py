@@ -73,37 +73,29 @@ class HermkesKuehnRiggelsen2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
         Note that this model was developed using a Bayesian non-parametric
         method, which means it is should only be used over the data range
         used to develop the model. See the paper for more details.
 
-        Keyword Args:
-            depth_hyp (float): Hypocentral depth (:math:`H_\\text{hyp}`, km).
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-            mag (float): moment magnitude of the event (:math:`M_w`)
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(HermkesKuehnRiggelsen2014, self).__init__(**kwds)
+        super(HermkesKuehnRiggelsen2014, self).__init__(scenario)
 
-        p = self.params
+        s = self._scenario
 
         flag_rs = flag_ss = flag_ns = 0
-        if p['mechanism'] == 'SS':
+        if s.mechanism == 'SS':
             flag_ss = 1
-        elif p['mechanism'] == 'NS':
+        elif s.mechanism == 'NS':
             flag_ns = 1
-        elif p['mechanism'] == 'RS':
+        elif s.mechanism == 'RS':
             flag_rs = 1
 
-        event = (p['mag'], p['depth_hyp'], flag_rs, flag_ss, flag_ns,
-                 p['dist_jb'], p['v_s30'])
-
+        event = (s.mag, s.depth_hyp, flag_rs, flag_ss, flag_ns, s.dist_jb, s.v_s30)
         prediction = INTERPOLATOR(event)
 
         self._ln_resp = prediction[0::2]

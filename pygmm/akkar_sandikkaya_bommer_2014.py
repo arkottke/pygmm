@@ -42,7 +42,7 @@ class AkkarSandikkayaBommer2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
         The model is specified for three different distance metrics. However,
@@ -59,29 +59,15 @@ class AkkarSandikkayaBommer2014(model.Model):
         deviation. To compute the response for differing metrics, call the
         model multiple times with different keywords.
 
-        Keyword Args:
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-
-            dist_epi (float): Epicentral distance to the rupture plane
-                (:math:`R_\\text{epi}`, km)
-
-            dist_hyp (float): Hypocentral distance to the rupture plane
-                (:math:`R_\\text{hyp}`, km).
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(AkkarSandikkayaBommer2014, self).__init__(**kwds)
+        super(AkkarSandikkayaBommer2014, self).__init__(scenario)
 
-        p = self.params
+        s = self._scenario
         for k in self.COEFF:
-            if p[k] is not None:
-                dist = p[k]
+            if s[k] is not None:
+                dist = s[k]
                 c = self.COEFF[k]
                 break
         else:
@@ -90,31 +76,31 @@ class AkkarSandikkayaBommer2014(model.Model):
 
         # Compute the reference response
         ln_resp_ref = (
-            c.a_1 + c.a_3 * (8.5 - p['mag']) ** 2 +
-            (c.a_4 + c.a_5 * (p['mag'] - c.c_1)) *
+            c.a_1 + c.a_3 * (8.5 - s.mag) ** 2 +
+            (c.a_4 + c.a_5 * (s.mag - c.c_1)) *
             np.log(np.sqrt(dist ** 2 + c.a_6 ** 2))
         )
 
-        mask = (p['mag'] <= c.c_1)
-        ln_resp_ref[mask] += (c.a_2 * (p['mag'] - c.c_1))[mask]
-        ln_resp_ref[~mask] += (c.a_7 * (p['mag'] - c.c_1))[~mask]
+        mask = (s.mag <= c.c_1)
+        ln_resp_ref[mask] += (c.a_2 * (s.mag - c.c_1))[mask]
+        ln_resp_ref[~mask] += (c.a_7 * (s.mag - c.c_1))[~mask]
 
-        if p['mechanism'] == 'NS':
+        if s.mechanism == 'NS':
             ln_resp_ref += c.a_8
-        elif p['mechanism'] == 'RS':
+        elif s.mechanism == 'RS':
             ln_resp_ref += c.a_9
 
         pga_ref = np.exp(ln_resp_ref[self.INDEX_PGA])
 
         # Compute the nonlinear site term
-        if p['v_s30'] <= self.V_REF:
-            vs_ratio = p['v_s30'] / self.V_REF
+        if s.v_s30 <= self.V_REF:
+            vs_ratio = s.v_s30 / self.V_REF
             site = (c.b_1 * np.log(vs_ratio) +
                     c.b_2 * np.log((pga_ref + c.c * vs_ratio ** c.n) /
                                    ((pga_ref + c.c) * vs_ratio ** c.n))
                     )
         else:
-            site = c.b_1 * np.log(np.minimum(p['v_s30'], c.v_con) / self.V_REF)
+            site = c.b_1 * np.log(np.minimum(s.v_s30, c.v_con) / self.V_REF)
 
         self._ln_resp = ln_resp_ref + site
         self._ln_std = np.array(c.sd_total)

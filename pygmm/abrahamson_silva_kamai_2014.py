@@ -61,80 +61,30 @@ class AbrahamsonSilvaKamai2014(model.Model):
                                    [True, False], False),
     ]
 
-    def _check_inputs(self, **kwds):
-        super(AbrahamsonSilvaKamai2014, self)._check_inputs(**kwds)
+    def _check_inputs(self):
+        super(AbrahamsonSilvaKamai2014, self)._check_inputs()
 
-        p = self.params
+        s = self._scenario
+        if s['width'] is None:
+            s['width'] = self.calc_width(s['mag'], s['dip'])
 
-        if p['width'] is None:
-            p['width'] = self.calc_width(p['mag'], p['dip'])
+        if s['depth_tor'] is None:
+            s['depth_tor'] = self.calc_depth_tor(s['mag'])
 
-        if p['depth_tor'] is None:
-            p['depth_tor'] = self.calc_depth_tor(p['mag'])
-
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
-        Keyword Args:
-            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
-                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
-                Used to estimate `depth_2_5`.
-
-            depth_2_5 (Optional[float]): depth to the 2.5 km∕s shear-wave
-                velocity horizon beneath the site, :math:`Z_{2.5}` in (km).
-                If *None*, then it is computed from `depth_1_0` or `v_s30`
-                and the `region` parameter.
-
-            depth_tor (Optional[float]): depth to the top of the rupture
-                plane (:math:`Z_{tor}`, km). If *None*, then  the average
-                model is used.
-
-            depth_bor (Optional[float]): depth to the bottom of the rupture
-                plane (:math:`Z_{bor}`, km). If *None*, then  the average
-                model is used.
-
-            dip (float): fault dip angle (:math:`\phi`, deg).
-
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-
-            dist_rup (float): closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
-
-            dist_x (float): site coordinate measured perpendicular to the
-                fault strike from the fault line with the down-dip direction
-                being positive (:math:`R_x`, km).
-
-            dist_y0 (Optional[float]): the horizontal distance off the end of
-                the rupture measured parallel to strike (:math:`R_{y0}`, km).
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS", "RS".
-
-            on_hanging_wall (Optional[bool]): If the site is located on the
-                hanging wall of the fault. If *None*, then *False* is assumed.
-
-            region (Optional[str]): region. Valid options: "global",
-                "california", "china", "italy", "japan", "taiwan". If *None*,
-                then "global" is used as a default value.
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
-
-            vs_source (Optional[str]): source of the `v_s30` value.  Valid
-                options: "measured", "inferred"
-
-            width (Optional[float]): Down-dip width of the fault. If *None*,
-                then  the model average is used.
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
+        super(AbrahamsonSilvaKamai2014, self).__init__(scenario)
 
         # Compute the response at the reference velocity
         resp_ref = np.exp(self._calc_ln_resp(self.V_REF, np.nan))
 
-        self._ln_resp = self._calc_ln_resp(self.params['v_s30'], resp_ref)
+        self._ln_resp = self._calc_ln_resp(self._scenario.v_s30, resp_ref)
         self._ln_std = self._calc_ln_std(resp_ref)
+
 
     def _calc_ln_resp(self, v_s30, resp_ref):
         """Calculate the natural logarithm of the response.
@@ -151,26 +101,26 @@ class AbrahamsonSilvaKamai2014(model.Model):
             :class:`np.array`: Natural log of the response.
         """
         c = self.COEFF
-        p = self.params
+        s = self._scenario
 
         # Magnitude scaling
         f1 = self._calc_f1()
 
-        if p['on_hanging_wall']:
+        if s.on_hanging_wall:
             # Hanging-wall term
             f4 = self._calc_f4()
         else:
             f4 = 0
 
         # Depth to top of rupture term
-        f6 = c.a15 * np.clip(p['depth_tor'] / 20, 0, 1)
+        f6 = c.a15 * np.clip(s.depth_tor / 20, 0, 1)
         # Style of faulting
-        if p['mechanism'] == 'RS':
-            f7 = c.a11 * np.clip(p['mag'] - 4, 0, 1)
+        if s.mechanism == 'RS':
+            f7 = c.a11 * np.clip(s.mag - 4, 0, 1)
             f8 = 0
-        elif p['mechanism'] == 'NS':
+        elif s.mechanism == 'NS':
             f7 = 0
-            f8 = c.a12 * np.clip(p['mag'] - 4, 0, 1)
+            f8 = c.a12 * np.clip(s.mag - 4, 0, 1)
         else:
             f7, f8 = 0, 0
 
@@ -191,14 +141,14 @@ class AbrahamsonSilvaKamai2014(model.Model):
         )[mask]
 
         # Basin term
-        if v_s30 == self.V_REF or p['depth_1_0'] is None:
+        if v_s30 == self.V_REF or s.depth_1_0 is None:
             # No basin response
             f10 = 0
         else:
             # Ratio between site depth_1_0 and model center
             ln_depth_ratio = np.log(
-                (p['depth_1_0'] + 0.01) /
-                (self.calc_depth_1_0(v_s30, p['region']) + 0.01)
+                (s.depth_1_0 + 0.01) /
+                (self.calc_depth_1_0(v_s30, s.region) + 0.01)
             )
             slope = interp1d(
                 [150, 250, 400, 700],
@@ -210,16 +160,16 @@ class AbrahamsonSilvaKamai2014(model.Model):
             f10 = slope * ln_depth_ratio
 
         # Aftershock term
-        if p['is_aftershock']:
-            f11 = c.a14 * np.clip(1 - (p['dist_crjb'] - 5) / 10, 0, 1)
+        if s.is_aftershock:
+            f11 = c.a14 * np.clip(1 - (s.dist_crjb - 5) / 10, 0, 1)
         else:
             f11 = 0
 
-        if p['region'] == 'taiwan':
-            freg = c.a31 * np.log(vs_ratio) + c.a25 * p['dist_rup']
-        elif p['region'] == 'china':
-            freg = c.a28 * p['dist_rup']
-        elif p['region'] == 'japan':
+        if s.region == 'taiwan':
+            freg = c.a31 * np.log(vs_ratio) + c.a25 * s.dist_rup
+        elif s.region == 'china':
+            freg = c.a28 * s.dist_rup
+        elif s.region == 'japan':
             f13 = interp1d(
                 [150, 250, 350, 450, 600, 850, 1150],
                 np.c_[c.a36, c.a37, c.a38, c.a39, c.a40, c.a41, c.a42],
@@ -227,7 +177,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
                 bounds_error=False,
                 fill_value=(c.a36, c.a42),
             )(v_s30)
-            freg = f13 + c.a29 * p['dist_rup']
+            freg = f13 + c.a29 * s.dist_rup
         else:
             freg = 0
 
@@ -242,17 +192,17 @@ class AbrahamsonSilvaKamai2014(model.Model):
         p = self.params
         c = self.COEFF
 
-        if p['region'] == 'japan':
-            phi_al = c.s5 + (c.s6 - c.s5) * np.clip((p['dist_rup'] - 30) / 50,
+        if s.region == 'japan':
+            phi_al = c.s5 + (c.s6 - c.s5) * np.clip((s.dist_rup - 30) / 50,
                                                     0, 1)
         else:
-            transition = np.clip((p['mag'] - 4) / 2, 0, 1)
-            if p['vs_source'] == 'measured':
+            transition = np.clip((s.mag - 4) / 2, 0, 1)
+            if s.vs_source == 'measured':
                 phi_al = c.s1m + (c.s2m - c.s1m) * transition
             else:
                 phi_al = c.s1e + (c.s2e - c.s1e) * transition
 
-        tau_al = c.s3 + (c.s4 - c.s3) * np.clip((p['mag'] - 5) / 2, 0, 1)
+        tau_al = c.s3 + (c.s4 - c.s3) * np.clip((s.mag - 5) / 2, 0, 1)
         tau_b = tau_al
 
         # Remove period independent site amplification uncertainty of 0.4
@@ -263,8 +213,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
         # the reference intensity
         deriv = ((-c.b * psa_ref) / (psa_ref + c.c) +
                  (c.b * psa_ref) /
-                 (psa_ref + c.c * (p['v_s30'] / c.v_lin) ** c.n))
-        deriv[p['v_s30'] >= c.v_lin] = 0
+                 (psa_ref + c.c * (s.v_s30 / c.v_lin) ** c.n))
+        deriv[s.v_s30 >= c.v_lin] = 0
 
         tau = tau_b * (1 + deriv)
         phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
@@ -350,8 +300,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         # Magnitude dependent taper
         dist = np.sqrt(
-            p['dist_rup'] ** 2 +
-            (c.c4 - (c.c4 - 1) * np.clip(5 - p['mag'], 0, 1)) ** 2
+            s.dist_rup ** 2 +
+            (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
         )
 
         # Magnitude scaling
@@ -359,26 +309,26 @@ class AbrahamsonSilvaKamai2014(model.Model):
         # Need to copy c.a1 to that it isn't modified during the following
         # operations.
         f1 = np.array(c.a1)
-        ma1 = (p['mag'] <= c.m2)
+        ma1 = (s.mag <= c.m2)
         f1[ma1] += (
             c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 +
-            c.a6 * (p['mag'] - c.m2) +
-            c.a7 * (p['mag'] - c.m2) +
+            c.a6 * (s.mag - c.m2) +
+            c.a7 * (s.mag - c.m2) +
             (c.a2 + c.a3 * (c.m2 - c.m1)) * np.log(dist) +
-            c.a17 * p['dist_rup']
+            c.a17 * s.dist_rup
         )[ma1]
 
         f1[~ma1] += (
-            c.a8 * (8.5 - p['mag']) ** 2 +
-            (c.a2 + c.a3 * (p['mag'] - c.m1)) * np.log(dist) +
-            c.a17 * p['dist_rup']
+            c.a8 * (8.5 - s.mag) ** 2 +
+            (c.a2 + c.a3 * (s.mag - c.m1)) * np.log(dist) +
+            c.a17 * s.dist_rup
         )[~ma1]
 
-        ma2 = np.logical_and(~ma1, p['mag'] <= c.m1)
-        f1[ma2] += (c.a4 * (p['mag'] - c.m1))[ma2]
+        ma2 = np.logical_and(~ma1, s.mag <= c.m1)
+        f1[ma2] += (c.a4 * (s.mag - c.m1))[ma2]
 
-        ma3 = np.logical_and(~ma1, p['mag'] > c.m1)
-        f1[ma3] += (c.a5 * (p['mag'] - c.m1))[ma3]
+        ma3 = np.logical_and(~ma1, s.mag > c.m1)
+        f1[ma3] += (c.a5 * (s.mag - c.m1))[ma3]
 
         return f1
 
@@ -390,39 +340,39 @@ class AbrahamsonSilvaKamai2014(model.Model):
         """
         # Move this into a decorator?
         c = self.COEFF
-        p = self.params
+        s = self._scenario
 
-        t1 = min(90 - p['dip'], 60) / 45
+        t1 = min(90 - s.dip, 60) / 45
         # Constant from page 1041
         a2hw = 0.2
-        if p['mag'] <= 5.5:
+        if s.mag <= 5.5:
             t2 = 0
-        elif p['mag'] < 6.5:
-            t2 = (1 + a2hw * (p['mag'] - 6.5) -
-                  (1 - a2hw) * (p['mag'] - 6.5) ** 2)
+        elif s.mag < 6.5:
+            t2 = (1 + a2hw * (s.mag - 6.5) -
+                  (1 - a2hw) * (s.mag - 6.5) ** 2)
         else:
-            t2 = 1 + a2hw * (p['mag'] - 6.5)
+            t2 = 1 + a2hw * (s.mag - 6.5)
 
         # Constants defined on page 1040
-        r1 = p['width'] * np.cos(np.radians(p['dip']))
+        r1 = s.width * np.cos(np.radians(s.dip))
         r2 = 3 * r1
         h1 = 0.25
         h2 = 1.5
         h3 = -0.75
-        if p['dist_x'] < r1:
-            t3 = h1 + h2 * (p['dist_x'] / r1) + h3 * (p['dist_x'] / r1) ** 2
-        elif p['dist_x'] < r2:
-            t3 = 1 - ((p['dist_x'] - r1) / (r2 - r1))
+        if s.dist_x < r1:
+            t3 = h1 + h2 * (s.dist_x / r1) + h3 * (s.dist_x / r1) ** 2
+        elif s.dist_x < r2:
+            t3 = 1 - ((s.dist_x - r1) / (r2 - r1))
         else:
             t3 = 0
 
-        t4 = np.clip(1 - p['depth_tor'] ** 2 / 100, 0, 1)
+        t4 = np.clip(1 - s.depth_tor ** 2 / 100, 0, 1)
 
-        if p['dist_y0'] is None:
-            t5 = np.clip(1 - p['dist_jb'] / 30, 0, 1)
+        if s.dist_y0 is None:
+            t5 = np.clip(1 - s.dist_jb / 30, 0, 1)
         else:
-            dist_y1 = p['dist_x'] * np.tan(np.radians(20))
-            t5 = np.clip(1 - (p['dist_y0'] - dist_y1) / 5, 0, 1)
+            dist_y1 = s.dist_x * np.tan(np.radians(20))
+            t5 = np.clip(1 - (s.dist_y0 - dist_y1) / 5, 0, 1)
 
         f4 = c.a13 * t1 * t2 * t3 * t4 * t5
 

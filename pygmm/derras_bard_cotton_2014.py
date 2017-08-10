@@ -42,32 +42,21 @@ class DerrasBardCotton2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, **kwds):
+    def __init__(self, scenario):
         """Initialize the model.
 
-        Keyword Args:
-            depth_hyp (float): depth of the hypocenter (km).
-
-            dist_jb (float): Joyner-Boore distance to the rupture plane
-                (:math:`R_\\text{JB}`, km)
-
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            mechanism (str): fault mechanism. Valid options: "SS", "NS",
-                "RS".
-
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
-
+        Args:
+            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(DerrasBardCotton2014, self).__init__(**kwds)
+        super(DerrasBardCotton2014, self).__init__(scenario)
         c = self.COEFF
-        p = dict(self.params)
+        # Values modified during the calculation
+        s = self._scenario.copy()
 
         for k in ['v_s30', 'dist_jb']:
-            p['log10_' + k] = np.log10(p[k])
+            s['log10_' + k] = np.log10(p[k])
         # Translate to mechanism integer
-        p['mechanism'] = dict(NS=1, RS=3, SS=4)[p['mechanism']]
+        s['mechanism'] = dict(NS=1, RS=3, SS=4)[p['mechanism']]
 
         # Create the normalized parameter matrix
         keys = ['log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp',
