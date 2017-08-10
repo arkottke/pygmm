@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
 
 from __future__ import division
@@ -20,6 +19,13 @@ class CampbellBozorgnia2014(model.Model):
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Campbell & Bozorgnia (2014)'
@@ -56,7 +62,6 @@ class CampbellBozorgnia2014(model.Model):
         model.NumericParameter('mag', True, 3.3, 8.5),
         model.NumericParameter('v_s30', True, 150, 1500),
         model.NumericParameter('width', False),
-
         model.CategoricalParameter(
             'region', False,
             ['global', 'california', 'japan', 'italy', 'china'], 'global'),
@@ -64,6 +69,17 @@ class CampbellBozorgnia2014(model.Model):
     ]
 
     def _check_inputs(self, **kwds):
+        """
+
+        Parameters
+        ----------
+        **kwds :
+
+
+        Returns
+        -------
+
+        """
         super(CampbellBozorgnia2014, self)._check_inputs(**kwds)
         s = self._scenario
 
@@ -71,6 +87,7 @@ class CampbellBozorgnia2014(model.Model):
             if mech == s.mechanism and s.mag > limit:
                 logging.warning(
                     'Magnitude of %g is greater than the recommended limit of'
+<<<<<<< HEAD
                     '%g for %s style faults',
                     s.mag, limit, mech
                 )
@@ -78,6 +95,13 @@ class CampbellBozorgnia2014(model.Model):
         if s.depth_2_5 is None:
             s.depth_2_5 = self.calc_depth_2_5(
                 s.v_s30, s.region, s.depth_1_0)
+=======
+                    '%g for %s style faults', p['mag'], limit, mech)
+
+        if p['depth_2_5'] is None:
+            p['depth_2_5'] = self.calc_depth_2_5(p['v_s30'], p['region'],
+                                                 p['depth_1_0'])
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         if s.depth_tor is None:
             s.depth_tor = CY14.calc_depth_tor(s.mag, s.mechanism)
@@ -86,9 +110,15 @@ class CampbellBozorgnia2014(model.Model):
             s.width = CampbellBozorgnia2014.calc_width(
                 s.mag, s.dip, s.depth_tor, s.depth_bot)
 
+<<<<<<< HEAD
         if s.depth_bor is None:
             s.depth_bor = self.calc_depth_bor(
                 s.depth_tor, s.dip, s.width)
+=======
+        if p['depth_bor'] is None:
+            p['depth_bor'] = self.calc_depth_bor(p['depth_tor'], p['dip'],
+                                                 p['width'])
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         if s.depth_hyp is None:
             s.depth_hyp = CampbellBozorgnia2014.calc_depth_hyp(
@@ -110,15 +140,20 @@ class CampbellBozorgnia2014(model.Model):
     def _calc_ln_resp(self, pga_ref, v_s30):
         """Calculate the natural logarithm of the response.
 
-        Args:
-            pga_ref (float): peak ground acceleration (g) at the reference
-                condition. If :class:`np.nan`, then no site term is applied.
+        Parameters
+        ----------
+        pga_ref : float
+            peak ground acceleration (g) at the reference
+            condition. If :class:`np.nan`, then no site term is applied.
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
 
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Returns
+        -------
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+            class:`np.array`: Natural log of the response.
+
         """
         c = self.COEFF
         s = self._scenario
@@ -132,9 +167,14 @@ class CampbellBozorgnia2014(model.Model):
                 break
 
         # Geometric attenuation term
+<<<<<<< HEAD
         f_dis = (c.c_5 + c.c_6 * s.mag) * np.log(np.sqrt(
             s.dist_rup ** 2 + c.c_7 ** 2
         ))
+=======
+        f_dis = (c.c_5 + c.c_6 * p['mag']
+                 ) * np.log(np.sqrt(p['dist_rup'] ** 2 + c.c_7 ** 2))
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         # Style of faulting term
         taper = np.clip(s.mag - 4.5, 0, 1)
@@ -178,22 +218,17 @@ class CampbellBozorgnia2014(model.Model):
         vs_ratio = v_s30 / c.k_1
         mask = (v_s30 <= c.k_1)
         f_site[mask] = (
-            c.c_11 * np.log(vs_ratio) +
-            c.k_2 * (np.log(pga_ref +
-                            self.COEFF_C * vs_ratio ** self.COEFF_N) -
-                     np.log(pga_ref + self.COEFF_C))
-            )[mask]
+            c.c_11 * np.log(vs_ratio) + c.k_2 *
+            (np.log(pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) -
+             np.log(pga_ref + self.COEFF_C)))[mask]
         f_site[~mask] = (
-            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
-        )[~mask]
+            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio))[~mask]
 
         if s.region == 'japan':
             # Apply regional correction for Japan
             if v_s30 <= 200:
-                f_site += (
-                    (c.c_12 + c.k_2 * self.COEFF_N) *
-                    (np.log(vs_ratio) - np.log(200 / c.k_1))
-                )
+                f_site += ((c.c_12 + c.k_2 * self.COEFF_N) *
+                           (np.log(vs_ratio) - np.log(200 / c.k_1)))
             else:
                 f_site += (c.c_13 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
 
@@ -239,12 +274,17 @@ class CampbellBozorgnia2014(model.Model):
     def _calc_ln_std(self, pga_ref):
         """Calculate the logarithmic standard deviation.
 
-        Args:
-            pga_ref (float): peak ground acceleration (g) at the reference
-                condition.
+        Parameters
+        ----------
+        pga_ref : float
+            peak ground acceleration (g) at the reference
+            condition.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         c = self.COEFF
         s = self._scenario
@@ -254,25 +294,32 @@ class CampbellBozorgnia2014(model.Model):
 
         vs_ratio = s.v_s30 / c.k_1
         alpha = np.zeros_like(c.period)
+<<<<<<< HEAD
         mask = s.v_s30 < c.k_1
         alpha[mask] = (
             c.k_2 * pga_ref * (
                 (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1) -
                 (pga_ref + self.COEFF_C) ** -1)
         )[mask]
+=======
+        mask = p['v_s30'] < c.k_1
+        alpha[mask] = (c.k_2 * pga_ref *
+                       ((pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) **
+                        (-1) - (pga_ref + self.COEFF_C) ** -1))[mask]
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
-        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 +
-                      2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
+        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 + 2 * alpha *
+                      c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
 
         phi_lnPGA = phi_lnY[self.INDEX_PGA]
         phi_lnAF_PGA = self.COEFF['phi_lnAF'][self.INDEX_PGA]
         phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
         phi_lnY_B = np.sqrt(phi_lnY ** 2 - c.phi_lnAF ** 2)
 
-        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 +
-                      alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) +
-                      2 * alpha * c.rho_lnPGAlnY * phi_lnY_B * phi_lnPGA_B)
+        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 + alpha ** 2 * (
+            phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) + 2 * alpha * c.rho_lnPGAlnY *
+                      phi_lnY_B * phi_lnPGA_B)
 
         ln_std = np.sqrt(phi ** 2 + tau ** 2)
 
@@ -285,20 +332,28 @@ class CampbellBozorgnia2014(model.Model):
 
         Provide either `v_s30` or `depth_1_0`.
 
-        Args:
-            v_s30 (Optional[float]): time-averaged shear-wave velocity over
-                the top 30 m of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        v_s30 : Optional[float]
+            time-averaged shear-wave velocity over
+            the top 30 m of the site (:math:`V_{s30}`, m/s).
+            Keyword Args:
+        region : Optional[str]
+            region of the basin model. Valid values:
+            "california", "japan". (Default value = 'global')
+        depth_1_0 : Optional[float]
+            depth to the 1.0 km∕s shear-wave
+            velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+            (Default value = None)
 
-        Keyword Args:
-            region (Optional[str]): region of the basin model. Valid values:
-                "california", "japan".
-
-            depth_1_0 (Optional[float]): depth to the 1.0 km∕s shear-wave
-                velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
-
-        Returns:
-            float: estimated depth to a shear-wave velocity of 2.5 km/sec
+        Returns
+        -------
+        float
+            estimated depth to a shear-wave velocity of 2.5 km/sec
+        float
+            estimated depth to a shear-wave velocity of 2.5 km/sec
             (km).
+
         """
         if v_s30:
             param = v_s30
@@ -339,26 +394,29 @@ class CampbellBozorgnia2014(model.Model):
     def calc_depth_hyp(mag, dip, depth_tor, depth_bor):
         """Estimate the depth to hypocenter.
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        dip : float
+            fault dip angle (:math:`\phi`, deg).
+        depth_tor : float
+            depth to the top of the rupture
+            plane (:math:`Z_{tor}`, km).
+        depth_bor : float
+            depth to the bottom of the rupture
+            plane (:math:`Z_{bor}`, km).
 
-            dip (float): fault dip angle (:math:`\phi`, deg).
+        Returns
+        -------
+        float
+            estimated hypocenter depth (km)
 
-            depth_tor (float): depth to the top of the rupture
-                plane (:math:`Z_{tor}`, km).
-
-            depth_bor (float): depth to the bottom of the rupture
-                plane (:math:`Z_{bor}`, km).
-
-        Returns:
-            float: estimated hypocenter depth (km)
         """
         # Equations 35, 36, and 37 of journal article
         ln_dZ = min(
-            min(-4.317 + 0.984 * mag, 2.325) +
-            min(0.0445 * (dip - 40), 0),
-            np.log(0.9 * (depth_bor - depth_tor))
-        )
+            min(-4.317 + 0.984 * mag, 2.325) + min(0.0445 * (dip - 40), 0),
+            np.log(0.9 * (depth_bor - depth_tor)))
 
         depth_hyp = depth_tor + np.exp(ln_dZ)
 
@@ -368,40 +426,49 @@ class CampbellBozorgnia2014(model.Model):
     def calc_width(mag, dip, depth_tor, depth_bot=15.0):
         """Estimate the fault width using Equation (39) of CB14.
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        dip : float
+            fault dip angle (:math:`\phi`, deg).
+        depth_tor : float
+            depth to the top of the rupture
+            plane (:math:`Z_{tor}`, km).
+            Keyword Args:
+        depth_bot : Optional[float]
+            depth to bottom of seismogenic crust
+            (km). Used to calculate fault width if none is specified. If
+            *None*, then a value of 15 km is used. (Default value = 15.0)
 
-            dip (float): fault dip angle (:math:`\phi`, deg).
+        Returns
+        -------
+        float
+            estimated fault width (km)
 
-            depth_tor (float): depth to the top of the rupture
-                plane (:math:`Z_{tor}`, km).
-
-        Keyword Args:
-            depth_bot (Optional[float]): depth to bottom of seismogenic crust
-                (km). Used to calculate fault width if none is specified. If
-                *None*, then a value of 15 km is used.
-
-        Returns:
-            float: estimated fault width (km)
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
-            (depth_bot - depth_tor) / np.sin(np.radians(dip))
-        )
+            (depth_bot - depth_tor) / np.sin(np.radians(dip)))
 
     @staticmethod
     def calc_depth_bor(depth_tor, dip, width):
         """Compute the depth to bottom of the rupture (km).
 
-        Args:
-            dip (float): fault dip angle (:math:`\phi`, deg).
+        Parameters
+        ----------
+        dip : float
+            fault dip angle (:math:`\phi`, deg).
+        depth_tor : float
+            depth to the top of the rupture
+            plane (:math:`Z_{tor}`, km).
+        width : float
+            Down-dip width of the fault.
 
-            depth_tor (float): depth to the top of the rupture
-                plane (:math:`Z_{tor}`, km).
+        Returns
+        -------
+        float
+            depth to bottom of the fault rupture (km)
 
-            width (float): Down-dip width of the fault.
-
-        Returns:
-            float: depth to bottom of the fault rupture (km)
         """
         return depth_tor + width * np.sin(np.radians(dip))

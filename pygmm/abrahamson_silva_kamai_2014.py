@@ -7,6 +7,7 @@ import numpy as np
 from scipy.interpolate import interp1d
 
 from . import model
+from .types import ArrayLike
 
 __author__ = 'Albert Kottke'
 
@@ -38,7 +39,6 @@ class AbrahamsonSilvaKamai2014(model.Model):
         model.NumericParameter('dist_jb', True),
         model.NumericParameter('mag', True, 3, 8.5),
         model.NumericParameter('v_s30', True, 180, 1000),
-
         model.NumericParameter('depth_1_0', False),
         model.NumericParameter('depth_tor', False),
         model.NumericParameter('dip', True),
@@ -46,23 +46,27 @@ class AbrahamsonSilvaKamai2014(model.Model):
         model.NumericParameter('dist_x', False),
         model.NumericParameter('dist_y0', False),
         model.NumericParameter('width', False),
-
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
         model.CategoricalParameter(
             'region', False,
             ['global', 'california', 'china', 'italy', 'japan', 'taiwan'],
-            'global'
-        ),
-        model.CategoricalParameter(
-            'vs_source', False, ['measured', 'inferred'], 'measured'),
-        model.CategoricalParameter(
-            'is_aftershock', False, [True, False], False),
-        model.CategoricalParameter('on_hanging_wall', False,
-                                   [True, False], False),
+            'global'),
+        model.CategoricalParameter('vs_source', False,
+                                   ['measured', 'inferred'], 'measured'),
+        model.CategoricalParameter('is_aftershock', False, [True, False],
+                                   False),
+        model.CategoricalParameter('on_hanging_wall', False, [True, False],
+                                   False),
     ]
 
+<<<<<<< HEAD
     def _check_inputs(self):
         super(AbrahamsonSilvaKamai2014, self)._check_inputs()
+=======
+    def _check_inputs(self, **kwds):
+        """Check the inputs."""
+        super(AbrahamsonSilvaKamai2014, self)._check_inputs(**kwds)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         s = self._scenario
         if s['width'] is None:
@@ -74,10 +78,63 @@ class AbrahamsonSilvaKamai2014(model.Model):
     def __init__(self, scenario):
         """Initialize the model.
 
+<<<<<<< HEAD
         Args:
             scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
         super(AbrahamsonSilvaKamai2014, self).__init__(scenario)
+=======
+        Parameters
+        ----------
+        depth_1_0 : float
+            depth to the 1.0 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{1.0}` in (km).
+        depth_2_5 : float
+            depth to the 2.5 km∕s shear-wave velocity
+            horizon beneath the site, :math:`Z_{2.5}` in (km).
+        depth_tor : float
+            depth to the top of the rupture plane
+            (:math:`Z_{tor}`, km).
+        depth_bor : float
+            depth to the bottom of the rupture plane
+            (:math:`Z_{bor}`, km).
+        dip : float
+            fault dip angle (:math:`\phi`, deg).
+        dist_jb : float
+            Joyner-Boore distance to the rupture plane
+            (:math:`R_\\text{JB}`, km)
+        dist_rup : float
+            closest distance to the rupture plane
+            (:math:`R_\\text{rup}`, km)
+        dist_x : float
+            site coordinate measured perpendicular to the
+            fault strike from the fault line with the down-dip direction
+            being positive (:math:`R_x`, km).
+        dist_y0 : float
+            the horizontal distance off the end of the
+            rupture measured parallel to strike (:math:`R_{y0}`, km).
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        mechanism : str
+            fault mechanism. Valid options: "SS", "NS", "RS",
+            and "U". See :ref:`Mechanism` for more information.
+        on_hanging_wall : bool
+            If the site is located on the hanging wall
+            of the fault. If *None*, then *False* is assumed.
+        region : str
+            region. Valid options are specified FIXME.
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+        vs_source : str
+            source of the `v_s30` value.  Valid options:
+            "measured", "inferred"
+        width : float
+            Down-dip width of the fault.
+        """
+
+        super(AbrahamsonSilvaKamai2014, self).__init__(**kwds)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         # Compute the response at the reference velocity
         resp_ref = np.exp(self._calc_ln_resp(self.V_REF, np.nan))
@@ -85,20 +142,28 @@ class AbrahamsonSilvaKamai2014(model.Model):
         self._ln_resp = self._calc_ln_resp(self._scenario.v_s30, resp_ref)
         self._ln_std = self._calc_ln_std(resp_ref)
 
+<<<<<<< HEAD
 
     def _calc_ln_resp(self, v_s30, resp_ref):
+=======
+    def _calc_ln_resp(self, v_s30: float, resp_ref: ArrayLike) -> ArrayLike:
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         """Calculate the natural logarithm of the response.
 
-        Args:
-            v_s30 (float): site condition. Set `v_s30` to the reference
-                velocity (e.g., 1180 m/s) for the reference response.
+        Parameters
+        ----------
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        resp_ref :  array_like, optional
+            response at the reference condition. Required if `v_s30` is not
+            equal to reference velocity.
 
-            resp_ref (Optional[:class:`np.array`]): response at the reference
-                condition. Required if `v_s30` is not equal to reference
-                velocity.
+        Returns
+        -------
+        ln_resp: :class:`np.ndarray`
+            Natural log of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
         """
         c = self.COEFF
         s = self._scenario
@@ -126,19 +191,16 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         # Site term
         ###########
-        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) +
-                     np.log(1500))
+        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(
+            1500))
 
         vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
         # Linear site model
         f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
         # Nonlinear model
         mask = vs_ratio < 1
-        f5[mask] = (
-            c.a10 * np.log(vs_ratio) -
-            c.b * np.log(resp_ref + c.c) +
-            c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
-        )[mask]
+        f5[mask] = (c.a10 * np.log(vs_ratio) - c.b * np.log(resp_ref + c.c) +
+                    c.b * np.log(resp_ref + c.c * vs_ratio ** c.n))[mask]
 
         # Basin term
         if v_s30 == self.V_REF or s.depth_1_0 is None:
@@ -147,16 +209,20 @@ class AbrahamsonSilvaKamai2014(model.Model):
         else:
             # Ratio between site depth_1_0 and model center
             ln_depth_ratio = np.log(
+<<<<<<< HEAD
                 (s.depth_1_0 + 0.01) /
                 (self.calc_depth_1_0(v_s30, s.region) + 0.01)
             )
+=======
+                (p['depth_1_0'] + 0.01) /
+                (self.calc_depth_1_0(v_s30, p['region']) + 0.01))
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
             slope = interp1d(
                 [150, 250, 400, 700],
                 np.c_[c.a43, c.a44, c.a45, c.a46],
                 copy=False,
                 bounds_error=False,
-                fill_value=(c.a43, c.a46),
-            )(v_s30)
+                fill_value=(c.a43, c.a46), )(v_s30)
             f10 = slope * ln_depth_ratio
 
         # Aftershock term
@@ -175,26 +241,44 @@ class AbrahamsonSilvaKamai2014(model.Model):
                 np.c_[c.a36, c.a37, c.a38, c.a39, c.a40, c.a41, c.a42],
                 copy=False,
                 bounds_error=False,
+<<<<<<< HEAD
                 fill_value=(c.a36, c.a42),
             )(v_s30)
             freg = f13 + c.a29 * s.dist_rup
+=======
+                fill_value=(c.a36, c.a42), )(v_s30)
+            freg = f13 + c.a29 * p['dist_rup']
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         else:
             freg = 0
 
         return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + freg
 
-    def _calc_ln_std(self, psa_ref):
+    def _calc_ln_std(self, psa_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+        psa_ref : array_like
+           Spectral accelerations at the reference condition
+
+        Returns
+        -------
+        ln_std :  :class:`np.ndarray`
+            Logarithmic standard deviation.
         """
         p = self.params
         c = self.COEFF
 
+<<<<<<< HEAD
         if s.region == 'japan':
             phi_al = c.s5 + (c.s6 - c.s5) * np.clip((s.dist_rup - 30) / 50,
                                                     0, 1)
+=======
+        if p['region'] == 'japan':
+            phi_al = c.s5 + (c.s6 - c.s5) * np.clip(
+                (p['dist_rup'] - 30) / 50, 0, 1)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         else:
             transition = np.clip((s.mag - 4) / 2, 0, 1)
             if s.vs_source == 'measured':
@@ -211,10 +295,16 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         # The partial derivative of the amplification with respect to
         # the reference intensity
+<<<<<<< HEAD
         deriv = ((-c.b * psa_ref) / (psa_ref + c.c) +
                  (c.b * psa_ref) /
                  (psa_ref + c.c * (s.v_s30 / c.v_lin) ** c.n))
         deriv[s.v_s30 >= c.v_lin] = 0
+=======
+        deriv = ((-c.b * psa_ref) / (psa_ref + c.c) + (c.b * psa_ref) /
+                 (psa_ref + c.c * (p['v_s30'] / c.v_lin) ** c.n))
+        deriv[p['v_s30'] >= c.v_lin] = 0
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         tau = tau_b * (1 + deriv)
         phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
@@ -224,55 +314,65 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return ln_std
 
     @staticmethod
-    def calc_width(mag, dip):
+    def calc_width(mag: float, dip: float) -> float:
         """Compute the fault width based on equation in NGW2 spreadsheet.
 
         This equation is not provided in the paper.
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
-            dip (float): Fault dip angle (:math:`\phi`, deg)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
+        dip : float
+            Fault dip angle (:math:`\phi`, deg)
 
-        Returns:
-            float: estimated fault width (:math:`W`, km)
+        Returns
+        -------
+        width : float
+            estimated fault width (:math:`W`, km)
+
         """
-        return min(
-            18 / np.sin(np.radians(dip)),
-            10 ** (-1.75 + 0.45 * mag)
-        )
+        return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 
     @staticmethod
-    def calc_depth_tor(mag):
+    def calc_depth_tor(mag: float) -> float:
         """Calculate the depth to top of rupture (km).
 
-        Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
+        Parameters
+        ----------
+        mag : float
+            moment magnitude of the event (:math:`M_w`)
 
-        Returns:
-            float: estimated depth (km)
+        Returns
+        -------
+        depth_tor : float
+            estimated depth to top of rupture (km)
         """
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30, region='california'):
+    def calc_depth_1_0(v_s30: float, region: str='california') -> float:
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
         This is based on equations 18 and 19 in the :cite:`abrahamson14`
         and differs from the equations in the :cite:`chiou14`.
 
-        Args:
-            v_s30 (float): time-averaged shear-wave velocity over the top 30 m
-                of the site (:math:`V_{s30}`, m/s).
+        Parameters
+        ----------
+        v_s30 : float
+            time-averaged shear-wave velocity over the top 30 m
+            of the site (:math:`V_{s30}`, m/s).
+            Keyword Args:
+        region : str, optional
+            region of basin model. Valid options: 'california', 'japan'. If
+            *None*, then 'california' is used as the default value.
 
-        Keyword Args:
-            region (Optional[str]): region of basin model. Valid options:
-                "california", "japan". If *None*, then "california" is used as
-                the default value.
-
-        Returns:
-            float: depth to a shear-wave velocity of 1,000 m/sec
-                (:math:`Z_{1.0}`, km).
+        Returns
+        -------
+        depth_1_0 : float
+            depth to a shear-wave velocity of 1,000 m/sec
+            (:math:`Z_{1.0}`, km).
 
         """
         if region in ['japan']:
@@ -289,20 +389,21 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
                                      (1360. ** power + v_ref ** power))) / 1000
 
-    def _calc_f1(self):
-        """Calculate the magnitude scaling parameter f1.
-
-        Returns:
-            :class:`np.array`: Model parameter f1.
-        """
+    def _calc_f1(self) -> np.ndarray:
+        """Calculate the magnitude scaling parameter f1."""
         c = self.COEFF
         p = self.params
 
         # Magnitude dependent taper
+<<<<<<< HEAD
         dist = np.sqrt(
             s.dist_rup ** 2 +
             (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
         )
+=======
+        dist = np.sqrt(p['dist_rup'] ** 2 + (c.c4 - (c.c4 - 1) * np.clip(5 - p[
+            'mag'], 0, 1)) ** 2)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         # Magnitude scaling
 
@@ -311,6 +412,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         f1 = np.array(c.a1)
         ma1 = (s.mag <= c.m2)
         f1[ma1] += (
+<<<<<<< HEAD
             c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 +
             c.a6 * (s.mag - c.m2) +
             c.a7 * (s.mag - c.m2) +
@@ -323,6 +425,17 @@ class AbrahamsonSilvaKamai2014(model.Model):
             (c.a2 + c.a3 * (s.mag - c.m1)) * np.log(dist) +
             c.a17 * s.dist_rup
         )[~ma1]
+=======
+            c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 + c.a6 *
+            (p['mag'] - c.m2) + c.a7 * (p['mag'] - c.m2) +
+            (c.a2 + c.a3 *
+             (c.m2 - c.m1)) * np.log(dist) + c.a17 * p['dist_rup'])[ma1]
+
+        f1[~ma1] += (
+            c.a8 * (8.5 - p['mag']) ** 2 +
+            (c.a2 + c.a3 *
+             (p['mag'] - c.m1)) * np.log(dist) + c.a17 * p['dist_rup'])[~ma1]
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         ma2 = np.logical_and(~ma1, s.mag <= c.m1)
         f1[ma2] += (c.a4 * (s.mag - c.m1))[ma2]
@@ -332,12 +445,8 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1
 
-    def _calc_f4(self):
-        """Calculate the hanging-wall parameter f4.
-
-        Returns:
-            :class:`np.array`: Model parameter f4.
-        """
+    def _calc_f4(self) -> np.ndarray:
+        """Calculate the hanging-wall parameter f4."""
         # Move this into a decorator?
         c = self.COEFF
         s = self._scenario
@@ -347,9 +456,15 @@ class AbrahamsonSilvaKamai2014(model.Model):
         a2hw = 0.2
         if s.mag <= 5.5:
             t2 = 0
+<<<<<<< HEAD
         elif s.mag < 6.5:
             t2 = (1 + a2hw * (s.mag - 6.5) -
                   (1 - a2hw) * (s.mag - 6.5) ** 2)
+=======
+        elif p['mag'] < 6.5:
+            t2 = (1 + a2hw * (p['mag'] - 6.5) - (1 - a2hw) *
+                  (p['mag'] - 6.5) ** 2)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         else:
             t2 = 1 + a2hw * (s.mag - 6.5)
 

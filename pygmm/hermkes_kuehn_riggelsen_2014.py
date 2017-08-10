@@ -13,34 +13,25 @@ from . import model
 __author__ = 'Albert Kottke'
 
 fname_data = os.path.join(
-    os.path.dirname(__file__),
-    'data',
-    'hermkes_kuehn_riggelsen_2014.npz'
-)
+    os.path.dirname(__file__), 'data', 'hermkes_kuehn_riggelsen_2014.npz')
 
 if not os.path.exists(fname_data):
     # Download the model data if not found.
     from six.moves.urllib.request import urlretrieve
     from six.moves.urllib.error import HTTPError
 
-    url = ('https://dl.dropboxusercontent.com/u/1401593/'
-           'hermkes_kuehn_riggelsen_2014.npz')
+    url = ('https://www.dropbox.com/s/1tu9ss1s3inctej/'
+           'hermkes_kuehn_riggelsen_2014.npz?dl=0')
     try:
         urlretrieve(url, fname_data)
     except HTTPError:
-        print(
-            'Hermkes, Kuehn, and Riggelsen (2013) model data required, '
-            'which cannot be downloaded. Download the file from {url}'
-            'to this location: {loc}'.format(
-                url=url, loc=os.path.abspath(fname_data)
-            )
-        )
+        print('Hermkes, Kuehn, and Riggelsen (2013) model data required, '
+              'which cannot be downloaded. Download the file from {url}'
+              'to this location: {loc}'.format(
+                  url=url, loc=os.path.abspath(fname_data)))
         raise RuntimeError
 
-with np.load(fname_data) as data:
-    # Need to transform the record arrays into flat numpy arrays
-    INTERPOLATOR = NearestNDInterpolator(
-        data['events'], data['predictions'])
+INTERPOLATOR = None
 
 
 class HermkesKuehnRiggelsen2014(model.Model):
@@ -54,6 +45,13 @@ class HermkesKuehnRiggelsen2014(model.Model):
 
     This is to due to the large file size of the model data, which takes
     time to load.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
     NAME = 'Hermkes, Kuehn, Riggelsen (2014)'
     ABBREV = 'HKR14'
@@ -95,8 +93,22 @@ class HermkesKuehnRiggelsen2014(model.Model):
         elif s.mechanism == 'RS':
             flag_rs = 1
 
+<<<<<<< HEAD
         event = (s.mag, s.depth_hyp, flag_rs, flag_ss, flag_ns, s.dist_jb, s.v_s30)
         prediction = INTERPOLATOR(event)
+=======
+        event = (p['mag'], p['depth_hyp'], flag_rs, flag_ss, flag_ns,
+                 p['dist_jb'], p['v_s30'])
+
+        global INTERPOLATOR
+        if INTERPOLATOR is None:
+            with np.load(fname_data) as data:
+                # Need to transform the record arrays into flat numpy arrays
+                INTERPOLATOR = NearestNDInterpolator(data['events'],
+                                                     data['predictions'])
+        else:
+            prediction = INTERPOLATOR(event)
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         self._ln_resp = prediction[0::2]
         self._ln_std = np.sqrt(prediction[1::2])

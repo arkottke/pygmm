@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
 """Model for the Idriss (2014) ground motion model."""
 
 from __future__ import division
@@ -17,6 +16,13 @@ class Idriss2014(model.Model):
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Idriss (2014)'
@@ -35,14 +41,10 @@ class Idriss2014(model.Model):
     INDICES_PSA = np.arange(22)
 
     PARAMS = [
-        model.NumericParameter(
-            'dist_rup', True, None, 150),
-        model.NumericParameter(
-            'mag', True, 5, None),
-        model.NumericParameter(
-            'v_s30', True, 450, 1200),
-        model.CategoricalParameter(
-            'mechanism', True, ['SS', 'RS'], 'SS'),
+        model.NumericParameter('dist_rup', True, None, 150),
+        model.NumericParameter('mag', True, 5, None),
+        model.NumericParameter('v_s30', True, 450, 1200),
+        model.CategoricalParameter('mechanism', True, ['SS', 'RS'], 'SS'),
     ]
 
     def __init__(self, scenario):
@@ -58,8 +60,14 @@ class Idriss2014(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural log of the response.
+
         """
         s = self._scenario
         c = self.COEFF['small'] if s.mag <= 6.75 else self.COEFF['large']
@@ -70,12 +78,20 @@ class Idriss2014(model.Model):
             # SS/RS/U
             flag_mech = 0
 
+<<<<<<< HEAD
         f_mag = (
             c.alpha_1 + c.alpha_2 * s.mag +
             c.alpha_3 * (8.5 - s.mag) ** 2)
         f_dst = (-(c.beta_1 + c.beta_2 * s.mag) * np.log(
             s.dist_rup + 10) + c.gamma * s.dist_rup)
         f_ste = c.epsilon * np.log(s.v_s30)
+=======
+        f_mag = (c.alpha_1 + c.alpha_2 * p['mag'] + c.alpha_3 *
+                 (8.5 - p['mag']) ** 2)
+        f_dst = (-(c.beta_1 + c.beta_2 * p['mag']) * np.log(p['dist_rup'] + 10)
+                 + c.gamma * p['dist_rup'])
+        f_ste = c.epsilon * np.log(p['v_s30'])
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         f_mec = c.phi * flag_mech
 
         ln_resp = f_mag + f_dst + f_ste + f_mec
@@ -85,13 +101,25 @@ class Idriss2014(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
+<<<<<<< HEAD
         s = self._scenario
         ln_std = (
             1.18 + 0.035 *
             np.log(np.clip(self.PERIODS, 0.05, 3.0)) -
             0.06 * np.clip(s.mag, 5.0, 7.5)
         )
+=======
+        p = self.params
+        ln_std = (1.18 + 0.035 * np.log(np.clip(self.PERIODS, 0.05, 3.0)) -
+                  0.06 * np.clip(p['mag'], 5.0, 7.5))
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         return ln_std

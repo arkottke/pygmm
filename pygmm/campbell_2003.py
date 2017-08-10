@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # encoding: utf-8
-
 """Model for the Campbell (2003) ground motion model."""
 
 from __future__ import division
@@ -16,6 +15,13 @@ class Campbell2003(model.Model):
     """Campbell (2003, :cite:`campbell03`) model.
 
     This model was developed for the Eastern US.
+
+    Parameters
+    ----------
+
+    Returns
+    -------
+
     """
 
     NAME = 'Campbell (2003)'
@@ -47,8 +53,14 @@ class Campbell2003(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural logarithm of the response.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Natural logarithm of the response.
+
         """
         p = self.params
         s = self._scenario
@@ -57,9 +69,14 @@ class Campbell2003(model.Model):
 
         # Distance scaling
         f_2 = (c.c_4 * np.log(
+<<<<<<< HEAD
             np.sqrt(s.dist_rup ** 2 +
                     (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2)) +
                (c.c_5 + c.c_6 * s.mag) * s.dist_rup)
+=======
+            np.sqrt(p['dist_rup'] ** 2 + (c.c_7 * np.exp(c.c_8 * p['mag'])) **
+                    2)) + (c.c_5 + c.c_6 * p['mag']) * p['dist_rup'])
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         # Geometric attenuation
         r_1 = 70.0
@@ -80,8 +97,14 @@ class Campbell2003(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Parameters
+        ----------
+
+        Returns
+        -------
+
+            class:`np.array`: Logarithmic standard deviation.
+
         """
         c = self.COEFF
         s = self._scenario

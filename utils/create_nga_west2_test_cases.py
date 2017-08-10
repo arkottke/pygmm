@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Create test cases for the NGA West2 models."""
 
 import gzip
@@ -56,8 +55,10 @@ def reformat_params(params):
         pass
 
     # Replace None with 999
-    for key in ['depth_tor', 'depth_hyp', 'depth_1_0', 'depth_2_5', 'width',
-                'dist_y0']:
+    for key in [
+            'depth_tor', 'depth_hyp', 'depth_1_0', 'depth_2_5', 'width',
+            'dist_y0'
+    ]:
         if key in params and params[key] is None:
             params[key] = 999
 
@@ -108,9 +109,11 @@ def get_results(wb, abbrev):
 
     return d
 
-wb_fname = os.path.abspath(os.path.join(
-    os.path.dirname(__file__),
-    'NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected.xlsm'))
+
+wb_fname = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        'NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected.xlsm'))
 
 # Parameters
 params_site = {
@@ -127,7 +130,7 @@ params_site = {
         'new_zealand',
         'turkey',
         'taiwan',
-        ]
+    ]
 }
 
 params_fault = [
@@ -219,16 +222,14 @@ CELLS = dict(
     flag_as='B75',
     region='B78',
     dpp_centered='B83',
-    depth_bor='B89',
-)
+    depth_bor='B89', )
 
 RESULT_COLUMNS = dict(
     ASK14='DEF',
     BSSA14='DST',
     CB14='DYZ',
     CY14='DUV',
-    I14='DLM',
-)
+    I14='DLM', )
 
 abbreviations = ['ASK14', 'BSSA14', 'CB14', 'CY14', 'I14']
 
@@ -252,10 +253,7 @@ for p in iter_parameters(parameters):
         load_params(wb, region='TWA')
         results['ASK14'] = get_results(wb, 'ASK14')
 
-    tests.append({
-        'params': p,
-        'results': results
-    })
+    tests.append({'params': p, 'results': results})
 
 fname = '../tests/data/ngaw2_tests.json.gz'
 with gzip.open(fname, 'wt') as fp:

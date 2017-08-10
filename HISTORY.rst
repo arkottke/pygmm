@@ -7,7 +7,7 @@ History
 
 - Added Hermkes et al. (2014).
 - Improved documentation.
-
+- Added Baker & Jayaram (2008), Kishida (2017)
 
 0.3.2 (2016-03-30)
 ------------------

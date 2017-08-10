@@ -3,9 +3,6 @@
 
 import logging
 import pkg_resources
-import typing
-
-import numpy as np
 
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
@@ -39,14 +36,15 @@ __license__ = 'MIT'
 __title__ = 'pyGMM'
 __version__ = pkg_resources.get_distribution('pygmm').version
 
-
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:
+
     class NullHandler(logging.Handler):
         def emit(self, record):
             pass
+
 
 logging.getLogger(__name__).addHandler(NullHandler())
 
@@ -63,5 +61,8 @@ models = [
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
 ]
+<<<<<<< HEAD
 
 ArrayLike = typing.Union[typing.List[float], np.ndarray]
+=======
+>>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
