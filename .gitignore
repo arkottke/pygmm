@@ -72,4 +72,4 @@ target/
 figures/
 
 # Large data files
-pygmm/data/hermkes_kuehn_riggelsen_2014.npz
+# pygmm/data/hermkes_kuehn_riggelsen_2014.npz
