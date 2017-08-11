@@ -28,6 +28,8 @@ python:
     - "3.6"
 
 install:
+    - git lfs install
+    - git lfs pull
     - pip install -r requirements_dev.txt
     - pip install -e .
 
