@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 # encoding: utf-8
+"""Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model."""
 
 from __future__ import division
 
@@ -46,13 +47,17 @@ class HermkesKuehnRiggelsen2014(model.Model):
     This is to due to the large file size of the model data, which takes
     time to load.
 
+    Note that this model was developed using a Bayesian non-parametric
+    method, which means it is should only be used over the data range
+    used to develop the model. See the paper for more details.
+
     Parameters
     ----------
-
-    Returns
-    -------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
 
     """
+
     NAME = 'Hermkes, Kuehn, Riggelsen (2014)'
     ABBREV = 'HKR14'
 
@@ -72,15 +77,7 @@ class HermkesKuehnRiggelsen2014(model.Model):
     ]
 
     def __init__(self, scenario):
-        """Initialize the model.
-
-        Note that this model was developed using a Bayesian non-parametric
-        method, which means it is should only be used over the data range
-        used to develop the model. See the paper for more details.
-
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-        """
+        """Initialize the model."""
         super(HermkesKuehnRiggelsen2014, self).__init__(scenario)
 
         s = self._scenario
@@ -93,22 +90,14 @@ class HermkesKuehnRiggelsen2014(model.Model):
         elif s.mechanism == 'RS':
             flag_rs = 1
 
-<<<<<<< HEAD
-        event = (s.mag, s.depth_hyp, flag_rs, flag_ss, flag_ns, s.dist_jb, s.v_s30)
-        prediction = INTERPOLATOR(event)
-=======
-        event = (p['mag'], p['depth_hyp'], flag_rs, flag_ss, flag_ns,
-                 p['dist_jb'], p['v_s30'])
+        event = (s.mag, s.depth_hyp, flag_rs, flag_ss, flag_ns, s.dist_jb,
+                 s.v_s30)
 
         global INTERPOLATOR
         if INTERPOLATOR is None:
             with np.load(fname_data) as data:
-                # Need to transform the record arrays into flat numpy arrays
                 INTERPOLATOR = NearestNDInterpolator(data['events'],
                                                      data['predictions'])
-        else:
-            prediction = INTERPOLATOR(event)
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
-
+        prediction = INTERPOLATOR(event)
         self._ln_resp = prediction[0::2]
         self._ln_std = np.sqrt(prediction[1::2])

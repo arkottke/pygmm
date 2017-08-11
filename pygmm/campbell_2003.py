@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-# encoding: utf-8
 """Model for the Campbell (2003) ground motion model."""
 
 from __future__ import division
@@ -18,9 +16,9 @@ class Campbell2003(model.Model):
 
     Parameters
     ----------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
 
-    Returns
-    -------
 
     """
 
@@ -41,11 +39,7 @@ class Campbell2003(model.Model):
     ]
 
     def __init__(self, scenario):
-        """Initialize the model.
-
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-        """
+        """Initialize the model."""
         super(Campbell2003, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
@@ -53,31 +47,20 @@ class Campbell2003(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Parameters
-        ----------
-
         Returns
         -------
-
-            class:`np.array`: Natural logarithm of the response.
+        ln_resp : class:`np.array`:
+            natural log of the response
 
         """
-        p = self.params
+        c = self.COEFF
         s = self._scenario
 
         f_1 = c.c_2 * s.mag + c.c_3 * (8.5 - s.mag) ** 2
-
         # Distance scaling
         f_2 = (c.c_4 * np.log(
-<<<<<<< HEAD
-            np.sqrt(s.dist_rup ** 2 +
-                    (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2)) +
+            np.sqrt(s.dist_rup ** 2 + (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2)) +
                (c.c_5 + c.c_6 * s.mag) * s.dist_rup)
-=======
-            np.sqrt(p['dist_rup'] ** 2 + (c.c_7 * np.exp(c.c_8 * p['mag'])) **
-                    2)) + (c.c_5 + c.c_6 * p['mag']) * p['dist_rup'])
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
-
         # Geometric attenuation
         r_1 = 70.0
         r_2 = 130.0
@@ -97,13 +80,10 @@ class Campbell2003(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Parameters
-        ----------
-
         Returns
         -------
-
-            class:`np.array`: Logarithmic standard deviation.
+        ln_std : class:`np.array`:
+            natural log standard deviation
 
         """
         c = self.COEFF

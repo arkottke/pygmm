@@ -33,7 +33,7 @@ testdata = [(m, t['params'], t['results'][m.ABBREV])
 
 @pytest.mark.parametrize('model,params,expected', testdata)
 def test_ln_stds(model, params, expected):
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
     np.testing.assert_allclose(
         m.interp_ln_stds(expected['periods']),
         expected['ln_stds'],
@@ -43,7 +43,7 @@ def test_ln_stds(model, params, expected):
 
 @pytest.mark.parametrize('model,params,expected', testdata)
 def test_spec_accels(model, params, expected):
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
     np.testing.assert_allclose(
         m.interp_spec_accels(expected['periods']),
         expected['spec_accels'],
@@ -57,7 +57,7 @@ def test_im_values(model, params, expected, key):
     if expected.get(key, None) is None:
         return
 
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
 
     try:
         value = getattr(m, key)

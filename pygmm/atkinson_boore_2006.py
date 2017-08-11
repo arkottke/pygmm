@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# encoding: utf-8
+"""Atkinson and Boore (2006, :cite:`atkinson06`) model."""
 
 from __future__ import division
 
@@ -15,6 +14,12 @@ class AtkinsonBoore2006(model.Model):
 
     Developed for the Eastern North America with a reference velocity of 760
     or 2000 m/s.
+
+    Parameters
+    ----------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
+
     """
 
     NAME = 'Atkinson and Boore (2006)'
@@ -42,43 +47,21 @@ class AtkinsonBoore2006(model.Model):
     ]
 
     def __init__(self, scenario):
-        """Initialize the model.
-
-<<<<<<< HEAD
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-=======
-        Parameters
-        ----------
-        mag : float
-            moment magnitude of the event (:math:`M_w`)
-        dist_rup : float
-            closest distance to the rupture plane
-            (:math:`R_\\text{rup}`, km)
-        v_s30 : float
-            time-averaged shear-wave velocity over the top 30 m
-            of the site (:math:`V_{s30}`, m/s).
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
-        """
+        """Initialize the model."""
         super(AtkinsonBoore2006, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
-<<<<<<< HEAD
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural log of the response.
+        Returns
+        -------
+        ln_resp : class:`np.array`:
+            natural log of the response
         """
         s = self._scenario
         c = self.COEFF['bc'] if s.v_s30 else self.COEFF['rock']
-=======
-    def _calc_ln_resp(self) -> np.ndarray:
-        """Calculate the natural logarithm of the response."""
-        p = self.params
-        c = self.COEFF['bc'] if p['v_s30'] else self.COEFF['rock']
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         # Compute the response at the reference condition
         r0 = 10.0
@@ -90,22 +73,10 @@ class AtkinsonBoore2006(model.Model):
         f2 = np.maximum(np.log10(s.dist_rup / r2), 0)
 
         # Compute the log10 PSA in units of cm/sec/sec
-<<<<<<< HEAD
-        log10_resp = (
-            c.c_1 +
-            c.c_2 * s.mag +
-            c.c_3 * s.mag ** 2 +
-            (c.c_4 + c.c_5 * s.mag) * f1 +
-            (c.c_6 + c.c_7 * s.mag) * f2 +
-            (c.c_8 + c.c_9 * s.mag) * f0 +
-            c.c_10 * s.dist_rup
-        )
-=======
-        log10_resp = (c.c_1 + c.c_2 * p['mag'] + c.c_3 * p['mag'] ** 2 +
-                      (c.c_4 + c.c_5 * p['mag']) * f1 +
-                      (c.c_6 + c.c_7 * p['mag']) * f2 +
-                      (c.c_8 + c.c_9 * p['mag']) * f0 + c.c_10 * p['dist_rup'])
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
+        log10_resp = (c.c_1 + c.c_2 * s.mag + c.c_3 * s.mag ** 2 +
+                      (c.c_4 + c.c_5 * s.mag) * f1 +
+                      (c.c_6 + c.c_7 * s.mag) * f2 +
+                      (c.c_8 + c.c_9 * s.mag) * f0 + c.c_10 * s.dist_rup)
 
         # Apply stress drop correction
         log10_resp += self._calc_stress_factor()
@@ -125,29 +96,32 @@ class AtkinsonBoore2006(model.Model):
         return ln_resp
 
     def _calc_ln_std(self) -> np.ndarray:
-        """Calculate the logarithmic standard deviation."""
+        """Calculate the logarithmic standard deviation.
+
+        Returns
+        -------
+        ln_std : class:`np.array`:
+            natural log standard deviation
+
+        """
         ln_std = np.ones_like(self.PERIODS) * 0.30
         return ln_std
 
     def _calc_stress_factor(self):
         """Calculate the stress correction factor proposed by Atkinson and
-<<<<<<< HEAD
         Boore (2011) :cite:`atkinson11`.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
+        Returns
+        -------
+        log10_stress_factor : class:`np.array`:
+            log base 10 of the stress factor
         """
         s = self._scenario
-=======
-        Boore (2011) :cite:`atkinson11`."""
-        p = self.params
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
         c = self.COEFF_SF
 
         stress_drop = 10. ** (3.45 - 0.2 * s.mag)
         v1 = c.delta + 0.05
-        v2 = (0.05 + c.delta * np.maximum(s.mag - c.m_1, 0) /
-              (c.m_h - c.m_1))
+        v2 = (0.05 + c.delta * np.maximum(s.mag - c.m_1, 0) / (c.m_h - c.m_1))
 
         log10_stress_factor = (np.minimum(2., stress_drop / 140.) *
                                np.minimum(v1, v2))
@@ -160,12 +134,12 @@ class AtkinsonBoore2006(model.Model):
         Parameters
         ----------
         pga_bc : float
-            Peak ground acceleration (PGA, g) at the B/C boundary.
+            peak ground acceleration (PGA, g) at the B/C boundary.
 
         Returns
         -------
         log_10_site : :class:`np.ndarray`
-            Log base 10 of the  site amplification.
+            log base 10 of the  site amplification.
         """
         s = self._scenario
         c = self.COEFF_SITE
@@ -176,11 +150,10 @@ class AtkinsonBoore2006(model.Model):
         if s.v_s30 <= VS_1:
             b_nl = c.b_1
         elif VS_1 < s.v_s30 <= VS_2:
-            b_nl = ((c.b_1 - c.b_2) * np.log(s.v_s30 / VS_2) /
-                    np.log(VS_1 / VS_2))
+            b_nl = (
+                (c.b_1 - c.b_2) * np.log(s.v_s30 / VS_2) / np.log(VS_1 / VS_2))
         elif VS_2 < s.v_s30 <= VS_REF:
-            b_nl = (c.b_2 * np.log(s.v_s30 / VS_REF) /
-                    np.log(VS_2 / VS_REF))
+            b_nl = (c.b_2 * np.log(s.v_s30 / VS_REF) / np.log(VS_2 / VS_REF))
         else:
             # Vs30 > VS_REF
             b_nl = 0
@@ -188,12 +161,6 @@ class AtkinsonBoore2006(model.Model):
         pga_bc = max(pga_bc, 60.)
 
         log10_site = np.log10(
-<<<<<<< HEAD
-            np.exp(c.b_lin * np.log(s.v_s30 / VS_REF) + b_nl *
-                   np.log(pga_bc / 100.)))
-=======
-            np.exp(c.b_lin * np.log(p['v_s30'] / VS_REF) + b_nl * np.log(
-                pga_bc / 100.)))
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
-
+            np.exp(c.b_lin * np.log(s.v_s30 / VS_REF) + b_nl * np.log(pga_bc /
+                                                                      100.)))
         return np.interp(self.PERIODS, c.period, log10_site)

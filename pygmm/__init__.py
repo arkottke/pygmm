@@ -1,6 +1,4 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+"""pyGMM: Ground motion models implemented in Python."""
 import logging
 import pkg_resources
 
@@ -61,8 +59,3 @@ models = [
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
 ]
-<<<<<<< HEAD
-
-ArrayLike = typing.Union[typing.List[float], np.ndarray]
-=======
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8

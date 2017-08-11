@@ -1,5 +1,4 @@
-#!/usr/bin/env python
-# encoding: utf-8
+"""Tavakoli and Pezeshk (2005, :cite:`tavakoli05`) model."""
 
 from __future__ import division
 
@@ -8,8 +7,6 @@ import numpy as np
 from . import model
 
 __author__ = 'Albert Kottke'
-
-import os
 
 
 class TavakoliPezeshk05(model.Model):
@@ -20,9 +17,8 @@ class TavakoliPezeshk05(model.Model):
 
     Parameters
     ----------
-
-    Returns
-    -------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
 
     """
 
@@ -45,11 +41,7 @@ class TavakoliPezeshk05(model.Model):
     ]
 
     def __init__(self, scenario):
-        """Initialize the model.
-
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-        """
+        """Initialize the model."""
         super(TavakoliPezeshk05, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
@@ -57,13 +49,10 @@ class TavakoliPezeshk05(model.Model):
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Parameters
-        ----------
-
         Returns
         -------
-
-            class:`np.array`: Natural log of the response.
+        ln_resp : class:`np.array`:
+            natural log of the response
 
         """
         s = self._scenario
@@ -83,10 +72,8 @@ class TavakoliPezeshk05(model.Model):
 
         # Calculate scaled, magnitude dependent distance R for use when
         # calculating f3
-        dist = np.sqrt(
-            s.dist_rup ** 2 +
-            (c.c_5 * np.exp(c.c_6 * s.mag +
-                            c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2)
+        dist = np.sqrt(s.dist_rup ** 2 + (c.c_5 * np.exp(
+            c.c_6 * s.mag + c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2)
         f3 = ((c.c_4 + c.c_13 * s.mag) * np.log(dist) +
               (c.c_8 + c.c_12 * s.mag) * dist)
 
@@ -98,13 +85,10 @@ class TavakoliPezeshk05(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Parameters
-        ----------
-
         Returns
         -------
-
-            class:`np.array`: Logarithmic standard deviation.
+        ln_std : class:`np.array`:
+            natural log standard deviation
 
         """
         s = self._scenario

@@ -1,6 +1,7 @@
 import numpy as np
 
 from .types import ArrayLike
+"""Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
 
 __author__ = 'Albert Kottke'
 

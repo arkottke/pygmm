@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-# encoding: utf-8
+"""Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
 
 from __future__ import division
 
@@ -14,7 +13,15 @@ __author__ = 'Albert Kottke'
 
 
 class DerrasBardCotton2014(model.Model):
-    """Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
+    """Derras, Bard and Cotton (2014, :cite:`derras14`) model.
+
+    Parameters
+    ----------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
+
+    """
+
     NAME = 'Derras, Bard & Cotton (2014)'
     ABBREV = 'DBC13'
 
@@ -39,26 +46,22 @@ class DerrasBardCotton2014(model.Model):
     ]
 
     def __init__(self, scenario):
-        """Initialize the model.
-
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-        """
+        """Initialize the model."""
         super(DerrasBardCotton2014, self).__init__(scenario)
         c = self.COEFF
         # Values modified during the calculation
-        s = self._scenario.copy()
+        s = dict(self._scenario)
 
         for k in ['v_s30', 'dist_jb']:
-            s['log10_' + k] = np.log10(p[k])
+            s['log10_' + k] = np.log10(s[k])
         # Translate to mechanism integer
-        s['mechanism'] = dict(NS=1, RS=3, SS=4)[p['mechanism']]
+        s['mechanism'] = dict(NS=1, RS=3, SS=4)[s['mechanism']]
 
         # Create the normalized parameter matrix
         keys = [
             'log10_dist_jb', 'mag', 'log10_v_s30', 'depth_hyp', 'mechanism'
         ]
-        values = np.array([p[k] for k in keys])
+        values = np.array([s[k] for k in keys])
         limits = np.rec.array([c['min_max'][k] for k in keys], names='min,max')
         p_n = np.matrix(2 * (values - limits['min']) / (limits['max'] - limits[
             'min']) - 1).T

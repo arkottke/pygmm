@@ -4,6 +4,7 @@
 import numpy as np
 import pytest
 
+from pygmm.model import Scenario
 from pygmm.hermkes_kuehn_riggelsen_2014 \
     import HermkesKuehnRiggelsen2014 as HKR13
 
@@ -53,7 +54,7 @@ predictions = [
                           (3, 'ln_std_pga'), ([2, 4, 6, 8, 10], 'spec_accels'),
                           ([3, 5, 7, 9, 11], 'ln_stds')])
 def test_model(event, prediction, indices, attr):
-    m = HKR13(**dict(zip(names, event)))
+    m = HKR13(Scenario(**dict(zip(names, event))))
 
     prediction = np.asarray(prediction)
     if 'ln_' in attr:

@@ -8,6 +8,7 @@ import os
 import numpy as np
 import pytest
 
+from pygmm.model import Scenario
 from pygmm import DerrasBardCotton2014 as DBC14
 
 # Relative tolerance for all tests
@@ -23,7 +24,7 @@ testdata = [(t['params'], t['results']) for t in tests]
 
 @pytest.mark.parametrize('params,expected', testdata)
 def test_spec_accels(params, expected):
-    m = DBC14(**params)
+    m = DBC14(Scenario(**params))
     np.testing.assert_allclose(
         m.interp_spec_accels(expected['periods']),
         # Need to convert from m/sec to g
@@ -35,7 +36,7 @@ def test_spec_accels(params, expected):
 @pytest.mark.parametrize('params,expected', testdata)
 @pytest.mark.parametrize('key', ['pga', 'pgv'])
 def test_im_values(params, expected, key):
-    m = DBC14(**params)
+    m = DBC14(Scenario(**params))
     # PGA needs to be converted from m/sec² to g, and PGV need to be
     # converted from m/sec into cm/sec
     scale = m.GRAVITY if key == 'pga' else 0.01
@@ -49,7 +50,8 @@ def test_im_values(params, expected, key):
 @pytest.fixture
 def model():
     """Instance of the DBC13 model."""
-    return DBC14(dist_jb=10, mag=6, v_s30=600, depth_hyp=10, mechanism='SS')
+    return DBC14(
+        Scenario(dist_jb=10, mag=6, v_s30=600, depth_hyp=10, mechanism='SS'))
 
 
 def test_ln_std(model):

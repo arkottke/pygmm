@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
 
 from __future__ import division
@@ -19,13 +17,6 @@ class CampbellBozorgnia2014(model.Model):
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
-
-    Parameters
-    ----------
-
-    Returns
-    -------
-
     """
 
     NAME = 'Campbell & Bozorgnia (2014)'
@@ -69,17 +60,7 @@ class CampbellBozorgnia2014(model.Model):
     ]
 
     def _check_inputs(self, **kwds):
-        """
-
-        Parameters
-        ----------
-        **kwds :
-
-
-        Returns
-        -------
-
-        """
+        """Check the inputs."""
         super(CampbellBozorgnia2014, self)._check_inputs(**kwds)
         s = self._scenario
 
@@ -87,21 +68,9 @@ class CampbellBozorgnia2014(model.Model):
             if mech == s.mechanism and s.mag > limit:
                 logging.warning(
                     'Magnitude of %g is greater than the recommended limit of'
-<<<<<<< HEAD
-                    '%g for %s style faults',
-                    s.mag, limit, mech
-                )
-
+                    '%g for %s style faults', s.mag, limit, mech)
         if s.depth_2_5 is None:
-            s.depth_2_5 = self.calc_depth_2_5(
-                s.v_s30, s.region, s.depth_1_0)
-=======
-                    '%g for %s style faults', p['mag'], limit, mech)
-
-        if p['depth_2_5'] is None:
-            p['depth_2_5'] = self.calc_depth_2_5(p['v_s30'], p['region'],
-                                                 p['depth_1_0'])
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
+            s.depth_2_5 = self.calc_depth_2_5(s.v_s30, s.region, s.depth_1_0)
 
         if s.depth_tor is None:
             s.depth_tor = CY14.calc_depth_tor(s.mag, s.mechanism)
@@ -110,15 +79,8 @@ class CampbellBozorgnia2014(model.Model):
             s.width = CampbellBozorgnia2014.calc_width(
                 s.mag, s.dip, s.depth_tor, s.depth_bot)
 
-<<<<<<< HEAD
         if s.depth_bor is None:
-            s.depth_bor = self.calc_depth_bor(
-                s.depth_tor, s.dip, s.width)
-=======
-        if p['depth_bor'] is None:
-            p['depth_bor'] = self.calc_depth_bor(p['depth_tor'], p['dip'],
-                                                 p['width'])
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
+            s.depth_bor = self.calc_depth_bor(s.depth_tor, s.dip, s.width)
 
         if s.depth_hyp is None:
             s.depth_hyp = CampbellBozorgnia2014.calc_depth_hyp(
@@ -167,14 +129,8 @@ class CampbellBozorgnia2014(model.Model):
                 break
 
         # Geometric attenuation term
-<<<<<<< HEAD
-        f_dis = (c.c_5 + c.c_6 * s.mag) * np.log(np.sqrt(
-            s.dist_rup ** 2 + c.c_7 ** 2
-        ))
-=======
-        f_dis = (c.c_5 + c.c_6 * p['mag']
-                 ) * np.log(np.sqrt(p['dist_rup'] ** 2 + c.c_7 ** 2))
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
+        f_dis = (c.c_5 + c.c_6 * s.mag
+                 ) * np.log(np.sqrt(s.dist_rup ** 2 + c.c_7 ** 2))
 
         # Style of faulting term
         taper = np.clip(s.mag - 4.5, 0, 1)
@@ -294,19 +250,10 @@ class CampbellBozorgnia2014(model.Model):
 
         vs_ratio = s.v_s30 / c.k_1
         alpha = np.zeros_like(c.period)
-<<<<<<< HEAD
         mask = s.v_s30 < c.k_1
-        alpha[mask] = (
-            c.k_2 * pga_ref * (
-                (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1) -
-                (pga_ref + self.COEFF_C) ** -1)
-        )[mask]
-=======
-        mask = p['v_s30'] < c.k_1
         alpha[mask] = (c.k_2 * pga_ref *
                        ((pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) **
                         (-1) - (pga_ref + self.COEFF_C) ** -1))[mask]
->>>>>>> 463f156a57779d7fb9def11b795e00bc38ad0dd8
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
         tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 + 2 * alpha *

@@ -8,6 +8,7 @@ import os
 import numpy as np
 import pytest
 
+from pygmm.model import Scenario
 from pygmm import AkkarSandikkayaBommer2014 as ASB14
 
 # Relative tolerance for all tests
@@ -25,7 +26,8 @@ testdata = [(dist, t['params'], results)
 def create_model(params, dist):
     params = dict(params)
     params[dist] = params.pop('dist')
-    m = ASB14(**params)
+    s = Scenario(**params)
+    m = ASB14(s)
     return m
 
 
