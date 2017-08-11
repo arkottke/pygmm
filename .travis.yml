@@ -1,3 +1,4 @@
+sudo: required
 language: python
 python:
   - "2.7"
@@ -6,8 +7,10 @@ python:
 before_install:
   # Install git-lfs
   - curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh.deb | sudo bash
+  - sudo apt-get install -y git-lfs
+
 install:
-  - git pull
+  - /usr/bin/git-lfs pull
   - pip install -r requirements_dev.txt
   - pip install -e .
 
