@@ -48,6 +48,7 @@ predictions = [
 ]
 
 
+@pytest.mark.slowtest
 @pytest.mark.parametrize('event,prediction', zip(events, predictions))
 @pytest.mark.parametrize('indices,attr',
                          [(0, 'pgv'), (1, 'ln_std_pgv'), (2, 'pga'),
