@@ -222,7 +222,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return ln_std
 
     @staticmethod
-    def calc_width(mag: float, dip: float) -> float:
+    def calc_width(mag, dip):
         """Compute the fault width based on equation in NGW2 spreadsheet.
 
         This equation is not provided in the paper.
@@ -243,7 +243,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 
     @staticmethod
-    def calc_depth_tor(mag: float) -> float:
+    def calc_depth_tor(mag):
         """Calculate the depth to top of rupture (km).
 
         Parameters
@@ -259,7 +259,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30: float, region: str='california') -> float:
+    def calc_depth_1_0(v_s30, region='california'):
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
@@ -297,7 +297,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
                                      (1360. ** power + v_ref ** power))) / 1000
 
-    def _calc_f1(self) -> np.ndarray:
+    def _calc_f1(self):
         """Calculate the magnitude scaling parameter f1."""
         c = self.COEFF
         s = self._scenario
@@ -329,7 +329,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1
 
-    def _calc_f4(self) -> np.ndarray:
+    def _calc_f4(self):
         """Calculate the hanging-wall parameter f4."""
         # Move this into a decorator?
         c = self.COEFF

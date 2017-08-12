@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-import pathlib
+import os
 
 import pytest
 import numpy as np
@@ -11,10 +11,10 @@ from numpy.testing import assert_allclose
 
 from pygmm.baker_jayaram_2008 import calc_correls, calc_cond_mean_spectrum
 
-fpath = pathlib.Path(__file__).parent.joinpath('data',
-                                               'baker_jayaram_2008.json')
+fpath = os.path.join(
+    os.path.dirname(__file__), 'data', 'baker_jayaram_2008.json')
 
-with fpath.open() as fp:
+with open(fpath) as fp:
     data = json.load(fp)
 
 
