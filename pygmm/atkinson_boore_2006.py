@@ -95,7 +95,7 @@ class AtkinsonBoore2006(model.Model):
         ln_resp = np.log(10 ** log10_resp)
         return ln_resp
 
-    def _calc_ln_std(self) -> np.ndarray:
+    def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
         Returns
@@ -128,7 +128,7 @@ class AtkinsonBoore2006(model.Model):
 
         return np.interp(self.PERIODS, c.period, log10_stress_factor)
 
-    def _calc_log10_site(self, pga_bc: float) -> np.ndarray:
+    def _calc_log10_site(self, pga_bc):
         """Calculate the log10 of the site amplification.
 
         Parameters
