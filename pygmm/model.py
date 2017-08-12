@@ -10,7 +10,7 @@ import numpy as np
 
 from scipy.interpolate import interp1d
 
-from six import UserDict
+from six.moves import UserDict
 
 
 class Scenario(UserDict):
