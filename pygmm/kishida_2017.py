@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Kishida (2017, :cite:`kishida17`) conditional spectrum."""
 
 import numpy as np

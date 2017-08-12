@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Chiou and Youngs (2014, :cite:`chiou14`) model."""
 
 from __future__ import division

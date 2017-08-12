@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
 
 from __future__ import division

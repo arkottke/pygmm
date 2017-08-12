@@ -1,6 +1,6 @@
 # History
 
-## 0.5
+## 0.5.1
 
 * Added Scenario objects
 * Added Python 2.7 support

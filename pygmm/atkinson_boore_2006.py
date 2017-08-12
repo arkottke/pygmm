@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Atkinson and Boore (2006, :cite:`atkinson06`) model."""
 
 from __future__ import division

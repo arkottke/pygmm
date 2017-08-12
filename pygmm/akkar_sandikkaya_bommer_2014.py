@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model."""
 
 from __future__ import division

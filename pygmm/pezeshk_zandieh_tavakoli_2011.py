@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Pezeshk, Zandieh, and Tavakoli (2011, :cite:`pezeshk11`) model."""
 
 from __future__ import division
