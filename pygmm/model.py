@@ -3,15 +3,17 @@
 
 from __future__ import division
 
-import collections
 import logging
 import os
 
 import numpy as np
+
 from scipy.interpolate import interp1d
 
+from six import UserDict
 
-class Scenario(collections.UserDict):
+
+class Scenario(UserDict):
     r"""An eathquake scenario used in all ground motion models.
 
     Parameters
