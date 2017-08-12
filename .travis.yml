@@ -7,6 +7,7 @@ python:
 install:
   # Remove the file and force it to be downloaded from Dropbox
   - rm pygmm/data/hermkes_kuehn_riggelsen_2014.npz
+  - wget -o=pygmm/data/hermkes_kuehn_riggelsen_2014.npz "https://www.dropbox.com/s/1tu9ss1s3inctej/hermkes_kuehn_riggelsen_2014.npz?dl=0"
   - pip install -r requirements_dev.txt
   - pip install -e .
 
