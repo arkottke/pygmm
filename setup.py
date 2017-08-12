@@ -22,7 +22,7 @@ test_requirements = ['pytest >= 2.9.0', 'pytest-cov', 'pytest-flake8']
 
 setup(
     name='pygmm',
-    version='0.3.3.dev0',
+    version='0.4.1.dev0',
     description="Ground motion models implemented in Python.",
     long_description=readme + '\n\n' + history,
     author="Albert Kottke",
@@ -30,7 +30,7 @@ setup(
     url='https://github.com/arkottke/pygmm',
     packages=['pygmm'],
     package_dir={'pygmm': 'pygmm'},
-    package_data={'pygmm': ['data/*']},
+    package_data={'pygmm': ['data/*.csv', 'data/*.json']},
     include_package_data=True,
     install_requires=requirements,
     license="MIT",
