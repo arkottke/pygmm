@@ -1,12 +1,11 @@
-import numpy as np
-
-from .types import ArrayLike
 """Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
+
+import numpy as np
 
 __author__ = 'Albert Kottke'
 
 
-def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
+def calc_correls(periods, period_cond):
     """Baker and Jayaram (2008, :cite:`baker08`) correlation model.
 
     Parameters
@@ -45,11 +44,8 @@ def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
     return correls
 
 
-def calc_cond_mean_spectrum(periods: ArrayLike,
-                            ln_psas: ArrayLike,
-                            ln_stds: ArrayLike,
-                            period_cond: float,
-                            ln_psa_cond: float) -> (np.ndarray, np.ndarray):
+def calc_cond_mean_spectrum(periods, ln_psas, ln_stds, period_cond,
+                            ln_psa_cond):
     """Conditional mean spectrum by Baker & Jayaram (2008, :cite:`baker08`).
 
     Parameters

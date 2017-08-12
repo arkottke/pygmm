@@ -1,8 +1,10 @@
-import typing
+"""Custom types."""
+# import typing
 
-import numpy as np
+# import numpy as np
 
 __author__ = 'Albert Kottke'
 
 # Numpy like arrays
-ArrayLike = typing.Union[typing.List[float], np.ndarray]
+# Disable for Python2.7 compatability
+# ArrayLike = typing.Union[typing.List[float], np.ndarray]
