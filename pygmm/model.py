@@ -10,8 +10,6 @@ import os
 import numpy as np
 from scipy.interpolate import interp1d
 
-from .types import ArrayLike
-
 
 class Scenario(collections.UserDict):
     r"""An eathquake scenario used in all ground motion models.
@@ -143,8 +141,7 @@ class Model(object):
                for p in self.PARAMS})
         self._check_inputs()
 
-    def interp_spec_accels(self, periods: ArrayLike,
-                           kind: str='linear') -> np.ndarray:
+    def interp_spec_accels(self, periods, kind='linear'):
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -174,8 +171,7 @@ class Model(object):
                 bounds_error=False,
                 fill_value=np.nan, )(np.log(periods)))
 
-    def interp_ln_stds(self, periods: ArrayLike,
-                       kind: str='linear') -> np.ndarray:
+    def interp_ln_stds(self, periods, kind='linear'):
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
