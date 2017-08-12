@@ -92,7 +92,7 @@ class Scenario(collections.UserDict):
         super(Scenario, self).__init__(kwds)
         for k in self.data:
             if k not in self.KNOWN_KEYS:
-                raise Warning(f'{k} is not a recognized scenario key!')
+                raise Warning('%s is not a recognized scenario key!', k)
 
     def __getattr__(self, item):
         """Access the data with attributes."""
