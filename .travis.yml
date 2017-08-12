@@ -4,13 +4,9 @@ python:
   - "2.7"
   - "3.6"
 
-before_install:
-  # Install git-lfs
-  - curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh.deb | sudo bash
-  - sudo apt-get install -y git-lfs
-
 install:
-  - /usr/bin/git-lfs pull
+  # Remove the file and force it to be downloaded from Dropbox
+  - rm pygmm/data/hermkes_kuehn_riggelsen_2014.npz
   - pip install -r requirements_dev.txt
   - pip install -e .
 
