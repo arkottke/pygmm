@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Basic models."""
 
 from __future__ import division
