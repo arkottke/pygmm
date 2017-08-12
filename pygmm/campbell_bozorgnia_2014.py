@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
 
 from __future__ import division
