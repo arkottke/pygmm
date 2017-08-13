@@ -66,7 +66,7 @@ def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
         for period_cond in periods_grouped
     ]).T
     # Covariance matrix, Equation (7)
-    mat_covar = mat_ln_std @ mat_correls @ mat_ln_std
+    mat_covar = np.matmul(mat_ln_std, np.matmul(mat_correls, mat_ln_std))
     # Extract the submatrices, Equation (6)
     n = np.ma.count_masked(ln_psas_cond)
     mat_covar_11 = mat_covar[0:n, 0:n]
@@ -77,12 +77,13 @@ def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
     # Conditional mean value, Equation (3)
     mat_total_resids = np.asmatrix(ln_psas_cond[~mask] - ln_psas[~mask]).T
     ln_psas_cmsv = np.r_[ln_psas[mask] + np.ravel(
-        mat_covar_12 @ mat_covar_22_inv @ mat_total_resids), ln_psas_cond[
-            ~mask].data]
+        np.matmul(mat_covar_12, np.matmul(
+            mat_covar_22_inv, mat_total_resids))), ln_psas_cond[~mask].data]
     # Compute standard deviation, Equation (4)
     ln_stds_cmsv = np.r_[np.sqrt(
-        np.diag(mat_covar_11 - mat_covar_12 @ mat_covar_22_inv
-                @ mat_covar_21)), np.zeros(ln_psas_cond.count())]
+        np.diag(mat_covar_11 - np.matmul(
+            mat_covar_12, np.matmul(mat_covar_22_inv, mat_covar_21)))),
+                         np.zeros(ln_psas_cond.count())]
     # Sort to the original period indices
     indices = np.argsort(periods_grouped)
     ln_psas_cmsv = ln_psas_cmsv[indices]
