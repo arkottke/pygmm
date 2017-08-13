@@ -2,9 +2,8 @@
 # encoding: utf-8
 """Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model."""
 
-from __future__ import division
-
-import os
+import pathlib
+import logging
 
 import numpy as np
 from scipy.interpolate import NearestNDInterpolator
@@ -13,24 +12,25 @@ from . import model
 
 __author__ = 'Albert Kottke'
 
-fname_data = os.path.join(
-    os.path.dirname(__file__), 'data', 'hermkes_kuehn_riggelsen_2014.npz')
+fname_data = pathlib.Path(__file__).parent.joinpath(
+    'data', 'hermkes_kuehn_riggelsen_2014.npz')
 
-if not os.path.exists(fname_data):
+if not fname_data.exists():
     # Download the model data if not found.
-    from six.moves.urllib.request import urlretrieve
-    from six.moves.urllib.error import HTTPError
+    import urllib.request
+    import shutil
 
     url = ('https://www.dropbox.com/s/1tu9ss1s3inctej/'
            'hermkes_kuehn_riggelsen_2014.npz?dl=0')
+
     try:
-        urlretrieve(url, fname_data)
-    except HTTPError:
-        print('Hermkes, Kuehn, and Riggelsen (2013) model data required, '
-              'which cannot be downloaded. Download the file from {url}'
-              'to this location: {loc}'.format(
-                  url=url, loc=os.path.abspath(fname_data)))
-        raise RuntimeError
+        with urllib.request.urlopen(url) as req, fname_data.open('wb') as fp:
+            shutil.copy(req, fp)
+    except urllib.request.URLError:
+        logging.critical(
+            'Hermkes, Kuehn, and Riggelsen (2013) model data required, '
+            'which cannot be downloaded. Download the file from %s'
+            'to this location: %s', url, fname_data)
 
 INTERPOLATOR = None
 
@@ -76,9 +76,9 @@ class HermkesKuehnRiggelsen2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(HermkesKuehnRiggelsen2014, self).__init__(scenario)
+        super().__init__(scenario)
 
         s = self._scenario
 

@@ -4,9 +4,14 @@
 import numpy as np
 
 from .baker_jayaram_2008 import calc_correls
+from .types import ArrayLike
 
 
-def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
+def calc_cond_mean_spectrum_vector(
+        periods: ArrayLike,
+        ln_psas: ArrayLike,
+        ln_stds: ArrayLike,
+        ln_psas_cond: ArrayLike) -> (np.ndarray, np.ndarray):
     """Kishida (2017, :cite:`kishida17`) conditional spectrum.
 
     Conditional mean spectrum vector (CMSV) by Kishida (2017,

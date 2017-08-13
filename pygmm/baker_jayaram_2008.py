@@ -2,10 +2,12 @@
 
 import numpy as np
 
+from .types import ArrayLike
+
 __author__ = 'Albert Kottke'
 
 
-def calc_correls(periods, period_cond):
+def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
     """Baker and Jayaram (2008, :cite:`baker08`) correlation model.
 
     Parameters
@@ -20,7 +22,7 @@ def calc_correls(periods, period_cond):
     correls : :class:`np.ndarray`
         Correlation coefficients
     """
-
+    periods = np.asarray(periods)
     periods_min = np.minimum(periods, period_cond)
     periods_max = np.maximum(periods, period_cond)
 
@@ -44,8 +46,11 @@ def calc_correls(periods, period_cond):
     return correls
 
 
-def calc_cond_mean_spectrum(periods, ln_psas, ln_stds, period_cond,
-                            ln_psa_cond):
+def calc_cond_mean_spectrum(periods: ArrayLike,
+                            ln_psas: ArrayLike,
+                            ln_stds: ArrayLike,
+                            period_cond: float,
+                            ln_psa_cond: float) -> (np.ndarray, np.ndarray):
     """Conditional mean spectrum by Baker & Jayaram (2008, :cite:`baker08`).
 
     Parameters

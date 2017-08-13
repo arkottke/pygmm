@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model."""
 
-from __future__ import division
-
 import collections
 
 import numpy as np
@@ -60,7 +58,7 @@ class AkkarSandikkayaBommer2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
         super(AkkarSandikkayaBommer2014, self).__init__(scenario)
 

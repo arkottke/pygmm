@@ -1,9 +1,9 @@
 # History
 
-## 0.5.1
+## 0.5.1 (unreleased)
 
-* Added Scenario objects
-* Added Python 2.7 support
+* Added Scenario objects.
+* Added typing for all classes.
 
 
 ## 0.4.0 (2016-04-08)

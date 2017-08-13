@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Idriss (2014, :cite:`idriss14`) model."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -45,13 +43,13 @@ class Idriss2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'RS'], 'SS'),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(Idriss2014, self).__init__(scenario)
+        super().__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
-    def _calc_ln_resp(self):
+    def _calc_ln_resp(self) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Returns
@@ -80,7 +78,7 @@ class Idriss2014(model.Model):
 
         return ln_resp
 
-    def _calc_ln_std(self):
+    def _calc_ln_std(self) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Returns

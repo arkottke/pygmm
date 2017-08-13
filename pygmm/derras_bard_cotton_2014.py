@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
 
-from __future__ import division
-
 import json
 import os
 
@@ -46,9 +44,9 @@ class DerrasBardCotton2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(DerrasBardCotton2014, self).__init__(scenario)
+        super().__init__(scenario)
         c = self.COEFF
         # Values modified during the calculation
         s = dict(self._scenario)
