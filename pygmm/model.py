@@ -13,7 +13,7 @@ from scipy.interpolate import interp1d
 from six.moves import UserDict
 
 
-class Scenario(UserDict):
+class Scenario(UserDict, object):
     r"""An eathquake scenario used in all ground motion models.
 
     Parameters
