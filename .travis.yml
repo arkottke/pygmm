@@ -1,12 +1,10 @@
 sudo: required
 language: python
 python:
-  - "2.7"
   - "3.6"
 
 install:
   # Remove the file and force it to be downloaded from Dropbox
-  - rm pygmm/data/hermkes_kuehn_riggelsen_2014.npz
   - wget -O pygmm/data/hermkes_kuehn_riggelsen_2014.npz "https://www.dropbox.com/s/1tu9ss1s3inctej/hermkes_kuehn_riggelsen_2014.npz?dl=0"
   - pip install -r requirements_dev.txt
   - pip install -e .
@@ -19,7 +17,7 @@ after_success:
 
 deploy:
   true:
-    condition: $TRAVIS_PYTHON_VERSION == "3.4"
+    condition: $TRAVIS_PYTHON_VERSION == "3.6"
     repo: arkottke/pygmm
     tags: true
   user: arkottke
