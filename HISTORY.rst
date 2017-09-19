@@ -2,11 +2,11 @@
 History
 =======
 
-0.4.1 (unreleased)
+0.4.1 (2017-09-19)
 ------------------
 
-- Nothing changed yet.
-
+- Added Scenario to simplify repeated calls and documentation.
+- Added some typing support.
 
 0.4.0 (2016-04-08)
 ------------------
@@ -20,8 +20,7 @@ History
 
 - Nothing changed yet.
 
-
 0.3.1 (2016-03-30)
 ------------------
 
-* First release on PyPI.
+- First release on PyPI.
