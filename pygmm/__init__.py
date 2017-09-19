@@ -1,9 +1,8 @@
-#!/usr/bin/python
-# -*- coding: utf-8 -*-
-
+"""pyGMM: Ground motion models implemented in Python."""
 import logging
 import pkg_resources
 
+from .model import Scenario
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
@@ -17,6 +16,7 @@ from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 
 __all__ = [
+    'Scenario',
     'AbrahamsonSilvaKamai2014',
     'AkkarSandikkayaBommer2014',
     'AtkinsonBoore2006',
@@ -36,14 +36,15 @@ __license__ = 'MIT'
 __title__ = 'pyGMM'
 __version__ = pkg_resources.get_distribution('pygmm').version
 
-
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+
     from logging import NullHandler
 except ImportError:
+
     class NullHandler(logging.Handler):
         def emit(self, record):
             pass
+
 
 logging.getLogger(__name__).addHandler(NullHandler())
 

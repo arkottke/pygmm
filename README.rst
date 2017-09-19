@@ -66,6 +66,14 @@ Models currently supported:
 
 * Tavakoli & Pezeshk (2005)
 
+Conditional spectra models:
+
+* Baker & Jayaram (2008) with unit tests
+
+* Kishida (2017) with unit tests
+
+Unit tests means that each test cases are used to test the implemention of
+the model.
 
 Citation
 --------

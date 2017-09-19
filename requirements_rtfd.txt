@@ -1,0 +1,7 @@
+-r ./requirements.txt
+
+jinja2
+matplotlib
+sphinx
+sphinx_rtd_theme
+sphinxcontrib-bibtex

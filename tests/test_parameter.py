@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Test model interface using C03 model."""
 
 from pygmm.model import Parameter, NumericParameter, CategoricalParameter
@@ -10,8 +9,7 @@ import pytest
 
 def test_parameter():
     p = Parameter('test')
-    with pytest.raises(NotImplementedError):
-        p.check(None)
+    p.check(None)
 
 
 @pytest.fixture

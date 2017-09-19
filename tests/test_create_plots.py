@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Create plots for visual comparison."""
 
 import os
 
 import matplotlib
-matplotlib.use('agg')
+matplotlib.use('agg')  # NOQA
 import matplotlib.pyplot as plt
+import pytest
 
 import pygmm
 
@@ -28,14 +28,22 @@ DEFAULT_PROPS = dict(
     mechanism='SS',
     region='california',
     v_s30=500.,
-    width=10,
-)
+    width=10, )
 
 # Make the figure directory if needed
 if not os.path.exists('figures'):
     os.makedirs('figures')
 
 
+@pytest.mark.parametrize('model', pygmm.models, ids=lambda m: m.ABBREV)
+@pytest.mark.parametrize(
+    'key,values,label', [
+        ('mag', [5, 6, 7], 'Magnitude'),
+        (['dist', 'dist_rup', 'dist_jb', 'dist_x'], [10, 50, 100],
+         'Distance (km)'),
+        ('v_s30', [300, 650, 1000], '$V_{s30}$ (m/s)'),
+    ],
+    ids=lambda a: a[0])
 def plot_model_with_param(model, key, values, label):
     props = dict(DEFAULT_PROPS)
 
@@ -72,14 +80,3 @@ def plot_model_with_param(model, key, values, label):
 
     fig.savefig(os.path.join('figures', prefix + '-' + model.ABBREV))
     plt.close(fig)
-
-
-def test_models():
-    for m in pygmm.models:
-        for key, values, label in [
-                ('mag', [5, 6, 7], 'Magnitude'),
-                (['dist', 'dist_rup', 'dist_jb', 'dist_x'], [10, 50, 100],
-                 'Distance (km)'),
-                ('v_s30', [300, 650, 1000], '$V_{s30}$ (m/s)'),
-                ]:
-            yield plot_model_with_param, m, key, values, label

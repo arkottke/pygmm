@@ -8,14 +8,14 @@ import os
 import numpy as np
 import pytest
 
+from pygmm.model import Scenario
 from pygmm import AkkarSandikkayaBommer2014 as ASB14
 
 # Relative tolerance for all tests
 RTOL = 1e-2
 
 # Load the tests
-fname = os.path.join(
-    os.path.dirname(__file__), 'data', 'asb14_tests.json.gz')
+fname = os.path.join(os.path.dirname(__file__), 'data', 'asb14_tests.json.gz')
 with gzip.open(fname, 'rt') as fp:
     tests = json.load(fp)
 
@@ -26,7 +26,8 @@ testdata = [(dist, t['params'], results)
 def create_model(params, dist):
     params = dict(params)
     params[dist] = params.pop('dist')
-    m = ASB14(**params)
+    s = Scenario(**params)
+    m = ASB14(s)
     return m
 
 
@@ -37,8 +38,7 @@ def test_spec_accels(dist, params, expected):
         m.interp_spec_accels(expected['periods']),
         expected['spec_accels'],
         rtol=RTOL,
-        err_msg='Spectral accelerations'
-    )
+        err_msg='Spectral accelerations')
 
 
 @pytest.mark.parametrize('dist,params,expected', testdata)
@@ -48,5 +48,4 @@ def test_im_values(dist, params, expected, key):
     np.testing.assert_allclose(
         getattr(m, key),
         expected[key],
-        rtol=RTOL,
-    )
+        rtol=RTOL, )

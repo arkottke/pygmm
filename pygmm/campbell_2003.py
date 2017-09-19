@@ -1,6 +1,3 @@
-#!/usr/bin/env python3
-# encoding: utf-8
-
 """Model for the Campbell (2003) ground motion model."""
 
 from __future__ import division
@@ -16,6 +13,13 @@ class Campbell2003(model.Model):
     """Campbell (2003, :cite:`campbell03`) model.
 
     This model was developed for the Eastern US.
+
+    Parameters
+    ----------
+    scenario : :class:`pygmm.model.Scenario`
+        earthquake scenario
+
+
     """
 
     NAME = 'Campbell (2003)'
@@ -34,47 +38,39 @@ class Campbell2003(model.Model):
         model.NumericParameter('dist_rup', True, None, 1000.),
     ]
 
-    def __init__(self, **kwds):
-        """Initialize the model.
-
-        Keyword Args:
-            mag (float): moment magnitude of the event (:math:`M_w`)
-
-            dist_rup (float): closest distance to the rupture plane
-                (:math:`R_\\text{rup}`, km)
-
-        """
-        super(Campbell2003, self).__init__(**kwds)
+    def __init__(self, scenario):
+        """Initialize the model."""
+        super(Campbell2003, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
     def _calc_ln_resp(self):
         """Calculate the natural logarithm of the response.
 
-        Returns:
-            :class:`np.array`: Natural logarithm of the response.
+        Returns
+        -------
+        ln_resp : class:`np.array`:
+            natural log of the response
+
         """
-        p = self.params
         c = self.COEFF
+        s = self._scenario
 
-        f_1 = c.c_2 * p['mag'] + c.c_3 * (8.5 - p['mag']) ** 2
-
+        f_1 = c.c_2 * s.mag + c.c_3 * (8.5 - s.mag) ** 2
         # Distance scaling
         f_2 = (c.c_4 * np.log(
-            np.sqrt(p['dist_rup'] ** 2 +
-                    (c.c_7 * np.exp(c.c_8 * p['mag'])) ** 2)) +
-               (c.c_5 + c.c_6 * p['mag']) * p['dist_rup'])
-
+            np.sqrt(s.dist_rup ** 2 + (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2)) +
+               (c.c_5 + c.c_6 * s.mag) * s.dist_rup)
         # Geometric attenuation
         r_1 = 70.0
         r_2 = 130.0
-        if p['dist_rup'] <= r_1:
+        if s.dist_rup <= r_1:
             f_3 = 0.
         else:
-            f_3 = c.c_9 * (np.log(p['dist_rup']) - np.log(r_1))
+            f_3 = c.c_9 * (np.log(s.dist_rup) - np.log(r_1))
 
-            if r_2 < p['dist_rup']:
-                f_3 += c.c_10 * (np.log(p['dist_rup']) - np.log(r_2))
+            if r_2 < s.dist_rup:
+                f_3 += c.c_10 * (np.log(s.dist_rup) - np.log(r_2))
 
         # Compute the ground motion
         ln_resp = c.c_1 + f_1 + f_2 + f_3
@@ -84,14 +80,17 @@ class Campbell2003(model.Model):
     def _calc_ln_std(self):
         """Calculate the logarithmic standard deviation.
 
-        Returns:
-            :class:`np.array`: Logarithmic standard deviation.
-        """
-        p = self.params
-        c = self.COEFF
+        Returns
+        -------
+        ln_std : class:`np.array`:
+            natural log standard deviation
 
-        if p['mag'] < 7.16:
-            ln_std = c.c_11 + c.c_12 * p['mag']
+        """
+        c = self.COEFF
+        s = self._scenario
+
+        if s.mag < 7.16:
+            ln_std = c.c_11 + c.c_12 * s.mag
         else:
             ln_std = c.c_13
 

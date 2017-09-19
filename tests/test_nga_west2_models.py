@@ -23,8 +23,7 @@ models = [
 RTOL = 1e-2
 
 # Load the tests
-fname = os.path.join(
-    os.path.dirname(__file__), 'data', 'ngaw2_tests.json.gz')
+fname = os.path.join(os.path.dirname(__file__), 'data', 'ngaw2_tests.json.gz')
 with gzip.open(fname, 'rt') as fp:
     tests = json.load(fp)
 
@@ -34,24 +33,22 @@ testdata = [(m, t['params'], t['results'][m.ABBREV])
 
 @pytest.mark.parametrize('model,params,expected', testdata)
 def test_ln_stds(model, params, expected):
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
     np.testing.assert_allclose(
         m.interp_ln_stds(expected['periods']),
         expected['ln_stds'],
         rtol=RTOL,
-        err_msg='Logarithmic standard deviations'
-    )
+        err_msg='Logarithmic standard deviations')
 
 
 @pytest.mark.parametrize('model,params,expected', testdata)
 def test_spec_accels(model, params, expected):
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
     np.testing.assert_allclose(
         m.interp_spec_accels(expected['periods']),
         expected['spec_accels'],
         rtol=RTOL,
-        err_msg='Spectral accelerations'
-    )
+        err_msg='Spectral accelerations')
 
 
 @pytest.mark.parametrize('model,params,expected', testdata)
@@ -60,7 +57,7 @@ def test_im_values(model, params, expected, key):
     if expected.get(key, None) is None:
         return
 
-    m = model(**params)
+    m = model(pygmm.model.Scenario(**params))
 
     try:
         value = getattr(m, key)
@@ -73,5 +70,4 @@ def test_im_values(model, params, expected, key):
     np.testing.assert_allclose(
         getattr(m, key),
         expected[key],
-        rtol=RTOL,
-    )
+        rtol=RTOL, )

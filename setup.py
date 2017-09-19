@@ -1,12 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-
 try:
     from setuptools import setup
 except ImportError:
     from distutils.core import setup
-
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -14,22 +12,13 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [
-    'matplotlib',
-    'numpy',
-    'scipy >= 0.17.0',
-    'six'
-]
+requirements = ['matplotlib', 'numpy', 'scipy >= 0.17.0', 'six']
 
 setup_requirements = [
     'pytest-runner',
 ]
 
-test_requirements = [
-    'pytest >= 2.9.0',
-    'pytest-cov',
-    'pytest-flake8'
-]
+test_requirements = ['pytest >= 2.9.0', 'pytest-cov', 'pytest-flake8']
 
 setup(
     name='pygmm',
@@ -39,11 +28,8 @@ setup(
     author="Albert Kottke",
     author_email='albert.kottke@gmail.com',
     url='https://github.com/arkottke/pygmm',
-    packages=[
-        'pygmm'
-    ],
-    package_dir={'pygmm':
-                 'pygmm'},
+    packages=['pygmm'],
+    package_dir={'pygmm': 'pygmm'},
     package_data={'pygmm': ['data/*.csv', 'data/*.json']},
     include_package_data=True,
     install_requires=requirements,
@@ -63,5 +49,4 @@ setup(
         'Intended Audience :: Science/Research',
     ],
     setup_requires=setup_requirements,
-    tests_require=test_requirements,
-)
+    tests_require=test_requirements, )

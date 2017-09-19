@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-
 """Create test cases for the DBC14 model."""
 
 import gzip
@@ -60,15 +59,13 @@ def get_results(wb):
 
     return d
 
+
 wb_fname = os.path.abspath('10518_2013_9481_MOESM1_ESM.xlsx')
 tests = []
 for p in iter_parameters(params):
     wb = xw.Workbook(wb_fname)
     load_params(wb, **p)
-    tests.append({
-        'params': p,
-        'results': get_results(wb)
-    })
+    tests.append({'params': p, 'results': get_results(wb)})
 
 fname = '../tests/data/dbc14_tests.json.gz'
 with gzip.open(fname, 'wt') as fp:
