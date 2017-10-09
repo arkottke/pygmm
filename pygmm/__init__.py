@@ -4,6 +4,7 @@
 import logging
 import pkg_resources
 
+from .model import Scenario
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
@@ -17,6 +18,7 @@ from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 
 __all__ = [
+    'Scenario',
     'AbrahamsonSilvaKamai2014',
     'AkkarSandikkayaBommer2014',
     'AtkinsonBoore2006',

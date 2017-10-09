@@ -75,7 +75,6 @@ Conditional spectra models:
 Unit tests means that each test cases are used to test the implemention of
 the model.
 
-
 Citation
 --------
 
