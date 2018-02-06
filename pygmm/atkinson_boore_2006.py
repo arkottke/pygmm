@@ -1,6 +1,5 @@
+# -*- coding: utf-8 -*-
 """Atkinson and Boore (2006, :cite:`atkinson06`) model."""
-
-from __future__ import division
 
 import numpy as np
 
@@ -46,13 +45,13 @@ class AtkinsonBoore2006(model.Model):
         model.NumericParameter('v_s30', True)
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
         super(AtkinsonBoore2006, self).__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
-    def _calc_ln_resp(self):
+    def _calc_ln_resp(self) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Returns
@@ -107,7 +106,7 @@ class AtkinsonBoore2006(model.Model):
         ln_std = np.ones_like(self.PERIODS) * 0.30
         return ln_std
 
-    def _calc_stress_factor(self):
+    def _calc_stress_factor(self) -> float:
         """Calculate the stress correction factor proposed by Atkinson and
         Boore (2011) :cite:`atkinson11`.
 

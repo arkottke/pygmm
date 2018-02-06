@@ -1,6 +1,5 @@
+# -*- coding: utf-8 -*-
 """Model for the Campbell (2003) ground motion model."""
-
-from __future__ import division
 
 import numpy as np
 
@@ -38,13 +37,13 @@ class Campbell2003(model.Model):
         model.NumericParameter('dist_rup', True, None, 1000.),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(Campbell2003, self).__init__(scenario)
+        super().__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 
-    def _calc_ln_resp(self):
+    def _calc_ln_resp(self) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Returns
@@ -77,7 +76,7 @@ class Campbell2003(model.Model):
 
         return ln_resp
 
-    def _calc_ln_std(self):
+    def _calc_ln_std(self) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Returns

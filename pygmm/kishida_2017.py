@@ -1,11 +1,17 @@
+# -*- coding: utf-8 -*-
 """Kishida (2017, :cite:`kishida17`) conditional spectrum."""
 
 import numpy as np
 
 from .baker_jayaram_2008 import calc_correls
+from .types import ArrayLike
 
 
-def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
+def calc_cond_mean_spectrum_vector(
+        periods: ArrayLike,
+        ln_psas: ArrayLike,
+        ln_stds: ArrayLike,
+        ln_psas_cond: ArrayLike) -> (np.ndarray, np.ndarray):
     """Kishida (2017, :cite:`kishida17`) conditional spectrum.
 
     Conditional mean spectrum vector (CMSV) by Kishida (2017,
@@ -80,8 +86,8 @@ def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
             ~mask].data]
     # Compute standard deviation, Equation (4)
     ln_stds_cmsv = np.r_[np.sqrt(
-        np.diag(mat_covar_11 - mat_covar_12 @ mat_covar_22_inv
-                @ mat_covar_21)), np.zeros(ln_psas_cond.count())]
+        np.diag(mat_covar_11 - (mat_covar_12 @ mat_covar_22_inv @ mat_covar_21
+                                ))), np.zeros(ln_psas_cond.count())]
     # Sort to the original period indices
     indices = np.argsort(periods_grouped)
     ln_psas_cmsv = ln_psas_cmsv[indices]

@@ -1,7 +1,8 @@
+"""Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
+
 import numpy as np
 
 from .types import ArrayLike
-"""Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
 
 __author__ = 'Albert Kottke'
 
@@ -21,7 +22,7 @@ def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
     correls : :class:`np.ndarray`
         Correlation coefficients
     """
-
+    periods = np.asarray(periods)
     periods_min = np.minimum(periods, period_cond)
     periods_max = np.maximum(periods, period_cond)
 

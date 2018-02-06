@@ -1,13 +1,15 @@
+# -*- coding: utf-8 -*-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
-
-from __future__ import division
 
 import logging
 
 import numpy as np
 
+from typing import Optional
+
 from . import model
 from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
+from .types import ArrayLike
 
 __author__ = 'Albert Kottke'
 
@@ -59,9 +61,9 @@ class CampbellBozorgnia2014(model.Model):
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
-    def _check_inputs(self, **kwds):
+    def _check_inputs(self) -> None:
         """Check the inputs."""
-        super(CampbellBozorgnia2014, self)._check_inputs(**kwds)
+        super()._check_inputs()
         s = self._scenario
 
         for mech, limit in [('SS', 8.5), ('RS', 8.0), ('NS', 7.5)]:
@@ -86,20 +88,20 @@ class CampbellBozorgnia2014(model.Model):
             s.depth_hyp = CampbellBozorgnia2014.calc_depth_hyp(
                 s.mag, s.dip, s.depth_tor, s.depth_bor)
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model.
 
         Args:
             scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(CampbellBozorgnia2014, self).__init__(scenario)
+        super().__init__(scenario)
 
         pga_ref = np.exp(
             self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref, self._scenario.v_s30)
         self._ln_std = self._calc_ln_std(pga_ref)
 
-    def _calc_ln_resp(self, pga_ref, v_s30):
+    def _calc_ln_resp(self, pga_ref: float, v_s30: float) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Parameters
@@ -227,7 +229,7 @@ class CampbellBozorgnia2014(model.Model):
                    f_dip + f_atn)
         return ln_resp
 
-    def _calc_ln_std(self, pga_ref):
+    def _calc_ln_std(self, pga_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Parameters
@@ -273,7 +275,9 @@ class CampbellBozorgnia2014(model.Model):
         return ln_std
 
     @staticmethod
-    def calc_depth_2_5(v_s30, region='global', depth_1_0=None):
+    def calc_depth_2_5(v_s30: float,
+                       region: str='global',
+                       depth_1_0: Optional[float]=None) -> float:
         """Calculate the depth to a shear-wave velocity of 2.5 km/sec
         (:math:`Z_{2.5}`).
 
@@ -338,7 +342,10 @@ class CampbellBozorgnia2014(model.Model):
         return np.exp(intercept - slope * np.log(param))
 
     @staticmethod
-    def calc_depth_hyp(mag, dip, depth_tor, depth_bor):
+    def calc_depth_hyp(mag: float,
+                       dip: float,
+                       depth_tor: float,
+                       depth_bor: float) -> float:
         """Estimate the depth to hypocenter.
 
         Parameters
@@ -370,7 +377,10 @@ class CampbellBozorgnia2014(model.Model):
         return depth_hyp
 
     @staticmethod
-    def calc_width(mag, dip, depth_tor, depth_bot=15.0):
+    def calc_width(mag: float,
+                   dip: float,
+                   depth_tor: float,
+                   depth_bot: float=15.0) -> float:
         """Estimate the fault width using Equation (39) of CB14.
 
         Parameters
@@ -399,7 +409,7 @@ class CampbellBozorgnia2014(model.Model):
             (depth_bot - depth_tor) / np.sin(np.radians(dip)))
 
     @staticmethod
-    def calc_depth_bor(depth_tor, dip, width):
+    def calc_depth_bor(depth_tor: float, dip: float, width: float) -> float:
         """Compute the depth to bottom of the rupture (km).
 
         Parameters

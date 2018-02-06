@@ -1,11 +1,11 @@
+# -*- coding: utf-8 -*-
 """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model."""
-
-from __future__ import division
 
 import numpy as np
 from scipy.interpolate import interp1d
 
 from . import model
+from .types import ArrayLike
 
 __author__ = 'Albert Kottke'
 
@@ -63,7 +63,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
                                    False),
     ]
 
-    def _check_inputs(self):
+    def _check_inputs(self) -> None:
         """Check the inputs."""
         super(AbrahamsonSilvaKamai2014, self)._check_inputs()
         s = self._scenario
@@ -73,7 +73,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         if s['depth_tor'] is None:
             s['depth_tor'] = self.calc_depth_tor(s.mag)
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
         super(AbrahamsonSilvaKamai2014, self).__init__(scenario)
         # Compute the response at the reference velocity
@@ -82,7 +82,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         self._ln_resp = self._calc_ln_resp(self._scenario.v_s30, resp_ref)
         self._ln_std = self._calc_ln_std(resp_ref)
 
-    def _calc_ln_resp(self, v_s30, resp_ref):
+    def _calc_ln_resp(self, v_s30: float, resp_ref: ArrayLike) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Parameters
@@ -177,7 +177,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + freg
 
-    def _calc_ln_std(self, psa_ref):
+    def _calc_ln_std(self, psa_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Parameters
@@ -222,7 +222,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return ln_std
 
     @staticmethod
-    def calc_width(mag, dip):
+    def calc_width(mag: float, dip: float) -> float:
         """Compute the fault width based on equation in NGW2 spreadsheet.
 
         This equation is not provided in the paper.
@@ -243,7 +243,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 
     @staticmethod
-    def calc_depth_tor(mag):
+    def calc_depth_tor(mag: float) -> float:
         """Calculate the depth to top of rupture (km).
 
         Parameters
@@ -259,7 +259,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.interp(mag, [5., 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30, region='california'):
+    def calc_depth_1_0(v_s30: float, region: str='california') -> float:
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
@@ -297,7 +297,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
         return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
                                      (1360. ** power + v_ref ** power))) / 1000
 
-    def _calc_f1(self):
+    def _calc_f1(self) -> np.ndarray:
         """Calculate the magnitude scaling parameter f1."""
         c = self.COEFF
         s = self._scenario
@@ -329,7 +329,7 @@ class AbrahamsonSilvaKamai2014(model.Model):
 
         return f1
 
-    def _calc_f4(self):
+    def _calc_f4(self) -> np.ndarray:
         """Calculate the hanging-wall parameter f4."""
         # Move this into a decorator?
         c = self.COEFF
