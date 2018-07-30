@@ -9,7 +9,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class TavakoliPezeshk05(model.Model):
+class TavakoliPezeshk05(model.GroundMotionModel):
     """Tavakoli and Pezeshk (2005, :cite:`tavakoli05`) model.
 
     Developed for the Eastern North America with a reference velocity of 2880

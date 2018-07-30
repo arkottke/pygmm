@@ -10,7 +10,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class AbrahamsonSilvaKamai2014(model.Model):
+class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
     """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model.
 
     This model was developed for active tectonic regions as part of the

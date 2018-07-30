@@ -4,19 +4,19 @@
 Installation
 ============
 
-Prior to using pyGMM, Python and the following dependencies need to be
+Prior to using `pygmm`, Python and the following dependencies need to be
 installed:
 
 * matplotlib -- used for plotting
 
 * numpy -- fast vector operations
 
-pyGMM supports both Python 2.7 and Python 3.
+`pygmm` supports both Python 2.7 and Python 3.
 
 Linux
 -----
 
-Install pyGMM dependencies is best accomplished with a package manager. On Arch
+Install `pygmm` dependencies is best accomplished with a package manager. On Arch
 Linux this can be accomplished with::
 
     pacman -S python-numpy python-matplotlib pip
@@ -45,11 +45,11 @@ within the *Edit Options* group. Copy the text, and then paste it by click the
 right mouse button.
 
 
-Installing pyGMM
-----------------
+Installing `pygmm`
+------------------
 
-After the dependencies have been installed, install or upgrade pyGMM using pip::
+After the dependencies have been installed, install or upgrade `pygmm` using pip::
 
   pip install --upgrade pygmm
 
-This command can be re-run later to upgrade pyGMM to the latest version.
+This command can be re-run later to upgrade `pygmm` to the latest version.

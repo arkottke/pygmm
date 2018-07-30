@@ -17,7 +17,7 @@ def iter_parameters(parameters):
 
 
 def reformat_params(params):
-    """Transform from pyGMM input to spreadsheet input."""
+    """Transform from pygmm input to spreadsheet input."""
     if 'mechanism' in params:
         # Replace mechanism with flags
         mech = params.pop('mechanism')

@@ -11,7 +11,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class Idriss2014(model.Model):
+class Idriss2014(model.GroundMotionModel):
     """Idriss (2014, :cite:`idriss14`) model.
 
     This model was developed for active tectonic regions as part of the

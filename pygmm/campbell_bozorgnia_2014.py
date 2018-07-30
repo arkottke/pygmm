@@ -12,7 +12,7 @@ from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
 __author__ = 'Albert Kottke'
 
 
-class CampbellBozorgnia2014(model.Model):
+class CampbellBozorgnia2014(model.GroundMotionModel):
     """Campbell and Bozorgnia (2014, :cite:`campbell14`) model.
 
     This model was developed for active tectonic regions as part of the

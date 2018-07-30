@@ -35,7 +35,7 @@ if not os.path.exists(fname_data):
 INTERPOLATOR = None
 
 
-class HermkesKuehnRiggelsen2014(model.Model):
+class HermkesKuehnRiggelsen2014(model.GroundMotionModel):
     """Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model.
 
     Only the *GPSELinCorr* model is implemented. This model must be imported

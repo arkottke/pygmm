@@ -12,7 +12,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class DerrasBardCotton2014(model.Model):
+class DerrasBardCotton2014(model.GroundMotionModel):
     """Derras, Bard and Cotton (2014, :cite:`derras14`) model.
 
     Parameters

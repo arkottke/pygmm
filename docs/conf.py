@@ -59,7 +59,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'pyGMM'
+project = u'pygmm'
 copyright = u'2016, Albert Kottke'
 
 # The version info for the project you're documenting, acts as replacement
@@ -210,7 +210,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ('index', 'pygmm.tex', u'pyGMM Documentation', u'Albert Kottke', 'manual'),
+    ('index', 'pygmm.tex', u'pygmm Documentation', u'Albert Kottke', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -237,7 +237,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [('index', 'pygmm', u'pyGMM Documentation', [u'Albert Kottke'], 1)]
+man_pages = [('index', 'pygmm', u'pygmm Documentation', [u'Albert Kottke'], 1)]
 
 # If true, show URL addresses after external links.
 #man_show_urls = False
@@ -248,7 +248,7 @@ man_pages = [('index', 'pygmm', u'pyGMM Documentation', [u'Albert Kottke'], 1)]
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    ('index', 'pygmm', u'pyGMM Documentation', u'Albert Kottke', 'pygmm',
+    ('index', 'pygmm', u'pygmm Documentation', u'Albert Kottke', 'pygmm',
      'One line description of project.', 'Miscellaneous'),
 ]
 

@@ -104,12 +104,33 @@ class Scenario(UserDict):
 
 
 class Model(object):
-    """Abstract class for ground motion prediction models."""
-
     #: Long name of the model
     NAME = ''
     #: Short name of the model
     ABBREV = ''
+
+    def __init__(self, scenario):
+        """Initialize the model."""
+        super(Model, self).__init__(scenario)
+
+        self._ln_resp = None
+        self._ln_std = None
+
+        # Select the used parameters and check them against the recommended
+        # values
+        self._scenario = Scenario(
+            **{p.name: scenario.get(p.name, None)
+               for p in self.PARAMS})
+        self._check_inputs()
+
+    def _check_inputs(self):
+        for p in self.PARAMS:
+            self._scenario[p.name] = p.check(self._scenario[p.name])
+
+
+class GroundMotionModel(Model):
+    """Abstract class for ground motion prediction models."""
+
     #: Indices for the spectral accelerations
     INDICES_PSA = np.array([])
     #: Indices of the periods
@@ -131,17 +152,10 @@ class Model(object):
 
     def __init__(self, scenario):
         """Initialize the model."""
-        super(Model, self).__init__()
+        super(GroundMotionModel, self).__init__(scenario)
 
         self._ln_resp = None
         self._ln_std = None
-
-        # Select the used parameters and check them against the recommended
-        # values
-        self._scenario = Scenario(
-            **{p.name: scenario.get(p.name, None)
-               for p in self.PARAMS})
-        self._check_inputs()
 
     def interp_spec_accels(self, periods, kind='linear'):
         """Interpolate the spectral acceleration.
@@ -274,10 +288,6 @@ class Model(object):
     def _resp(self, index):
         if index is not None:
             return np.exp(self._ln_resp[index])
-
-    def _check_inputs(self):
-        for p in self.PARAMS:
-            self._scenario[p.name] = p.check(self._scenario[p.name])
 
 
 class Parameter(object):

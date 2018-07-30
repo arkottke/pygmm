@@ -8,7 +8,7 @@ Generic Interface
 
 The interfaces for models have been simplified to use same parameter names and
 values where possible. Details of this interface are provided in
-:class:`~pygmm.model.Model`.
+:class:`~pygmm.model.GroundMotionModel`.
 
 .. currentmodule:: pygmm.model
 

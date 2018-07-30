@@ -9,7 +9,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class AtkinsonBoore2006(model.Model):
+class AtkinsonBoore2006(model.GroundMotionModel):
     """Atkinson and Boore (2006, :cite:`atkinson06`) model.
 
     Developed for the Eastern North America with a reference velocity of 760

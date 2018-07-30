@@ -1,4 +1,4 @@
-"""pyGMM: Ground motion models implemented in Python."""
+"""pygmm: Ground motion models implemented in Python."""
 import logging
 import pkg_resources
 
@@ -33,7 +33,7 @@ __all__ = [
 __author__ = 'Albert Kottke'
 __copyright__ = 'Copyright 2016 Albert Kottke'
 __license__ = 'MIT'
-__title__ = 'pyGMM'
+__title__ = 'pygmm'
 __version__ = pkg_resources.get_distribution('pygmm').version
 
 # Set default logging handler to avoid "No handler found" warnings.

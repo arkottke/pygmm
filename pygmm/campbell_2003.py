@@ -9,7 +9,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class Campbell2003(model.Model):
+class Campbell2003(model.GroundMotionModel):
     """Campbell (2003, :cite:`campbell03`) model.
 
     This model was developed for the Eastern US.

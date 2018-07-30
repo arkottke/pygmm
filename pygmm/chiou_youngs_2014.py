@@ -11,7 +11,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class ChiouYoungs2014(model.Model):
+class ChiouYoungs2014(model.GroundMotionModel):
     """Chiou and Youngs (2014, :cite:`chiou14`) model.
 
     This model was developed for active tectonic regions as part of the

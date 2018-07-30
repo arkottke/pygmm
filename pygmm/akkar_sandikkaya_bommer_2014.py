@@ -11,7 +11,7 @@ from . import model
 __author__ = 'Albert Kottke'
 
 
-class AkkarSandikkayaBommer2014(model.Model):
+class AkkarSandikkayaBommer2014(model.GroundMotionModel):
     """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model.
 
     The model is specified for three different distance metrics. However,
