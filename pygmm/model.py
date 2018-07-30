@@ -68,6 +68,9 @@ class Scenario(UserDict):
         then *False* is assumed.
     region : str
         region. Valid options are specified in a specific GMM.
+    site_cond : str
+        site condition. String description of the site condition. Valid 
+        options are specified in a specific GMM.
     v_s30 : float
         time-averaged shear-wave velocity over the top 30 m of the site
         (:math:`V_{s30}`, m/s).
@@ -83,8 +86,8 @@ class Scenario(UserDict):
         'depth_1_0', 'depth_2_5', 'depth_tor', 'depth_bor', 'depth_bot',
         'depth_hyp', 'dip', 'dist_crjb', 'dist_jb', 'dist_epi', 'dist_hyp',
         'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered', 'is_aftershock',
-        'mag', 'mechanism', 'on_hanging_wall', 'region', 'v_s30', 'vs_source',
-        'width'
+        'mag', 'mechanism', 'on_hanging_wall', 'region', 'site_cond', 
+        'v_s30', 'vs_source', 'width'
     ]
 
     def __init__(self, **kwds):
@@ -111,7 +114,7 @@ class Model(object):
 
     def __init__(self, scenario):
         """Initialize the model."""
-        super(Model, self).__init__(scenario)
+        super(Model, self).__init__()
 
         self._ln_resp = None
         self._ln_std = None
