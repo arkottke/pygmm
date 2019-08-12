@@ -74,7 +74,7 @@ def calc_cond_mean_spectrum_vector(periods, ln_psas, ln_stds, ln_psas_cond):
     mat_covar_21 = mat_covar[n:, 0:n]
     mat_covar_22_inv = np.linalg.inv(mat_covar_22)
     # Conditional mean value, Equation (3)
-    mat_total_resids = np.asmatrix(ln_psas_cond[~mask] - ln_psas[~mask]).T
+    mat_total_resids = (ln_psas_cond[~mask] - ln_psas[~mask]).T
     ln_psas_cmsv = np.r_[ln_psas[mask] + np.ravel(
         mat_covar_12 @ mat_covar_22_inv @ mat_total_resids), ln_psas_cond[
             ~mask].data]

@@ -63,17 +63,16 @@ class DerrasBardCotton2014(model.GroundMotionModel):
         ]
         values = np.array([s[k] for k in keys])
         limits = np.rec.array([c['min_max'][k] for k in keys], names='min,max')
-        p_n = np.matrix(2 * (values - limits['min']) / (limits['max'] - limits[
+        p_n = np.array(2 * (values - limits['min']) / (limits['max'] - limits[
             'min']) - 1).T
 
         # Compute the normalized response
-        b_1 = np.matrix(c['b_1']).T
-        b_2 = np.matrix(c['b_2']).T
-        w_1 = np.matrix(c['w_1'])
-        w_2 = np.matrix(c['w_2'])
+        b_1 = np.array(c['b_1']).T
+        b_2 = np.array(c['b_2']).T
+        w_1 = np.array(c['w_1'])
+        w_2 = np.array(c['w_2'])
 
-        # Here .A1 returns the flatten matrix
-        log10_resp_n = (b_2 + w_2 * np.tanh(b_1 + w_1 * p_n)).A1
+        log10_resp_n = (b_2 + w_2 @ np.tanh(b_1 + w_1 @ p_n))
 
         # Convert from normalized values
         log10_resp_limits = np.rec.array(

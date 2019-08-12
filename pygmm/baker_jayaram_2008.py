@@ -22,24 +22,27 @@ def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
         Correlation coefficients
     """
 
-    periods_min = np.minimum(periods, period_cond)
-    periods_max = np.maximum(periods, period_cond)
+    period_min = np.minimum(periods, period_cond)
+    period_max = np.maximum(periods, period_cond)
 
-    c_1 = (1 - np.cos(np.pi / 2 - 0.366 * np.log(periods_max / np.maximum(
-        periods_min, 0.109))))
+    c_1 = (1 - np.cos(np.pi / 2 - 0.366 * np.log(period_max / np.maximum(
+        period_min, 0.109))))
 
-    c_2 = np.select([periods_max < 0.2, True], [
-        1 - 0.105 * (1 - 1 / (1 + np.exp(100 * periods_max - 5))) *
-        (periods_max - periods_min) / (periods_max - 0.0099), 0
+    # The minimum() is added to prevent an overflow issue
+    c_2 = np.select([period_max < 0.2, True], [
+        1 - 0.105 * (
+            1 - 1 / (1 + np.exp(100 * np.minimum(period_max, 0.2) - 5))) *
+        (period_max - period_min) / (period_max - 0.0099),
+        0
     ])
 
-    c_3 = np.select([periods_max < 0.109, True], [c_2, c_1])
+    c_3 = np.select([period_max < 0.109, True], [c_2, c_1])
 
     c_4 = (c_1 + 0.5 * (np.sqrt(c_3) - c_3) *
-           (1 + np.cos(np.pi * periods_min / 0.109)))
+           (1 + np.cos(np.pi * period_min / 0.109)))
 
     correls = np.select(
-        [periods_max < 0.109, periods_min > 0.109, periods_max < 0.200, True],
+        [period_max < 0.109, period_min > 0.109, period_max < 0.200, True],
         [c_2, c_1, np.minimum(c_2, c_4), c_4], )
 
     return correls

@@ -176,8 +176,11 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             dc_3 = c.dc_3global
 
         dist = np.sqrt(s.dist_jb ** 2 + c.h ** 2)
-        path = ((c.c_1 + c.c_2 * (s.mag - c.M_ref)) * np.log(dist / c.R_ref) +
-                (c.c_3 + dc_3) * (dist - c.R_ref))
+        path = (
+            (c.c_1 + c.c_2 * (s.mag - c.M_ref)) *
+            np.log(dist / c.R_ref) +
+            (c.c_3 + dc_3) * (dist - c.R_ref)
+        )
 
         if np.isnan(pga_ref):
             # Reference condition. No site effect
@@ -237,7 +240,12 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
 
         # Modify phi for R
         phi += c.dphi_R * np.clip(
-            np.log(s.dist_jb / c.R_1) / np.log(c.R_2 / c.R_1), 0, 1)
+            # Maximum added for zero distance caes
+            np.log(np.maximum(s.dist_jb, 0.1) / c.R_1) /
+            np.log(c.R_2 / c.R_1),
+            0, 1
+        )
+
 
         ln_std = np.sqrt(phi ** 2 + tau ** 2)
         return ln_std
