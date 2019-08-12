@@ -1,6 +1,5 @@
+# -*- coding: utf-8 -*-
 """Chiou and Youngs (2014, :cite:`chiou14`) model."""
-
-from __future__ import division
 
 import logging
 
@@ -60,14 +59,14 @@ class ChiouYoungs2014(model.GroundMotionModel):
                                    ['measured', 'inferred'], 'measured'),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(ChiouYoungs2014, self).__init__(scenario)
+        super().__init__(scenario)
         ln_resp_ref = self._calc_ln_resp_ref()
         self._ln_resp = self._calc_ln_resp_site(ln_resp_ref)
         self._ln_std = self._calc_ln_std(np.exp(ln_resp_ref))
 
-    def _calc_ln_resp_ref(self):
+    def _calc_ln_resp_ref(self) -> np.ndarray:
         """Calculate the natural logarithm of the reference response.
 
         Returns
@@ -133,7 +132,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
         return ln_resp
 
-    def _calc_ln_resp_site(self, ln_resp_ref):
+    def _calc_ln_resp_site(self, ln_resp_ref: np.ndarray) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Parameters
@@ -175,7 +174,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
         return ln_resp
 
-    def _calc_ln_std(self, resp_ref):
+    def _calc_ln_std(self, resp_ref: np.ndarray) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Parameters
@@ -215,7 +214,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
         ln_std = np.sqrt((1 + nl_0) ** 2 * tau ** 2 + phi_nl ** 2)
         return ln_std
 
-    def _check_inputs(self):
+    def _check_inputs(self) -> None:
         """Check the inputs."""
         super(ChiouYoungs2014, self)._check_inputs()
         s = self._scenario
@@ -238,7 +237,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
             s['depth_1_0'] = self.calc_depth_1_0(s.v_s30, s.region)
 
     @staticmethod
-    def calc_depth_1_0(v_s30, region):
+    def calc_depth_1_0(v_s30: float, region: str) -> float:
         """Calculate the depth to 1 km/sec (:math:`Z_{1.0}`).
 
         Parameters
@@ -270,7 +269,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
                                      (1360. ** power + v_ref ** power))) / 1000
 
     @staticmethod
-    def calc_depth_tor(mag, mechanism):
+    def calc_depth_tor(mag: float, mechanism: str) -> float:
         """Calculate an estimate of the depth to top of rupture (km).
 
         Parameters

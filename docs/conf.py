@@ -46,11 +46,16 @@ intersphinx_mappings = {
     'matplotlib': ('http://matplotlib.sourceforge.net/', None)
 }
 
+# Use recommonmark for Markdown files
+source_parsers = {
+    '.md': 'recommonmark.parser.CommonMarkParser',
+}
+
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
 
 # The suffix of source filenames.
-source_suffix = '.rst'
+source_suffix = ['.rst', '.md']
 
 # The encoding of source files.
 #source_encoding = 'utf-8-sig'

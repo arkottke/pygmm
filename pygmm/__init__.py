@@ -1,4 +1,6 @@
-"""pygmm: Ground motion models implemented in Python."""
+# -*- coding: utf-8 -*-
+"""pyGMM: Ground motion models implemented in Python."""
+
 import logging
 import pkg_resources
 

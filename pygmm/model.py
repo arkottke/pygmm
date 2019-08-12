@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """Basic models."""
 
-from __future__ import division
-
+import collections
 import logging
 import os
 
@@ -10,10 +9,11 @@ import numpy as np
 
 from scipy.interpolate import interp1d
 
-from six.moves import UserDict
+from typing import Optional, List
+from .types import ArrayLike
 
 
-class Scenario(UserDict):
+class Scenario(collections.UserDict):
     r"""An eathquake scenario used in all ground motion models.
 
     Parameters
@@ -69,7 +69,7 @@ class Scenario(UserDict):
     region : str
         region. Valid options are specified in a specific GMM.
     site_cond : str
-        site condition. String description of the site condition. Valid 
+        site condition. String description of the site condition. Valid
         options are specified in a specific GMM.
     v_s30 : float
         time-averaged shear-wave velocity over the top 30 m of the site
@@ -86,16 +86,16 @@ class Scenario(UserDict):
         'depth_1_0', 'depth_2_5', 'depth_tor', 'depth_bor', 'depth_bot',
         'depth_hyp', 'dip', 'dist_crjb', 'dist_jb', 'dist_epi', 'dist_hyp',
         'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered', 'is_aftershock',
-        'mag', 'mechanism', 'on_hanging_wall', 'region', 'site_cond', 
+        'mag', 'mechanism', 'on_hanging_wall', 'region', 'site_cond',
         'v_s30', 'vs_source', 'width'
     ]
 
     def __init__(self, **kwds):
         """Initialize the scenario."""
-        super(Scenario, self).__init__(kwds)
+        super().__init__(kwds)
         for k in self.data:
             if k not in self.KNOWN_KEYS:
-                raise Warning('%s is not a recognized scenario key!', k)
+                raise Warning('%s is not a recognized scenario key!' % k)
 
     def __getattr__(self, item):
         """Access the data with attributes."""
@@ -153,14 +153,23 @@ class GroundMotionModel(Model):
     #: Scale factor to apply to get PGD in cm
     PGD_SCALE = 1.
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: Scenario):
         """Initialize the model."""
         super(GroundMotionModel, self).__init__(scenario)
 
         self._ln_resp = None
         self._ln_std = None
 
-    def interp_spec_accels(self, periods, kind='linear'):
+        # Select the used parameters and check them against the recommended
+        # values
+        self._scenario = Scenario(
+            **{p.name: scenario.get(p.name, None)
+               for p in self.PARAMS})
+        self._check_inputs()
+
+    def interp_spec_accels(self,
+                           periods: ArrayLike,
+                           kind: Optional[str]='linear') -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -190,7 +199,8 @@ class GroundMotionModel(Model):
                 bounds_error=False,
                 fill_value=np.nan, )(np.log(periods)))
 
-    def interp_ln_stds(self, periods, kind='linear'):
+    def interp_ln_stds(self, periods: ArrayLike,
+                       kind: Optional[str]='linear') -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -223,17 +233,17 @@ class GroundMotionModel(Model):
                 fill_value=np.nan, )(np.log(periods))
 
     @property
-    def periods(self):
+    def periods(self) -> np.ndarray:
         """Periods specified by the model."""
         return self.PERIODS[self.INDICES_PSA]
 
     @property
-    def spec_accels(self):
+    def spec_accels(self) -> np.ndarray:
         """Pseudo-spectral accelerations computed by the model (g)."""
         return self._resp(self.INDICES_PSA)
 
     @property
-    def ln_stds(self):
+    def ln_stds(self) -> np.ndarray:
         """Pseudo-spectral accelerations log-standard deviation."""
         if self._ln_std is None:
             raise NotImplementedError
@@ -241,7 +251,7 @@ class GroundMotionModel(Model):
             return self._ln_std[self.INDICES_PSA]
 
     @property
-    def pga(self):
+    def pga(self) -> float:
         """Peak ground acceleration (PGA) computed by the model (g)."""
         if self.INDEX_PGA is None:
             raise NotImplementedError
@@ -249,7 +259,7 @@ class GroundMotionModel(Model):
             return self._resp(self.INDEX_PGA)
 
     @property
-    def ln_std_pga(self):
+    def ln_std_pga(self) -> float:
         """Peak ground accelaration log-standard deviation."""
         if self.INDEX_PGA is None:
             raise NotImplementedError
@@ -257,7 +267,7 @@ class GroundMotionModel(Model):
             return self._ln_std[self.INDEX_PGA]
 
     @property
-    def pgv(self):
+    def pgv(self) -> float:
         """Peak ground velocity (PGV) computed by the model (cm/sec)."""
         if self.INDEX_PGV is None:
             raise NotImplementedError
@@ -265,7 +275,7 @@ class GroundMotionModel(Model):
             return self._resp(self.INDEX_PGV) * self.PGV_SCALE
 
     @property
-    def ln_std_pgv(self):
+    def ln_std_pgv(self) -> float:
         """Peak ground velocity log-standard deviation."""
         if self.INDEX_PGV is None:
             raise NotImplementedError
@@ -273,7 +283,7 @@ class GroundMotionModel(Model):
             return self._ln_std[self.INDEX_PGV]
 
     @property
-    def pgd(self):
+    def pgd(self) -> float:
         """Peak ground displacement (PGD) computed by the model (cm)."""
         if self.INDEX_PGD is None:
             raise NotImplementedError
@@ -281,17 +291,24 @@ class GroundMotionModel(Model):
             return self._resp(self.INDEX_PGD) * self.PGD_SCALE
 
     @property
-    def ln_std_pgd(self):
+    def ln_std_pgd(self) -> float:
         """Peak ground displacement log-standard deviation."""
         if self.INDEX_PGD is None:
             raise NotImplementedError
         else:
             return self._ln_std[self.INDEX_PGD]
 
-    def _resp(self, index):
+    def _resp(self, index) -> np.ndarray:
         if index is not None:
             return np.exp(self._ln_resp[index])
 
+<<<<<<< HEAD
+=======
+    def _check_inputs(self) -> None:
+        for p in self.PARAMS:
+            self._scenario[p.name] = p.check(self._scenario[p.name])
+
+>>>>>>> master
 
 class Parameter(object):
     """Model parameter.
@@ -354,27 +371,27 @@ class NumericParameter(Parameter):
     """
 
     def __init__(self,
-                 name,
-                 required=False,
-                 min_=None,
-                 max_=None,
-                 default=None):
+                 name: str,
+                 required: bool=False,
+                 min_: Optional[float]=None,
+                 max_: Optional[float]=None,
+                 default: Optional[float]=None):
         """Initialize parameter."""
         super(NumericParameter, self).__init__(name, required, default)
         self._min = min_
         self._max = max_
 
     @property
-    def min(self):
+    def min(self) -> float:
         """Minimum value."""
         return self._min
 
     @property
-    def max(self):
+    def max(self) -> float:
         """Maximum value."""
         return self._max
 
-    def check(self, value):
+    def check(self, value) -> float:
         """Check the value against the limits."""
         value = super(NumericParameter, self).check(value)
         if value is not None:
@@ -406,17 +423,21 @@ class CategoricalParameter(Parameter):
 
     """
 
-    def __init__(self, name, required=False, options=None, default=''):
+    def __init__(self,
+                 name: str,
+                 required: bool=False,
+                 options: Optional[List[str]]=None,
+                 default: Optional[str]=None):
         """Initialize parameter."""
         super(CategoricalParameter, self).__init__(name, required, default)
         self._options = options or []
 
     @property
-    def options(self):
+    def options(self) -> List[str]:
         """Possible options."""
         return self._options
 
-    def check(self, value):
+    def check(self, value) -> str:
         """Check the value against the limits."""
         value = super(CategoricalParameter, self).check(value)
         if value not in self.options:
@@ -432,7 +453,7 @@ class CategoricalParameter(Parameter):
         return value
 
 
-def load_data_file(name, skip_header=None):
+def load_data_file(name, skip_header=None) -> np.recarray:
     """Load a data file.
 
     Returns
