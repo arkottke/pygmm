@@ -26,7 +26,7 @@ def categorical_parameter():
 # See https://github.com/pytest-dev/pytest/issues/349
 @pytest.fixture(params=['numeric_parameter', 'categorical_parameter'])
 def param(request):
-    return request.getfuncargvalue(request.param)
+    return request.getfixturevalue(request.param)
 
 
 def test_required(param):
