@@ -79,6 +79,7 @@ following models have been implemented.
     :toctree: _autosummary
     :nosignatures:
 
+    ~abrahamson_gregor_addo_2016.AbrahamsonGregorAddo2016
     ~abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
     ~akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
     ~atkinson_boore_2006.AtkinsonBoore2006
@@ -114,3 +115,16 @@ periods.
     ~baker_jayaram_2008.calc_correls
     ~baker_jayaram_2008.calc_cond_mean_spectrum
     ~kishida_2017.calc_cond_mean_spectrum_vector
+
+Vertical-to-Horizontal (V/H) Models
+-----------------------------------
+
+Vertical-to-horizontal models are used to compute the vertical acceleration
+response spectrum from a horizontal response spectrum.
+
+.. currentmodule:: pygmm
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    ~gulerce_abrahamson_2011.GulerceAbrahamson2011
