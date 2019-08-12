@@ -1,7 +1,7 @@
 sudo: required
 language: python
 python:
-  - "3.6"
+  - "3.7"
 
 install:
   # Remove the file and force it to be downloaded from Dropbox
@@ -17,7 +17,7 @@ after_success:
 
 deploy:
   true:
-    condition: $TRAVIS_PYTHON_VERSION == "3.6"
+    condition: $TRAVIS_PYTHON_VERSION == "3.7"
     repo: arkottke/pygmm
     tags: true
   user: arkottke

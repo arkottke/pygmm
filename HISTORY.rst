@@ -1,21 +1,29 @@
-=======
 History
 =======
 
-0.3.3 (unreleased)
+0.5.1 (unreleased)
 ------------------
 
-- Added Hermkes et al. (2014).
-- Improved documentation.
-- Added Baker & Jayaram (2008), Kishida (2017)
+-  Added Scenario objects.
+-  Added typing for all classes.
+
+0.4.0 (2016-04-08)
+------------------
+
+-  Added Hermkes et al. (2014).
+-  Improved documentation.
+-  Added Baker & Jayaram (2008), Kishida (2017)
+
+.. _section-1:
 
 0.3.2 (2016-03-30)
 ------------------
 
-- Nothing changed yet.
+-  Nothing changed yet.
 
+.. _section-2:
 
 0.3.1 (2016-03-30)
 ------------------
 
-* First release on PyPI.
+-  First release on PyPI.

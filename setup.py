@@ -9,10 +9,9 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-
 setup(
     name='pygmm',
-    version='0.3.3.dev0',
+    version='0.4.1.dev0',
     description="Ground motion models implemented in Python.",
     long_description=readme + '\n\n' + history,
     author="Albert Kottke",
@@ -46,4 +45,5 @@ setup(
         'pytest >= 2.9.0',
         'pytest-cov',
         'pytest-flake8',
-    ], )
+    ],
+)

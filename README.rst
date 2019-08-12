@@ -25,11 +25,19 @@ pyGMM
 .. image:: https://img.shields.io/badge/license-MIT-blue.svg
     :target: https://github.com/arkottke/pygmm/blob/master/LICENSE
     :alt: License
+    
+.. image:: https://zenodo.org/badge/21452/arkottke/pygmm.svg
+   :target: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
+   :alt: DOI Information
 
 Ground motion models implemented in Python.
 
 * Free software: MIT license
 * Documentation: https://pygmm.readthedocs.org.
+
+I have recently learned that additional ground motion models have been implemented through GEM's OpenQuake Hazardlib_, which I recommend checking out.
+
+.. _Hazardlib: https://github.com/gem/oq-hazardlib
 
 Features
 --------
@@ -60,7 +68,6 @@ Models currently supported:
 
 * Tavakoli & Pezeshk (2005)
 
-
 Conditional spectra models:
 
 * Baker & Jayaram (2008) with unit tests
@@ -70,11 +77,11 @@ Conditional spectra models:
 Unit tests means that each test cases are used to test the implemention of
 the model.
 
+Citation
+--------
 
-Credits
----------
+Please cite this software using the following DOI:
 
-This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+.. image:: https://zenodo.org/badge/21452/arkottke/pygmm.svg
+   :target: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
+   :alt: DOI Information

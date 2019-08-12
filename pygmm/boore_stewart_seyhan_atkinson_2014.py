@@ -1,13 +1,12 @@
 """Boore, Stewart, Seyhan, and Atkinson (2014) ground motion model."""
 
-from __future__ import division
-
 import logging
 
 import numpy as np
 
 from . import model
 from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
+from .types import ArrayLike
 
 __author__ = 'Albert Kottke'
 
@@ -101,7 +100,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         ], 'global'),
     ]
 
-    def __init__(self, scenario):
+    def __init__(self, scenario: model.Scenario):
         """Initialize the model.
 
         Args:
@@ -112,7 +111,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         self._ln_resp = self._calc_ln_resp(pga_ref)
         self._ln_std = self._calc_ln_std()
 
-    def _check_inputs(self):
+    def _check_inputs(self) -> None:
         """Check the inputs."""
         super(BooreStewartSeyhanAtkinson2014, self)._check_inputs()
         s = self._scenario
@@ -130,7 +129,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
                     'Magnitude (%g) exceeds recommended bounds (%g to %g)'
                     ' for a normal-slip earthquake!', s.mag, _min, _max)
 
-    def _calc_ln_resp(self, pga_ref):
+    def _calc_ln_resp(self, pga_ref: ArrayLike) -> np.ndarray:
         """Calculate the natural logarithm of the response.
 
         Parameters
@@ -216,7 +215,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         ln_resp = event + path + site
         return ln_resp
 
-    def _calc_ln_std(self):
+    def _calc_ln_std(self) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
 
         Returns
