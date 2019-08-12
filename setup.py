@@ -6,12 +6,10 @@ from setuptools import setup, find_packages
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
-    history = history_file.read()
-
+with open('HISTORY.rst') as history_file: history = history_file.read()
 setup(
     name='pygmm',
-    version='0.4.1.dev0',
+    version='0.6.0',
     description="Ground motion models implemented in Python.",
     long_description=readme + '\n\n' + history,
     author="Albert Kottke",

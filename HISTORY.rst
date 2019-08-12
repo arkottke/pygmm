@@ -1,11 +1,13 @@
 History
 =======
 
-0.5.1 (unreleased)
+0.6.0 (2019-08-12)
 ------------------
-
--  Added Scenario objects.
--  Added typing for all classes.
+- Added Abrahamson, Gregor, Addo (2014)
+- Added Abrahamson & Gulerce (2011)
+- Added conditional mean spectra models.
+- Added Scenario objects.
+- Added typing for all classes.
 
 0.4.0 (2016-04-08)
 ------------------
