@@ -112,12 +112,17 @@ class Model(object):
     #: Short name of the model
     ABBREV = ''
 
-    def __init__(self, scenario):
+    def __init__(self, *args, **kwargs):
         """Initialize the model."""
         super(Model, self).__init__()
 
         self._ln_resp = None
         self._ln_std = None
+
+        if len(args) == 1:
+            scenario = args[0]
+        else:
+            scenario = Scenario(**kwargs)
 
         # Select the used parameters and check them against the recommended
         # values
