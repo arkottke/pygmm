@@ -56,6 +56,9 @@ class Scenario(UserDict):
         direct point parameter (DPP) for directivity effect (see Chiou and
         Spudich (2014, :cite:`spudich14`)) centered on the earthquake-specific
         average DPP for California.
+    event_type : str
+        event type. Type of event used in subduction models to distinguish
+        between intraslab and interface events.
     is_aftershock : bool
         if the scenario is an aftershock.
     mag : float
@@ -69,8 +72,11 @@ class Scenario(UserDict):
     region : str
         region. Valid options are specified in a specific GMM.
     site_cond : str
-        site condition. String description of the site condition. Valid 
+        site condition. String description of the site condition. Valid
         options are specified in a specific GMM.
+    tectonic_region : str
+        tectonic region. Tectonic setting of the site typically used in
+        subductin models.
     v_s30 : float
         time-averaged shear-wave velocity over the top 30 m of the site
         (:math:`V_{s30}`, m/s).
@@ -85,9 +91,9 @@ class Scenario(UserDict):
     KNOWN_KEYS = [
         'depth_1_0', 'depth_2_5', 'depth_tor', 'depth_bor', 'depth_bot',
         'depth_hyp', 'dip', 'dist_crjb', 'dist_jb', 'dist_epi', 'dist_hyp',
-        'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered', 'is_aftershock',
-        'mag', 'mechanism', 'on_hanging_wall', 'region', 'site_cond', 
-        'v_s30', 'vs_source', 'width'
+        'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered', 'event_type',
+        'is_aftershock', 'mag', 'mechanism', 'on_hanging_wall', 'region',
+        'site_cond', 'tectonic_region', 'v_s30', 'vs_source', 'width'
     ]
 
     def __init__(self, **kwds):
@@ -135,6 +141,9 @@ class Model(object):
         for p in self.PARAMS:
             self._scenario[p.name] = p.check(self._scenario[p.name])
 
+    @property
+    def scenario(self):
+        return self._scenario
 
 class GroundMotionModel(Model):
     """Abstract class for ground motion prediction models."""

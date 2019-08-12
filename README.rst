@@ -42,6 +42,8 @@ Models currently supported:
 
 * Abrahamson, Silva, & Kamai (2014) with unit tests
 
+* Abrahamson, Gregor, & Addo (2016) with unit tests
+
 * Boore, Stewart, Seyhan, & Atkinson (2014) with unit tests
 
 * Campbell (2003)
