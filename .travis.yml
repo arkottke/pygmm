@@ -13,7 +13,8 @@ script:
   - python setup.py test
 
 after_success:
-    coveralls
+  - coveralls
+  - codecov
 
 deploy:
   true:
