@@ -99,9 +99,7 @@ class Scenario(collections.UserDict):
     def __init__(self, **kwds):
         """Initialize the scenario."""
         super().__init__(kwds)
-        for k in self.data:
-            if k not in self.KNOWN_KEYS:
-                raise Warning('%s is not a recognized scenario key!' % k)
+        self._check_keys(self.keys())
 
     def __getattr__(self, item):
         """Access the data with attributes."""
@@ -110,6 +108,17 @@ class Scenario(collections.UserDict):
     def __repr__(self):
         """Representation."""
         return '<Scenario(mag={mag}, dist_jb={dist_jb})>'.format(**self.data)
+
+    def copy_with(self, **kwds):
+        self._check_keys(kwds.keys())
+        other = self.copy()
+        other.update(**kwds)
+        return other
+
+    def _check_keys(self, keys):
+        for k in keys:
+            if k not in self.KNOWN_KEYS:
+                raise Warning('%s is not a recognized scenario key!' % k)
 
 
 class Model(object):
@@ -182,6 +191,37 @@ class GroundMotionModel(Model):
                for p in self.PARAMS})
         self._check_inputs()
 
+    def interp_ln_spec_accels(self,
+                              periods: ArrayLike,
+                              kind: Optional[str] = 'linear') -> np.ndarray:
+        """Interpolate the spectral acceleration.
+
+        Interpolation of the spectral acceleration is done in natural log
+        space.
+
+        Parameters
+        ----------
+        periods : array_like
+            spectral periods to interpolate the response.
+        kind : str, optional
+            see :func:`scipy.interpolate.interp1d` for description of kind.
+            Options include: 'linear' (default), 'nearest', 'zero', 'slinear',
+            'quadratic', and 'cubic'
+
+        Returns
+        -------
+        ln_spec_accels : np.ndarray
+            interpolated spectral accelerations
+
+        """
+        return interp1d(
+                np.log(self.periods),
+                self._ln_resp[self.INDICES_PSA],
+                kind=kind,
+                copy=False,
+                bounds_error=False,
+                fill_value=np.nan)(np.log(periods))
+
     def interp_spec_accels(self,
                            periods: ArrayLike,
                            kind: Optional[str] = 'linear') -> np.ndarray:
@@ -205,14 +245,7 @@ class GroundMotionModel(Model):
             interpolated spectral accelerations
 
         """
-        return np.exp(
-            interp1d(
-                np.log(self.periods),
-                self._ln_resp[self.INDICES_PSA],
-                kind=kind,
-                copy=False,
-                bounds_error=False,
-                fill_value=np.nan, )(np.log(periods)))
+        return np.exp(self.interp_ln_spec_accels(periods, kind))
 
     def interp_ln_stds(self, periods: ArrayLike,
                        kind: Optional[str] = 'linear') -> np.ndarray:
