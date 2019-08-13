@@ -54,7 +54,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
                                    'unknown')
     ]
 
-    def __init__(self, scenario, adjust_c1=None, adjust_c4=0):
+    def __init__(self, scenario, adjust_c1=None, adjust_c4=0, scale_atten=1.):
         """Initialize the model.
 
         Args:
@@ -80,6 +80,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
                 self._adjust_c1 = np.asarray(adjust_c1)
 
         self._adjust_c4 = adjust_c4
+        self._scale_atten = scale_atten
 
         pga_ref = np.exp(self._calc_ln_resp(np.nan)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref)
@@ -92,6 +93,10 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
     @property
     def adjust_c4(self):
         return self._adjust_c4
+
+    @property
+    def scale_atten(self):
+        return self._scale_atten
 
     def _calc_ln_resp(self, pga_ref):
         """Calculate the natural logarithm of the response.
@@ -120,7 +125,8 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         )
 
         ln_resp = (
-            c.t_1 + c.t_4 * self.adjust_c1 + path_atten + c.t_6 * dist +
+            c.t_1 + c.t_4 * self.adjust_c1 + path_atten +
+            self._scale_atten * c.t_6 * dist +
             c.t_10 * f_event +
             self._calc_f_mag(s.mag) +
             self._calc_f_site(pga_ref)
