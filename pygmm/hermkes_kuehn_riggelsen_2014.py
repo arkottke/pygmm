@@ -24,8 +24,7 @@ if not fname_data.exists():
            'hermkes_kuehn_riggelsen_2014.npz?dl=0')
 
     try:
-        with urllib.request.urlopen(url) as req, fname_data.open('wb') as fp:
-            shutil.copy(req, fp)
+        urllib.request.urlretrieve(url, str(fname_data))
     except urllib.request.URLError:
         logging.critical(
             'Hermkes, Kuehn, and Riggelsen (2013) model data required, '
