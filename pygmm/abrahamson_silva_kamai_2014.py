@@ -238,7 +238,6 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         -------
         width : float
             estimated fault width (:math:`W`, km)
-
         """
         return min(18 / np.sin(np.radians(dip)), 10 ** (-1.75 + 0.45 * mag))
 

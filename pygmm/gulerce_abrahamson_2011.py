@@ -92,11 +92,13 @@ class GulerceAbrahamson2011(model.Model):
                 self.PERIODS <= 2.00,
                 self.PERIODS <= 10.0,
             ],
+            # Use minimum on period to prevent runtime warning.
             [
                 862,
                 1500.,
-                np.exp(8 - 0.795 * np.log(self.PERIODS / 0.21)),
-                np.exp(6.76 - 0.297 * np.log(self.PERIODS)),
+                np.exp(8 - 0.795 * np.log(
+                    np.maximum(0.001, self.PERIODS) / 0.21)),
+                np.exp(6.76 - 0.297 * np.log(np.maximum(0.001, self.PERIODS))),
                 700,
             ]
         )

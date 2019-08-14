@@ -402,7 +402,6 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         -------
         float
             estimated fault width (km)
-
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
@@ -426,6 +425,5 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         -------
         float
             depth to bottom of the fault rupture (km)
-
         """
         return depth_tor + width * np.sin(np.radians(dip))
