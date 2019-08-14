@@ -60,6 +60,13 @@ class GulerceAbrahamson2011(model.Model):
         self._ln_ratio = self._calc_ln_ratio()
         self._ln_std = self._calc_ln_std()
 
+    @property
+    def ratio(self):
+        return np.exp(self._ln_ratio)
+
+    @property
+    def ln_std(self):
+        return self._ln_std
 
     def _calc_ln_ratio(self):
         s = self._scenario
@@ -69,13 +76,13 @@ class GulerceAbrahamson2011(model.Model):
 
         # Magnitude and distance scaling
         f1 = (
-            c.a1 + c.a8 (8.5 - s.mag) ** 2 +
-            (c.a2 + c.a3 * (s.mag - c.c1)) * np.log(dist)
+            c.a1 + c.a8 * (8.5 - s.mag) ** 2 +
+            (c.a2 + c.a3 * (s.mag - c.c1)) * np.log(dist) +
+            np.select(
+                [(s.mag < c.c1), True],
+                [c.a4 * (s.mag - c.c1), c.a5 * (s.mag - c.c1)]
+            )
         )
-        mask = (s.mag < c.c1)
-        f1[mask] += c.a4 * (s.mag - c.c1)
-        f1[~mask] += c.a5 * (s.mag - c.c1)
-
         # Site model
         v_1 = np.select(
             [
@@ -94,15 +101,15 @@ class GulerceAbrahamson2011(model.Model):
             ]
         )
         v_s30_lim = np.minimum(s.v_s30, v_1)
-
-        f5 = c.a10 * np.log(v_s30_lim / c.v_lin)
-        mask = v_s30_lim < c.v_lin
-        f5[mask] -= (
-            -c.b * np.log(s.pga_ref + c.c) +
-            c.b * np.log(s.pga_ref + c * (v_s30_lim / c.v_lin) ** c.n)
-        )
-        f5[~mask] -= (
-            c.b * c.n * np.log(v_s30_lim / c.v_lin)
+        vs_ratio = v_s30_lim / c.v_lin
+        f5 = (
+                 c.a10 * np.log(vs_ratio) -
+                 np.select(
+                     [v_s30_lim < c.v_lin, True],
+                     [-c.b * np.log(s.pga_ref + c.c) +
+                      c.b * np.log(s.pga_ref + c.c * vs_ratio ** c.n),
+                      c.b * c.n * np.log(vs_ratio)]
+                 )
         )
 
         ln_ratio = f1 + f5
@@ -116,21 +123,29 @@ class GulerceAbrahamson2011(model.Model):
     def _calc_ln_std_within(self):
         c = self.COEFF
         mag = self._scenario.mag
-        return np.clip(
-            c.s1 + 0.5 * (c.s2 - c.s1) * (mag - 5),
-            c.s1, c.s2
+        return np.select(
+            [mag < 5, mag <= 7, True],
+            [
+                c.s1,
+                c.s1 + 0.5 * (c.s2 - c.s1) * (mag - 5),
+                c.s2
+            ]
         )
 
     def _calc_ln_std_between(self):
         c = self.COEFF
         mag = self._scenario.mag
-        return np.clip(
-            c.s3 + 0.5 * (c.s4 - c.s3) * (mag - 5),
-            c.s3, c.s4
+        return np.select(
+            [mag < 5, mag <= 7, True],
+            [
+                c.s3,
+                c.s3 + 0.5 * (c.s4 - c.s3) * (mag - 5),
+                c.s4
+            ]
         )
 
     def _calc_ln_std(self):
-        return np.sqrt(
-            self._calc_ln_std_between() ** 2 +
-            self._calc_ln_std_within() ** 2
-        )
+        between = self._calc_ln_std_between()
+        within = self._calc_ln_std_within()
+
+        return np.sqrt(between ** 2 + within ** 2)

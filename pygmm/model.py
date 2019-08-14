@@ -69,6 +69,9 @@ class Scenario(collections.UserDict):
     on_hanging_wall : bool
         If the site is located on the hanging wall of the fault. If *None*,
         then *False* is assumed.
+    pga_ref : float
+        peak ground accelearion in *g* at the model-specific reference
+        condition.
     region : str
         region. Valid options are specified in a specific GMM.
     site_cond : str
@@ -92,8 +95,8 @@ class Scenario(collections.UserDict):
         'depth_1_0', 'depth_2_5', 'depth_tor', 'depth_bor', 'depth_bot',
         'depth_hyp', 'dip', 'dist_crjb', 'dist_jb', 'dist_epi', 'dist_hyp',
         'dist_rup', 'dist_x', 'dist_y0', 'dpp_centered', 'event_type',
-        'is_aftershock', 'mag', 'mechanism', 'on_hanging_wall', 'region',
-        'site_cond', 'tectonic_region', 'v_s30', 'vs_source', 'width'
+        'is_aftershock', 'mag', 'mechanism', 'on_hanging_wall', 'pga_ref',
+        'region', 'site_cond', 'tectonic_region', 'v_s30', 'vs_source', 'width'
     ]
 
     def __init__(self, **kwds):
