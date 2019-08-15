@@ -28,7 +28,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
     V_REF = 1000.
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file('abrahamson_gregor_addo-2016.csv', 1)
+    COEFF = model.load_data_file('abrahamson_gregor_addo_2016.csv', 1)
     PERIODS = COEFF['period']
 
     INDEX_PGA = 0
@@ -233,7 +233,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
             [c.t_12 * np.log(vs_ratio) -
              c.b * np.log(pga_ref + c.c) +
              c.b * np.log(pga_ref + c.c * vs_ratio ** c.n),
-             c.t_12 * np.log(vs_ratio) + c.b * c.n * np.log(vs_ratio)
+             (c.t_12 + c.b * c.n) * np.log(vs_ratio)
              ]
         )
         return f_site
