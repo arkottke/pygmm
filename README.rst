@@ -1,39 +1,9 @@
-=====
 pyGMM
 =====
 
-.. image:: https://img.shields.io/pypi/v/pygmm.svg
-    :target: https://pypi.python.org/pypi/pygmm
-    :alt: PyPi Cheese Shop
-
-.. image:: https://img.shields.io/travis/arkottke/pygmm.svg
-    :target: https://travis-ci.org/arkottke/pygmm
-    :alt: Build Status
-
-.. image:: https://readthedocs.org/projects/pygmm/badge/?version=latest&style=flat
-    :target: https://pygmm.readthedocs.org
-    :alt: Documentation Status
-
-.. image:: https://coveralls.io/repos/github/arkottke/pygmm/badge.svg?branch=master
-    :target: https://coveralls.io/github/arkottke/pygmm?branch=master
-    :alt: Test Coverage
-
-.. image:: https://landscape.io/github/arkottke/pygmm/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/arkottke/pygmm/master
-    :alt: Code Health
-
-.. image:: https://img.shields.io/badge/license-MIT-blue.svg
-    :target: https://github.com/arkottke/pygmm/blob/master/LICENSE
-    :alt: License
-    
-.. image:: https://zenodo.org/badge/21452/arkottke/pygmm.svg
-   :target: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
-   :alt: DOI Information
+|PyPi Cheese Shop| |Build Status| |Code Quality| |Test Coverage| |License| |DOI|
 
 Ground motion models implemented in Python.
-
-* Free software: MIT license
-* Documentation: https://pygmm.readthedocs.org.
 
 I have recently learned that additional ground motion models have been implemented through GEM's OpenQuake Hazardlib_, which I recommend checking out.
 
@@ -80,8 +50,19 @@ the model.
 Citation
 --------
 
-Please cite this software using the following DOI:
+Please cite this software using the DOI_.
 
-.. image:: https://zenodo.org/badge/21452/arkottke/pygmm.svg
-   :target: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
-   :alt: DOI Information
+.. _DOI: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
+
+
+.. |PyPi Cheese Shop| image:: https://img.shields.io/pypi/v/pygmm.svg
+   :target: https://img.shields.io/pypi/v/pygmm.svg
+.. |Build Status| image:: https://travis-ci.org/arkottke/pygmm.svg?branch=master
+   :target: https://travis-ci.org/arkottke/pygmm
+.. |Code Quality| image:: https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7
+   :target: https://www.codacy.com/manual/arkottke/pygmm
+.. |Test Coverage| image:: https://api.codacy.com/project/badge/Coverage/abc9878c890143c8b590e6f3602056b7
+   :target: https://www.codacy.com/manual/arkottke/pygmm
+.. |License| image:: https://img.shields.io/badge/license-MIT-blue.svg
+.. |DOI| image:: https://zenodo.org/badge/183696586.svg
+   :target: https://zenodo.org/badge/latestdoi/183696586
