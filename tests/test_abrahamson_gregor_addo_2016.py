@@ -1,21 +1,15 @@
-
-import gzip
-import json
-import os
-
 import numpy as np
 import pytest
 
 from pygmm.model import Scenario
 from pygmm import AbrahamsonGregorAddo2016 as AGA16
 
+from . import load_tests
+
 # Relative tolerance for all tests
 RTOL = 2e-2
 
-# Load the tests
-fname = os.path.join(os.path.dirname(__file__), 'data', 'aga16_tests.json.gz')
-with gzip.open(fname, 'rt') as fp:
-    tests = json.load(fp)
+TESTS = load_tests('abrahamson_gregor_addo_2016.json.gz')
 
 
 def create_model(params):
@@ -24,7 +18,7 @@ def create_model(params):
     return m
 
 
-@pytest.mark.parametrize('test', tests)
+@pytest.mark.parametrize('test', TESTS)
 @pytest.mark.parametrize(
     'key', ['spec_accels', 'ln_stds', 'pga', 'ln_std_pga'])
 def test_spec_accels(test, key):

@@ -1,21 +1,12 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
-import json
-import os
-
+import numpy as np
 import pytest
-
-from numpy.testing import assert_allclose
 
 from pygmm import GulerceAbrahamson2011 as GA11
 
+from . import load_tests
 
-fpath = os.path.join(
-    os.path.dirname(__file__), 'data', 'gulerce_abrahamson_2011.json')
 
-with open(fpath) as fp:
-    tests = json.load(fp)
+TESTS = load_tests('gulerce_abrahamson_2011.json.gz')
 
 
 def idfn(test):
@@ -26,10 +17,10 @@ def idfn(test):
         return test
 
 
-@pytest.mark.parametrize('test', tests, ids=idfn)
+@pytest.mark.parametrize('test', TESTS, ids=idfn)
 @pytest.mark.parametrize('key', ['ratio', 'ln_std'])
 def test_calc_cond_spectrum(test, key):
     m = GA11(test['params'])
     actual = getattr(m, key)
     expected = test['output'][key]
-    assert_allclose(actual, expected, atol=0.001, rtol=0.005)
+    np.testing.assert_allclose(actual, expected, atol=0.001, rtol=0.005)

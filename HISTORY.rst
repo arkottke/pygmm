@@ -1,6 +1,10 @@
 History
 =======
 
+0.6.1 (in progress)
+-------------------
+- Added Coppersmith & Bommer (2014) model for Hanford 
+
 0.6.0 (2019-08-12)
 ------------------
 - Added Abrahamson, Gregor, Addo (2014)

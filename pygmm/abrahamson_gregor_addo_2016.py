@@ -62,20 +62,21 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         """
         super(AbrahamsonGregorAddo2016, self).__init__(scenario)
 
+        n = len(self.COEFF)
         if adjust_c1 is None:
             # Default adjustments
             if self.scenario.event_type == 'intraslab':
-                self._adjust_c1 = -0.3 * np.ones(23)
+                self._adjust_c1 = -0.3 * np.ones(n)
             else:
                 self._adjust_c1 = np.interp(
-                    np.log(np.r_[0.01, self.periods]),
+                    np.log(np.maximum(0.01, self.COEFF.period)),
                     np.log([0.3, 0.5, 1, 2, 3]),
                     [0.2, 0.1, 0, -0.1, -0.2],
                     left=0.2, right=-0.2
                 )
         else:
             if isinstance(adjust_c1, float):
-                self._adjust_c1 = adjust_c1 * np.ones(23)
+                self._adjust_c1 = adjust_c1 * np.ones(n)
             else:
                 self._adjust_c1 = np.asarray(adjust_c1)
 
@@ -133,7 +134,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         )
 
         if s.tectonic_region == 'backarc':
-            ln_resp += self._calc_f_faba(s.event_type, dist)
+            ln_resp += self._calc_f_faba(dist)
 
         if s.event_type == 'intraslab':
             ln_resp += self._calc_f_depth(s.depth_hyp)
@@ -182,14 +183,11 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         f_depth = c.t_11 * (np.minimum(depth_hyp, 120) - 60)
         return f_depth
 
-    def _calc_f_faba(self, event_type, dist):
+    def _calc_f_faba(self, dist):
         """Calculate the forearc/backarc scaling. Equation 4.
 
         Parameters
         ----------
-        event_type : str
-            type of subduction event, either: 'interface' or 'intraslab'
-
         dist : float
             depth to hypocenter [km]
 
@@ -200,9 +198,9 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
 
         """
         c = self.COEFF
-        if event_type == 'intraslab':
+        if self.scenario.event_type == 'intraslab':
             f_faba = c.t_7 + c.t_8 * np.log(np.maximum(dist, 85) / 40)
-        elif event_type == 'interface':
+        elif self.scenario.event_type == 'interface':
             f_faba = c.t_15 + c.t_16 * np.log(np.maximum(dist, 100) / 40)
         else:
             raise NotImplementedError
