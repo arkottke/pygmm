@@ -52,7 +52,7 @@ Citation
 
 Please cite this software using the DOI_.
 
-.. _DOI: https://zenodo.org/badge/latestdoi/21452/arkottke/pygmm
+.. _DOI: https://zenodo.org/badge/latestdoi/53176693
 
 
 .. |PyPi Cheese Shop| image:: https://img.shields.io/pypi/v/pygmm.svg
@@ -64,5 +64,5 @@ Please cite this software using the DOI_.
 .. |Test Coverage| image:: https://api.codacy.com/project/badge/Coverage/abc9878c890143c8b590e6f3602056b7
    :target: https://www.codacy.com/manual/arkottke/pygmm
 .. |License| image:: https://img.shields.io/badge/license-MIT-blue.svg
-.. |DOI| image:: https://zenodo.org/badge/183696586.svg
-   :target: https://zenodo.org/badge/latestdoi/183696586
+.. |DOI| image:: https://zenodo.org/badge/53176693.svg
+   :target: https://zenodo.org/badge/latestdoi/53176693
