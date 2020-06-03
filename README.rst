@@ -57,7 +57,7 @@ Please cite this software using the DOI_.
 
 .. |PyPi Cheese Shop| image:: https://img.shields.io/pypi/v/pygmm.svg
    :target: https://img.shields.io/pypi/v/pygmm.svg
-.. |Build Status| image:: https://travis-ci.org/arkottke/pygmm.svg?branch=master
+.. |Build Status| image:: https://travis-ci.com/arkottke/pygmm.svg?branch=master
    :target: https://travis-ci.org/arkottke/pygmm
 .. |Code Quality| image:: https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7
    :target: https://www.codacy.com/manual/arkottke/pygmm
