@@ -43,7 +43,7 @@ class GulerceAbrahamson2011(model.Model):
         model.NumericParameter('dist_rup', True, None, 200),
         model.NumericParameter('mag', True, 5, 8.5),
         model.NumericParameter('v_s30', True, 450, 1200),
-        model.NumericParameter('pga_ref', False, 0.001, 10),
+        model.NumericParameter('pga_ref', True, 0.001, 10),
         model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
     ]
 
