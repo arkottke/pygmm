@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 """Tavakoli and Pezeshk (2005, :cite:`tavakoli05`) model."""
-
 import numpy as np
 
 from . import model
 
-__author__ = 'Albert Kottke'
+__author__ = "Albert Kottke"
 
 
 class TavakoliPezeshk05(model.GroundMotionModel):
@@ -21,22 +20,22 @@ class TavakoliPezeshk05(model.GroundMotionModel):
 
     """
 
-    NAME = 'Tavakoli and Pezeshk (2005)'
-    ABBREV = 'TP05'
+    NAME = "Tavakoli and Pezeshk (2005)"
+    ABBREV = "TP05"
 
     # Reference velocity (m/sec)
-    V_REF = 2880.
+    V_REF = 2880.0
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file('tavakoli_pezeshk_2005.csv', 1)
-    PERIODS = COEFF['period']
+    COEFF = model.load_data_file("tavakoli_pezeshk_2005.csv", 1)
+    PERIODS = COEFF["period"]
 
     INDEX_PGA = 0
     INDICES_PSA = np.arange(1, 14)
 
     PARAMS = [
-        model.NumericParameter('dist_rup', True, None, 1000),
-        model.NumericParameter('mag', True, 5.0, 8.2),
+        model.NumericParameter("dist_rup", True, None, 1000),
+        model.NumericParameter("mag", True, 5.0, 8.2),
     ]
 
     def __init__(self, scenario: model.Scenario):
@@ -64,17 +63,18 @@ class TavakoliPezeshk05(model.GroundMotionModel):
         f2 = c.c_9 * np.log(s.dist_rup + 4.5)
 
         if s.dist_rup > 70:
-            f2 += c.c_10 * np.log(s.dist_rup / 70.)
+            f2 += c.c_10 * np.log(s.dist_rup / 70.0)
 
         if s.dist_rup > 130:
-            f2 += c.c_11 * np.log(s.dist_rup / 130.)
+            f2 += c.c_11 * np.log(s.dist_rup / 130.0)
 
         # Calculate scaled, magnitude dependent distance R for use when
         # calculating f3
-        dist = np.sqrt(s.dist_rup ** 2 + (c.c_5 * np.exp(
-            c.c_6 * s.mag + c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2)
-        f3 = ((c.c_4 + c.c_13 * s.mag) * np.log(dist) +
-              (c.c_8 + c.c_12 * s.mag) * dist)
+        dist = np.sqrt(
+            s.dist_rup ** 2
+            + (c.c_5 * np.exp(c.c_6 * s.mag + c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2
+        )
+        f3 = (c.c_4 + c.c_13 * s.mag) * np.log(dist) + (c.c_8 + c.c_12 * s.mag) * dist
 
         # Compute the ground motion
         ln_resp = f1 + f2 + f3

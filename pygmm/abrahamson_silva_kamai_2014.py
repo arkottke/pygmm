@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
 """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model."""
-
 import numpy as np
 from scipy.interpolate import interp1d
 
 from . import model
 from .types import ArrayLike
 
-__author__ = 'Albert Kottke'
+__author__ = "Albert Kottke"
 
 
 class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
@@ -23,55 +22,56 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
     """
 
-    NAME = 'Abrahamson, Silva, & Kamai (2014)'
-    ABBREV = 'ASK14'
+    NAME = "Abrahamson, Silva, & Kamai (2014)"
+    ABBREV = "ASK14"
 
     # Reference velocity (m/sec)
-    V_REF = 1180.
+    V_REF = 1180.0
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file('abrahamson_silva_kamai_2014.csv', 2)
+    COEFF = model.load_data_file("abrahamson_silva_kamai_2014.csv", 2)
 
-    PERIODS = COEFF['period']
+    PERIODS = COEFF["period"]
 
     INDICES_PSA = np.arange(22)
     INDEX_PGA = -2
     INDEX_PGV = -1
 
     PARAMS = [
-        model.NumericParameter('dist_rup', True, None, 300),
-        model.NumericParameter('dist_jb', True),
-        model.NumericParameter('mag', True, 3, 8.5),
-        model.NumericParameter('v_s30', True, 180, 1000),
-        model.NumericParameter('depth_1_0', False),
-        model.NumericParameter('depth_tor', False),
-        model.NumericParameter('dip', True),
-        model.NumericParameter('dist_crjb', False, default=15),
-        model.NumericParameter('dist_x', False),
-        model.NumericParameter('dist_y0', False),
-        model.NumericParameter('width', False),
-        model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
+        model.NumericParameter("dist_rup", True, None, 300),
+        model.NumericParameter("dist_jb", True),
+        model.NumericParameter("mag", True, 3, 8.5),
+        model.NumericParameter("v_s30", True, 180, 1000),
+        model.NumericParameter("depth_1_0", False),
+        model.NumericParameter("depth_tor", False),
+        model.NumericParameter("dip", True),
+        model.NumericParameter("dist_crjb", False, default=15),
+        model.NumericParameter("dist_x", False),
+        model.NumericParameter("dist_y0", False),
+        model.NumericParameter("width", False),
+        model.CategoricalParameter("mechanism", True, ["SS", "NS", "RS"]),
         model.CategoricalParameter(
-            'region', False,
-            ['global', 'california', 'china', 'italy', 'japan', 'taiwan'],
-            'global'),
-        model.CategoricalParameter('vs_source', False,
-                                   ['measured', 'inferred'], 'measured'),
-        model.CategoricalParameter('is_aftershock', False, [True, False],
-                                   False),
-        model.CategoricalParameter('on_hanging_wall', False, [True, False],
-                                   False),
+            "region",
+            False,
+            ["global", "california", "china", "italy", "japan", "taiwan"],
+            "global",
+        ),
+        model.CategoricalParameter(
+            "vs_source", False, ["measured", "inferred"], "measured"
+        ),
+        model.CategoricalParameter("is_aftershock", False, [True, False], False),
+        model.CategoricalParameter("on_hanging_wall", False, [True, False], False),
     ]
 
     def _check_inputs(self) -> None:
         """Check the inputs."""
         super(AbrahamsonSilvaKamai2014, self)._check_inputs()
         s = self._scenario
-        if s['width'] is None:
-            s['width'] = self.calc_width(s.mag, s.dip)
+        if s["width"] is None:
+            s["width"] = self.calc_width(s.mag, s.dip)
 
-        if s['depth_tor'] is None:
-            s['depth_tor'] = self.calc_depth_tor(s.mag)
+        if s["depth_tor"] is None:
+            s["depth_tor"] = self.calc_depth_tor(s.mag)
 
     def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
@@ -115,10 +115,10 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         # Depth to top of rupture term
         f6 = c.a15 * np.clip(s.depth_tor / 20, 0, 1)
         # Style of faulting
-        if s.mechanism == 'RS':
+        if s.mechanism == "RS":
             f7 = c.a11 * np.clip(s.mag - 4, 0, 1)
             f8 = 0
-        elif s.mechanism == 'NS':
+        elif s.mechanism == "NS":
             f7 = 0
             f8 = c.a12 * np.clip(s.mag - 4, 0, 1)
         else:
@@ -126,16 +126,18 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         # Site term
         ###########
-        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(
-            1500))
+        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(1500))
 
         vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
         # Linear site model
         f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
         # Nonlinear model
         mask = vs_ratio < 1
-        f5[mask] = (c.a10 * np.log(vs_ratio) - c.b * np.log(resp_ref + c.c) +
-                    c.b * np.log(resp_ref + c.c * vs_ratio ** c.n))[mask]
+        f5[mask] = (
+            c.a10 * np.log(vs_ratio)
+            - c.b * np.log(resp_ref + c.c)
+            + c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
+        )[mask]
 
         # Basin term
         if v_s30 == self.V_REF or s.depth_1_0 is None:
@@ -144,14 +146,15 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         else:
             # Ratio between site depth_1_0 and model center
             ln_depth_ratio = np.log(
-                (s.depth_1_0 + 0.01) /
-                (self.calc_depth_1_0(v_s30, s.region) + 0.01))
+                (s.depth_1_0 + 0.01) / (self.calc_depth_1_0(v_s30, s.region) + 0.01)
+            )
             slope = interp1d(
                 [150, 250, 400, 700],
                 np.c_[c.a43, c.a44, c.a45, c.a46],
                 copy=False,
                 bounds_error=False,
-                fill_value=(c.a43, c.a46), )(v_s30)
+                fill_value=(c.a43, c.a46),
+            )(v_s30)
             f10 = slope * ln_depth_ratio
 
         # Aftershock term
@@ -160,17 +163,18 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         else:
             f11 = 0
 
-        if s.region == 'taiwan':
+        if s.region == "taiwan":
             freg = c.a31 * np.log(vs_ratio) + c.a25 * s.dist_rup
-        elif s.region == 'china':
+        elif s.region == "china":
             freg = c.a28 * s.dist_rup
-        elif s.region == 'japan':
+        elif s.region == "japan":
             f13 = interp1d(
                 [150, 250, 350, 450, 600, 850, 1150],
                 np.c_[c.a36, c.a37, c.a38, c.a39, c.a40, c.a41, c.a42],
                 copy=False,
                 bounds_error=False,
-                fill_value=(c.a36, c.a42), )(v_s30)
+                fill_value=(c.a36, c.a42),
+            )(v_s30)
             freg = f13 + c.a29 * s.dist_rup
         else:
             freg = 0
@@ -193,12 +197,11 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         s = self._scenario
         c = self.COEFF
 
-        if s.region == 'japan':
-            phi_al = (c.s5 + (c.s6 - c.s5) * np.clip(
-                (s.dist_rup - 30) / 50, 0, 1))
+        if s.region == "japan":
+            phi_al = c.s5 + (c.s6 - c.s5) * np.clip((s.dist_rup - 30) / 50, 0, 1)
         else:
             transition = np.clip((s.mag - 4) / 2, 0, 1)
-            if s.vs_source == 'measured':
+            if s.vs_source == "measured":
                 phi_al = c.s1m + (c.s2m - c.s1m) * transition
             else:
                 phi_al = c.s1e + (c.s2e - c.s1e) * transition
@@ -212,8 +215,9 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         # The partial derivative of the amplification with respect to
         # the reference intensity
-        deriv = ((-c.b * psa_ref) / (psa_ref + c.c) + (c.b * psa_ref) /
-                 (psa_ref + c.c * (s.v_s30 / c.v_lin) ** c.n))
+        deriv = (-c.b * psa_ref) / (psa_ref + c.c) + (c.b * psa_ref) / (
+            psa_ref + c.c * (s.v_s30 / c.v_lin) ** c.n
+        )
         deriv[s.v_s30 >= c.v_lin] = 0
         tau = tau_b * (1 + deriv)
         phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
@@ -255,10 +259,10 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         depth_tor : float
             estimated depth to top of rupture (km)
         """
-        return np.interp(mag, [5., 7.2], [7.8, 0])
+        return np.interp(mag, [5.0, 7.2], [7.8, 0])
 
     @staticmethod
-    def calc_depth_1_0(v_s30: float, region: str='california') -> float:
+    def calc_depth_1_0(v_s30: float, region: str = "california") -> float:
         """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
         :math:`V_{s30}` and region.
 
@@ -282,7 +286,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             (:math:`Z_{1.0}`, km).
 
         """
-        if region in ['japan']:
+        if region in ["japan"]:
             # Japan
             power = 2
             v_ref = 412
@@ -293,8 +297,16 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             v_ref = 610
             slope = -7.67 / power
 
-        return np.exp(slope * np.log((v_s30 ** power + v_ref ** power) /
-                                     (1360. ** power + v_ref ** power))) / 1000
+        return (
+            np.exp(
+                slope
+                * np.log(
+                    (v_s30 ** power + v_ref ** power)
+                    / (1360.0 ** power + v_ref ** power)
+                )
+            )
+            / 1000
+        )
 
     def _calc_f1(self) -> np.ndarray:
         """Calculate the magnitude scaling parameter f1."""
@@ -302,23 +314,29 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         s = self._scenario
 
         # Magnitude dependent taper
-        dist = np.sqrt(s.dist_rup ** 2 + (c.c4 - (c.c4 - 1) * np.clip(
-            5 - s.mag, 0, 1)) ** 2)
+        dist = np.sqrt(
+            s.dist_rup ** 2 + (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
+        )
 
         # Magnitude scaling
         # Need to copy c.a1 to that it isn't modified during the following
         # operations.
         f1 = np.array(c.a1)
-        ma1 = (s.mag <= c.m2)
-        f1[ma1] += (c.a4 * (c.m2 - c.m1) + c.a8 * (8.5 - c.m2) ** 2 + c.a6 *
-                    (s.mag - c.m2) + c.a7 * (s.mag - c.m2) +
-                    (c.a2 + c.a3 *
-                     (c.m2 - c.m1)) * np.log(dist) + c.a17 * s.dist_rup)[ma1]
+        ma1 = s.mag <= c.m2
+        f1[ma1] += (
+            c.a4 * (c.m2 - c.m1)
+            + c.a8 * (8.5 - c.m2) ** 2
+            + c.a6 * (s.mag - c.m2)
+            + c.a7 * (s.mag - c.m2)
+            + (c.a2 + c.a3 * (c.m2 - c.m1)) * np.log(dist)
+            + c.a17 * s.dist_rup
+        )[ma1]
 
         f1[~ma1] += (
-            c.a8 * (8.5 - s.mag) ** 2 +
-            (c.a2 + c.a3 *
-             (s.mag - c.m1)) * np.log(dist) + c.a17 * s.dist_rup)[~ma1]
+            c.a8 * (8.5 - s.mag) ** 2
+            + (c.a2 + c.a3 * (s.mag - c.m1)) * np.log(dist)
+            + c.a17 * s.dist_rup
+        )[~ma1]
 
         ma2 = np.logical_and(~ma1, s.mag <= c.m1)
         f1[ma2] += (c.a4 * (s.mag - c.m1))[ma2]
@@ -340,7 +358,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         if s.mag <= 5.5:
             t2 = 0
         elif s.mag < 6.5:
-            t2 = (1 + a2hw * (s.mag - 6.5) - (1 - a2hw) * (s.mag - 6.5) ** 2)
+            t2 = 1 + a2hw * (s.mag - 6.5) - (1 - a2hw) * (s.mag - 6.5) ** 2
         else:
             t2 = 1 + a2hw * (s.mag - 6.5)
 

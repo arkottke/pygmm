@@ -1,5 +1,4 @@
 """Boore, Stewart, Seyhan, and Atkinson (2014) ground motion model."""
-
 import logging
 
 import numpy as np
@@ -8,7 +7,7 @@ from . import model
 from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
 from .types import ArrayLike
 
-__author__ = 'Albert Kottke'
+__author__ = "Albert Kottke"
 
 
 class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
@@ -68,15 +67,16 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         earthquake scenario
 
     """
-    NAME = 'Boore, Stewart, Seyhan, and Atkinson (2014)'
-    ABBREV = 'BSSA14'
+
+    NAME = "Boore, Stewart, Seyhan, and Atkinson (2014)"
+    ABBREV = "BSSA14"
 
     # Reference shear-wave velocity in m/sec
-    V_REF = 760.
+    V_REF = 760.0
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file('boore_stewart_seyhan_atkinson-2014.csv', 2)
-    PERIODS = COEFF['period']
+    COEFF = model.load_data_file("boore_stewart_seyhan_atkinson-2014.csv", 2)
+    PERIODS = COEFF["period"]
 
     INDEX_PGV = 0
     INDEX_PGA = 1
@@ -84,20 +84,31 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
 
     LIMITS = dict(
         mag=(3.0, 8.5),
-        dist_jb=(0., 300.),
-        v_s30=(150., 1500.), )
+        dist_jb=(0.0, 300.0),
+        v_s30=(150.0, 1500.0),
+    )
 
     PARAMS = [
-        model.NumericParameter('mag', True, 3, 8.5),
-        model.NumericParameter('depth_1_0', False),
-        model.NumericParameter('dist_jb', True, None, 300.),
-        model.NumericParameter('v_s30', True, 150., 1500.),
-        model.CategoricalParameter('mechanism', False, ['U', 'SS', 'NS', 'RS'],
-                                   'U'),
-        model.CategoricalParameter('region', False, [
-            'global', 'california', 'china', 'italy', 'japan', 'new_zealand',
-            'taiwan', 'turkey'
-        ], 'global'),
+        model.NumericParameter("mag", True, 3, 8.5),
+        model.NumericParameter("depth_1_0", False),
+        model.NumericParameter("dist_jb", True, None, 300.0),
+        model.NumericParameter("v_s30", True, 150.0, 1500.0),
+        model.CategoricalParameter("mechanism", False, ["U", "SS", "NS", "RS"], "U"),
+        model.CategoricalParameter(
+            "region",
+            False,
+            [
+                "global",
+                "california",
+                "china",
+                "italy",
+                "japan",
+                "new_zealand",
+                "taiwan",
+                "turkey",
+            ],
+            "global",
+        ),
     ]
 
     def __init__(self, scenario: model.Scenario):
@@ -116,18 +127,26 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         super(BooreStewartSeyhanAtkinson2014, self)._check_inputs()
         s = self._scenario
         # Mechanism specific limits
-        if s.mechanism == 'SS':
-            _min, _max = 3., 8.5
+        if s.mechanism == "SS":
+            _min, _max = 3.0, 8.5
             if not (_min <= s.mag <= _max):
                 logging.warning(
-                    'Magnitude (%g) exceeds recommended bounds (%g to %g)'
-                    ' for a strike-slip earthquake!', s.mag, _min, _max)
-        elif s.mechanism == 'NS':
-            _min, _max = 3., 7.0
+                    "Magnitude (%g) exceeds recommended bounds (%g to %g)"
+                    " for a strike-slip earthquake!",
+                    s.mag,
+                    _min,
+                    _max,
+                )
+        elif s.mechanism == "NS":
+            _min, _max = 3.0, 7.0
             if not (_min <= s.mag <= _max):
                 logging.warning(
-                    'Magnitude (%g) exceeds recommended bounds (%g to %g)'
-                    ' for a normal-slip earthquake!', s.mag, _min, _max)
+                    "Magnitude (%g) exceeds recommended bounds (%g to %g)"
+                    " for a normal-slip earthquake!",
+                    s.mag,
+                    _min,
+                    _max,
+                )
 
     def _calc_ln_resp(self, pga_ref: ArrayLike) -> np.ndarray:
         """Calculate the natural logarithm of the response.
@@ -149,37 +168,34 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
 
         # Compute the event term
         ########################
-        if s.mechanism == 'SS':
+        if s.mechanism == "SS":
             event = np.array(c.e_1)
-        elif s.mechanism == 'NS':
+        elif s.mechanism == "NS":
             event = np.array(c.e_2)
-        elif s.mechanism == 'RS':
+        elif s.mechanism == "RS":
             event = np.array(c.e_3)
         else:
             # Unspecified
             event = np.array(c.e_0)
 
         mask = s.mag <= c.M_h
-        event[mask] += (c.e_4 * (s.mag - c.M_h) + c.e_5 *
-                        (s.mag - c.M_h) ** 2)[mask]
+        event[mask] += (c.e_4 * (s.mag - c.M_h) + c.e_5 * (s.mag - c.M_h) ** 2)[mask]
         event[~mask] += (c.e_6 * (s.mag - c.M_h))[~mask]
 
         # Compute the distance terms
         ############################
-        if s.region in ['china', 'turkey']:
+        if s.region in ["china", "turkey"]:
             dc_3 = c.dc_3ct
-        elif s.region in ['italy', 'japan']:
+        elif s.region in ["italy", "japan"]:
             dc_3 = c.dc_3ij
         else:
             # s.region in 'global', 'california', 'new_zealand', 'taiwan'
             dc_3 = c.dc_3global
 
         dist = np.sqrt(s.dist_jb ** 2 + c.h ** 2)
-        path = (
-            (c.c_1 + c.c_2 * (s.mag - c.M_ref)) *
-            np.log(dist / c.R_ref) +
-            (c.c_3 + dc_3) * (dist - c.R_ref)
-        )
+        path = (c.c_1 + c.c_2 * (s.mag - c.M_ref)) * np.log(dist / c.R_ref) + (
+            c.c_3 + dc_3
+        ) * (dist - c.R_ref)
 
         if np.isnan(pga_ref):
             # Reference condition. No site effect
@@ -190,9 +206,9 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
 
             # Add the nonlinearity to the site term
             f_2 = c.f_4 * (
-                np.exp(c.f_5 *
-                       (min(s.v_s30, 760) - 360.)) - np.exp(c.f_5 *
-                                                            (760. - 360.)))
+                np.exp(c.f_5 * (min(s.v_s30, 760) - 360.0))
+                - np.exp(c.f_5 * (760.0 - 360.0))
+            )
             f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
 
             # Add the basin effect to the site term
@@ -202,12 +218,12 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             # model convert from m to km.
             ln_mz1 = np.log(CY14.calc_depth_1_0(s.v_s30, s.region))
 
-            if s.get('depth_1_0', None) is not None:
+            if s.get("depth_1_0", None) is not None:
                 delta_depth_1_0 = s.depth_1_0 - np.exp(ln_mz1)
             else:
-                delta_depth_1_0 = 0.
+                delta_depth_1_0 = 0.0
 
-            mask = (c.period >= 0.65)
+            mask = c.period >= 0.65
             F_dz1[mask] = np.minimum(c.f_6 * delta_depth_1_0, c.f_7)[mask]
 
             site = f_lin + f_nl + F_dz1
@@ -228,23 +244,19 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         s = self._scenario
 
         # Uncertainty model
-        tau = c.tau_1 + (c.tau_2 - c.tau_1) * \
-                        (np.clip(s.mag, 4.5, 5.5) - 4.5)
-        phi = c.phi_1 + (c.phi_2 - c.phi_1) * \
-                        (np.clip(s.mag, 4.5, 5.5) - 4.5)
+        tau = c.tau_1 + (c.tau_2 - c.tau_1) * (np.clip(s.mag, 4.5, 5.5) - 4.5)
+        phi = c.phi_1 + (c.phi_2 - c.phi_1) * (np.clip(s.mag, 4.5, 5.5) - 4.5)
 
         # Modify phi for Vs30
-        phi -= c.dphi_V * np.clip(
-            np.log(c.V_2 / s.v_s30) / np.log(c.V_2 / c.V_1), 0, 1)
+        phi -= c.dphi_V * np.clip(np.log(c.V_2 / s.v_s30) / np.log(c.V_2 / c.V_1), 0, 1)
 
         # Modify phi for R
         phi += c.dphi_R * np.clip(
             # Maximum added for zero distance caes
-            np.log(np.maximum(s.dist_jb, 0.1) / c.R_1) /
-            np.log(c.R_2 / c.R_1),
-            0, 1
+            np.log(np.maximum(s.dist_jb, 0.1) / c.R_1) / np.log(c.R_2 / c.R_1),
+            0,
+            1,
         )
-
 
         ln_std = np.sqrt(phi ** 2 + tau ** 2)
         return ln_std

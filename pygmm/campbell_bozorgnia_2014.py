@@ -1,17 +1,15 @@
 # -*- coding: utf-8 -*-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
-
 import logging
+from typing import Optional
 
 import numpy as np
-
-from typing import Optional
 
 from . import model
 from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
 from .types import ArrayLike
 
-__author__ = 'Albert Kottke'
+__author__ = "Albert Kottke"
 
 
 class CampbellBozorgnia2014(model.GroundMotionModel):
@@ -21,16 +19,16 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
     NGA-West2 effort.
     """
 
-    NAME = 'Campbell & Bozorgnia (2014)'
-    ABBREV = 'CB14'
+    NAME = "Campbell & Bozorgnia (2014)"
+    ABBREV = "CB14"
 
     # Reference velocity (m/sec)
-    V_REF = 1100.
+    V_REF = 1100.0
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file('campbell_bozorgnia_2014.csv', 2)
+    COEFF = model.load_data_file("campbell_bozorgnia_2014.csv", 2)
 
-    PERIODS = COEFF['period']
+    PERIODS = COEFF["period"]
 
     # Period independent model coefficients
     COEFF_C = 1.88
@@ -42,23 +40,26 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
     INDEX_PGV = -1
 
     PARAMS = [
-        model.NumericParameter('depth_1_0', False),
-        model.NumericParameter('depth_2_5', False, 0, 10),
-        model.NumericParameter('depth_bor', False),
-        model.NumericParameter('depth_bot', False, default=15.),
-        model.NumericParameter('depth_hyp', False, 0, 20),
-        model.NumericParameter('depth_tor', False, 0, 20),
-        model.NumericParameter('dip', True, 15, 90),
-        model.NumericParameter('dist_jb', True),
-        model.NumericParameter('dist_rup', True, None, 300),
-        model.NumericParameter('dist_x', True),
-        model.NumericParameter('mag', True, 3.3, 8.5),
-        model.NumericParameter('v_s30', True, 150, 1500),
-        model.NumericParameter('width', False),
+        model.NumericParameter("depth_1_0", False),
+        model.NumericParameter("depth_2_5", False, 0, 10),
+        model.NumericParameter("depth_bor", False),
+        model.NumericParameter("depth_bot", False, default=15.0),
+        model.NumericParameter("depth_hyp", False, 0, 20),
+        model.NumericParameter("depth_tor", False, 0, 20),
+        model.NumericParameter("dip", True, 15, 90),
+        model.NumericParameter("dist_jb", True),
+        model.NumericParameter("dist_rup", True, None, 300),
+        model.NumericParameter("dist_x", True),
+        model.NumericParameter("mag", True, 3.3, 8.5),
+        model.NumericParameter("v_s30", True, 150, 1500),
+        model.NumericParameter("width", False),
         model.CategoricalParameter(
-            'region', False,
-            ['global', 'california', 'japan', 'italy', 'china'], 'global'),
-        model.CategoricalParameter('mechanism', True, ['SS', 'NS', 'RS']),
+            "region",
+            False,
+            ["global", "california", "japan", "italy", "china"],
+            "global",
+        ),
+        model.CategoricalParameter("mechanism", True, ["SS", "NS", "RS"]),
     ]
 
     def _check_inputs(self) -> None:
@@ -66,11 +67,15 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         super()._check_inputs()
         s = self._scenario
 
-        for mech, limit in [('SS', 8.5), ('RS', 8.0), ('NS', 7.5)]:
+        for mech, limit in [("SS", 8.5), ("RS", 8.0), ("NS", 7.5)]:
             if mech == s.mechanism and s.mag > limit:
                 logging.warning(
-                    'Magnitude of %g is greater than the recommended limit of'
-                    '%g for %s style faults', s.mag, limit, mech)
+                    "Magnitude of %g is greater than the recommended limit of"
+                    "%g for %s style faults",
+                    s.mag,
+                    limit,
+                    mech,
+                )
         if s.depth_2_5 is None:
             s.depth_2_5 = self.calc_depth_2_5(s.v_s30, s.region, s.depth_1_0)
 
@@ -79,14 +84,16 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         if s.width is None:
             s.width = CampbellBozorgnia2014.calc_width(
-                s.mag, s.dip, s.depth_tor, s.depth_bot)
+                s.mag, s.dip, s.depth_tor, s.depth_bot
+            )
 
         if s.depth_bor is None:
             s.depth_bor = self.calc_depth_bor(s.depth_tor, s.dip, s.width)
 
         if s.depth_hyp is None:
             s.depth_hyp = CampbellBozorgnia2014.calc_depth_hyp(
-                s.mag, s.dip, s.depth_tor, s.depth_bor)
+                s.mag, s.dip, s.depth_tor, s.depth_bor
+            )
 
     def __init__(self, scenario: model.Scenario):
         """Initialize the model.
@@ -96,8 +103,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         """
         super().__init__(scenario)
 
-        pga_ref = np.exp(
-            self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
+        pga_ref = np.exp(self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref, self._scenario.v_s30)
         self._ln_std = self._calc_ln_std(pga_ref)
 
@@ -131,14 +137,13 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
                 break
 
         # Geometric attenuation term
-        f_dis = (c.c_5 + c.c_6 * s.mag
-                 ) * np.log(np.sqrt(s.dist_rup ** 2 + c.c_7 ** 2))
+        f_dis = (c.c_5 + c.c_6 * s.mag) * np.log(np.sqrt(s.dist_rup ** 2 + c.c_7 ** 2))
 
         # Style of faulting term
         taper = np.clip(s.mag - 4.5, 0, 1)
-        if s.mechanism == 'RS':
+        if s.mechanism == "RS":
             f_flt = c.c_8 * taper
-        elif s.mechanism == 'NS':
+        elif s.mechanism == "NS":
             f_flt = c.c_9 * taper
         else:
             f_flt = 0
@@ -163,8 +168,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         if s.mag <= 5.5:
             f_hngM = 0
         else:
-            f_hngM = \
-                np.minimum(s.mag - 5.5, 1) * (1 + c.a_2 * (s.mag - 6.5))
+            f_hngM = np.minimum(s.mag - 5.5, 1) * (1 + c.a_2 * (s.mag - 6.5))
 
         f_hngZ = 0 if s.depth_tor > 16.66 else 1 - 0.06 * s.depth_tor
         f_hngDip = (90 - s.dip) / 45
@@ -174,19 +178,23 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         # Site term
         f_site = np.zeros_like(c.period)
         vs_ratio = v_s30 / c.k_1
-        mask = (v_s30 <= c.k_1)
+        mask = v_s30 <= c.k_1
         f_site[mask] = (
-            c.c_11 * np.log(vs_ratio) + c.k_2 *
-            (np.log(pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) -
-             np.log(pga_ref + self.COEFF_C)))[mask]
-        f_site[~mask] = (
-            (c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio))[~mask]
+            c.c_11 * np.log(vs_ratio)
+            + c.k_2
+            * (
+                np.log(pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N)
+                - np.log(pga_ref + self.COEFF_C)
+            )
+        )[mask]
+        f_site[~mask] = ((c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio))[~mask]
 
-        if s.region == 'japan':
+        if s.region == "japan":
             # Apply regional correction for Japan
             if v_s30 <= 200:
-                f_site += ((c.c_12 + c.k_2 * self.COEFF_N) *
-                           (np.log(vs_ratio) - np.log(200 / c.k_1)))
+                f_site += (c.c_12 + c.k_2 * self.COEFF_N) * (
+                    np.log(vs_ratio) - np.log(200 / c.k_1)
+                )
             else:
                 f_site += (c.c_13 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
 
@@ -199,13 +207,14 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         if depth_2_5 <= 1:
             f_sed = c.c_14 * (depth_2_5 - 1)
-            if s.region == 'japan':
+            if s.region == "japan":
                 f_sed += c.c_15 * (depth_2_5 - 1)
         elif depth_2_5 <= 3:
             f_sed = 0
         else:
-            f_sed = (c.c_16 * c.k_3 * np.exp(-0.75) *
-                     (1 - np.exp(-0.25 * (depth_2_5 - 3))))
+            f_sed = (
+                c.c_16 * c.k_3 * np.exp(-0.75) * (1 - np.exp(-0.25 * (depth_2_5 - 3)))
+            )
 
         # Hypocentral depth term
         f_hypH = np.clip(s.depth_hyp - 7, 0, 13)
@@ -216,17 +225,16 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         f_dip = c.c_19 * s.dip * np.clip(5.5 - s.mag, 0, 1)
 
         # Anaelastic attenuation term
-        if s.region in ['japan', 'italy']:
+        if s.region in ["japan", "italy"]:
             dc_20 = c.dc_20jp
-        elif s.region == ['china']:
+        elif s.region == ["china"]:
             dc_20 = c.dc_20ch
         else:
             dc_20 = c.dc_20ca
 
         f_atn = (c.c_20 + dc_20) * max(s.dist_rup - 80, 0)
 
-        ln_resp = (f_mag + f_dis + f_flt + f_hng + f_site + f_sed + f_hyp +
-                   f_dip + f_atn)
+        ln_resp = f_mag + f_dis + f_flt + f_hng + f_site + f_sed + f_hyp + f_dip + f_atn
         return ln_resp
 
     def _calc_ln_std(self, pga_ref: ArrayLike) -> np.ndarray:
@@ -253,31 +261,42 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         vs_ratio = s.v_s30 / c.k_1
         alpha = np.zeros_like(c.period)
         mask = s.v_s30 < c.k_1
-        alpha[mask] = (c.k_2 * pga_ref *
-                       ((pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) **
-                        (-1) - (pga_ref + self.COEFF_C) ** -1))[mask]
+        alpha[mask] = (
+            c.k_2
+            * pga_ref
+            * (
+                (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1)
+                - (pga_ref + self.COEFF_C) ** -1
+            )
+        )[mask]
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
-        tau = np.sqrt(tau_lnY ** 2 + alpha ** 2 * tau_lnPGA ** 2 + 2 * alpha *
-                      c.rho_lnPGAlnY * tau_lnY * tau_lnPGA)
+        tau = np.sqrt(
+            tau_lnY ** 2
+            + alpha ** 2 * tau_lnPGA ** 2
+            + 2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA
+        )
 
         phi_lnPGA = phi_lnY[self.INDEX_PGA]
-        phi_lnAF_PGA = self.COEFF['phi_lnAF'][self.INDEX_PGA]
+        phi_lnAF_PGA = self.COEFF["phi_lnAF"][self.INDEX_PGA]
         phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
         phi_lnY_B = np.sqrt(phi_lnY ** 2 - c.phi_lnAF ** 2)
 
-        phi = np.sqrt(phi_lnY_B ** 2 + c.phi_lnAF ** 2 + alpha ** 2 * (
-            phi_lnPGA ** 2 - phi_lnAF_PGA ** 2) + 2 * alpha * c.rho_lnPGAlnY *
-                      phi_lnY_B * phi_lnPGA_B)
+        phi = np.sqrt(
+            phi_lnY_B ** 2
+            + c.phi_lnAF ** 2
+            + alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
+            + 2 * alpha * c.rho_lnPGAlnY * phi_lnY_B * phi_lnPGA_B
+        )
 
         ln_std = np.sqrt(phi ** 2 + tau ** 2)
 
         return ln_std
 
     @staticmethod
-    def calc_depth_2_5(v_s30: float,
-                       region: str='global',
-                       depth_1_0: Optional[float]=None) -> float:
+    def calc_depth_2_5(
+        v_s30: float, region: str = "global", depth_1_0: Optional[float] = None
+    ) -> float:
         """Calculate the depth to a shear-wave velocity of 2.5 km/sec
         (:math:`Z_{2.5}`).
 
@@ -308,7 +327,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         """
         if v_s30:
             param = v_s30
-            if region == 'japan':
+            if region == "japan":
                 # From equation 6.10 on page 63
                 intercept = 5.359
                 slope = 1.102
@@ -323,7 +342,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             # bar = 1.181
         elif depth_1_0:
             param = depth_1_0
-            if region == 'japan':
+            if region == "japan":
                 # From equation 6.13 on page 64
                 intercept = 0.408
                 slope = 1.745
@@ -342,10 +361,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         return np.exp(intercept - slope * np.log(param))
 
     @staticmethod
-    def calc_depth_hyp(mag: float,
-                       dip: float,
-                       depth_tor: float,
-                       depth_bor: float) -> float:
+    def calc_depth_hyp(
+        mag: float, dip: float, depth_tor: float, depth_bor: float
+    ) -> float:
         """Estimate the depth to hypocenter.
 
         Parameters
@@ -370,17 +388,17 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         # Equations 35, 36, and 37 of journal article
         ln_dZ = min(
             min(-4.317 + 0.984 * mag, 2.325) + min(0.0445 * (dip - 40), 0),
-            np.log(0.9 * (depth_bor - depth_tor)))
+            np.log(0.9 * (depth_bor - depth_tor)),
+        )
 
         depth_hyp = depth_tor + np.exp(ln_dZ)
 
         return depth_hyp
 
     @staticmethod
-    def calc_width(mag: float,
-                   dip: float,
-                   depth_tor: float,
-                   depth_bot: float=15.0) -> float:
+    def calc_width(
+        mag: float, dip: float, depth_tor: float, depth_bot: float = 15.0
+    ) -> float:
         """Estimate the fault width using Equation (39) of CB14.
 
         Parameters
@@ -405,7 +423,8 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
-            (depth_bot - depth_tor) / np.sin(np.radians(dip)))
+            (depth_bot - depth_tor) / np.sin(np.radians(dip)),
+        )
 
     @staticmethod
     def calc_depth_bor(depth_tor: float, dip: float, width: float) -> float:

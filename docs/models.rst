@@ -72,7 +72,7 @@ Specific Models
 
 Each supported ground motion model inherits from :class:`.Model`, which
 provides the standard interface to access the calculated ground motion. The
-following models have been implemented. 
+following models have been implemented.
 
 .. currentmodule:: pygmm
 .. autosummary::

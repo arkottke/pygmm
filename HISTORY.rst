@@ -3,7 +3,7 @@ History
 
 0.6.1 (2020-06-03)
 ------------------
-- Added Coppersmith & Bommer (2014) model for Hanford 
+- Added Coppersmith & Bommer (2014) model for Hanford
 - Factored tests
 
 0.6.0 (2019-08-12)
