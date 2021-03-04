@@ -1,14 +1,22 @@
--   repo: git://github.com/pre-commit/mirrors-yapf
-    sha: v0.16.0
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v1.2.3
     hooks:
-    -   id: yapf
--   repo: git://github.com/pre-commit/pre-commit-hooks
-    sha: 5bf6c09bfa1297d3692cadd621ef95f1284e33c0
+      - id: trailing-whitespace
+      - id: check-json
+      - id: check-yaml
+      - id: end-of-file-fixer
+  - repo: https://github.com/asottile/reorder_python_imports
+    rev: v2.4.0
     hooks:
-    -   id: trailing-whitespace
-    -   id: end-of-file-fixer
-    -   id: flake8
-        exclude: docs/*
-    -   id: check-json
-    -   id: check-yaml
-    -   id: check-merge-conflict
+      - id: reorder-python-imports
+  - repo: https://github.com/psf/black
+    rev: 20.8b1 # Replace by any tag/version: https://github.com/psf/black/tags
+    hooks:
+      - id: black
+        language_version: python3 # Should be a command that runs python3.6+
+  - repo: https://github.com/pycqa/pydocstyle
+    rev: 5.1.1  # pick a git hash / tag to point to
+    hooks:
+      - id: pydocstyle
+        exclude: test_*
