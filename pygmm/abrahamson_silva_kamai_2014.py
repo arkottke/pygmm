@@ -124,38 +124,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         else:
             f7, f8 = 0, 0
 
-        # Site term
-        ###########
-        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(1500))
-
-        vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
-        # Linear site model
-        f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
-        # Nonlinear model
-        mask = vs_ratio < 1
-        f5[mask] = (
-            c.a10 * np.log(vs_ratio)
-            - c.b * np.log(resp_ref + c.c)
-            + c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
-        )[mask]
-
-        # Basin term
-        if v_s30 == self.V_REF or s.depth_1_0 is None:
-            # No basin response
-            f10 = 0
-        else:
-            # Ratio between site depth_1_0 and model center
-            ln_depth_ratio = np.log(
-                (s.depth_1_0 + 0.01) / (self.calc_depth_1_0(v_s30, s.region) + 0.01)
-            )
-            slope = interp1d(
-                [150, 250, 400, 700],
-                np.c_[c.a43, c.a44, c.a45, c.a46],
-                copy=False,
-                bounds_error=False,
-                fill_value=(c.a43, c.a46),
-            )(v_s30)
-            f10 = slope * ln_depth_ratio
+        site_term = self.calc_site_term(resp_ref, v_s30, s.depth_1_0, s.region)
 
         # Aftershock term
         if s.is_aftershock:
@@ -164,6 +133,8 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             f11 = 0
 
         if s.region == "taiwan":
+            v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(1500))
+            vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
             freg = c.a31 * np.log(vs_ratio) + c.a25 * s.dist_rup
         elif s.region == "china":
             freg = c.a28 * s.dist_rup
@@ -179,7 +150,71 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         else:
             freg = 0
 
-        return f1 + f4 + f5 + f6 + f7 + f8 + f10 + f11 + freg
+        return f1 + f4 + f6 + f7 + f8 + f11 + freg + site_term
+
+    @classmethod
+    def calc_site_term(
+        cls,
+        resp_ref: ArrayLike,
+        v_s30: float,
+        depth_1_0: float,
+        region: str = "california",
+    ):
+        """Calculate the site term, which includes site and basin effects.
+
+        Parameters
+        ----------
+        resp_ref :  array_like, optional
+            response at the reference condition
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        depth_1_0 : float
+            depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
+            :math:`Z_{1.0}` in (km).
+        region : str, optional
+            region of basin model. Valid options: 'california', 'japan'. If
+            *None*, then 'california' is used as the default value.
+
+        Returns
+        -------
+        site_term: :class:`np.ndarray`
+            site term that is applied to the natural log response.
+        """
+        c = cls.COEFF
+
+        v_1 = np.exp(-0.35 * np.log(np.clip(c.period, 0.5, 3) / 0.5) + np.log(1500))
+
+        vs_ratio = np.minimum(v_s30, v_1) / c.v_lin
+        # Linear site model
+        f5 = (c.a10 + c.b * c.n) * np.log(vs_ratio)
+        # Nonlinear model
+        mask = vs_ratio < 1
+        f5[mask] = (
+            c.a10 * np.log(vs_ratio)
+            - c.b * np.log(resp_ref + c.c)
+            + c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
+        )[mask]
+
+        # Basin term
+        if v_s30 == cls.V_REF or depth_1_0 is None:
+            # No basin response
+            f10 = 0
+        else:
+            # Ratio between site depth_1_0 and model center
+            ln_depth_ratio = np.log(
+                (depth_1_0 + 0.01) / (cls.calc_depth_1_0(v_s30, region) + 0.01)
+            )
+            slope = interp1d(
+                [150, 250, 400, 700],
+                np.c_[c.a43, c.a44, c.a45, c.a46],
+                copy=False,
+                bounds_error=False,
+                fill_value=(c.a43, c.a46),
+            )(v_s30)
+            f10 = slope * ln_depth_ratio
+
+        return f5 + f10
 
     def _calc_ln_std(self, psa_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.

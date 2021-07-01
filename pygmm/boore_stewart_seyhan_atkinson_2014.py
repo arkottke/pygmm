@@ -1,5 +1,6 @@
 """Boore, Stewart, Seyhan, and Atkinson (2014) ground motion model."""
 import logging
+from typing import Optional
 
 import numpy as np
 
@@ -202,34 +203,72 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             site = 0
         else:
             # Compute the site term
-            f_lin = c.c * np.log(np.minimum(s.v_s30, c.V_c) / c.V_ref)
-
-            # Add the nonlinearity to the site term
-            f_2 = c.f_4 * (
-                np.exp(c.f_5 * (min(s.v_s30, 760) - 360.0))
-                - np.exp(c.f_5 * (760.0 - 360.0))
+            site = self.calc_site_term(
+                pga_ref, s.v_s30, s.depth_1_0, s.get("depth_1_0", None)
             )
-            f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
-
-            # Add the basin effect to the site term
-            F_dz1 = np.zeros_like(c.period)
-
-            # Compute the average from the Chiou and Youngs (2014)
-            # model convert from m to km.
-            ln_mz1 = np.log(CY14.calc_depth_1_0(s.v_s30, s.region))
-
-            if s.get("depth_1_0", None) is not None:
-                delta_depth_1_0 = s.depth_1_0 - np.exp(ln_mz1)
-            else:
-                delta_depth_1_0 = 0.0
-
-            mask = c.period >= 0.65
-            F_dz1[mask] = np.minimum(c.f_6 * delta_depth_1_0, c.f_7)[mask]
-
-            site = f_lin + f_nl + F_dz1
 
         ln_resp = event + path + site
         return ln_resp
+
+    @classmethod
+    def calc_site_term(
+        cls,
+        pga_ref: float,
+        v_s30: float,
+        depth_1_0: Optional[float],
+        region: str = "california",
+    ) -> ArrayLike:
+        """Calculate the site term, which includes site and basin effects.
+
+        Parameters
+        ----------
+        pga_ref : float
+            peak ground acceleration (g) at the reference
+            condition. If :class:`np.nan`, then no site term is applied.
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        depth_1_0 : float
+            depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
+            :math:`Z_{1.0}` in (km).
+        region : str, optional
+            region of basin model. Valid options: 'california', 'japan'. If
+            *None*, then 'california' is used as the default value.
+
+        Returns
+        -------
+        site_term: :class:`np.ndarray`
+            site term that is applied to the natural log response.
+        """
+
+        c = cls.COEFF
+
+        f_lin = c.c * np.log(np.minimum(v_s30, c.V_c) / c.V_ref)
+
+        # Add the nonlinearity to the site term
+        f_2 = c.f_4 * (
+            np.exp(c.f_5 * (min(v_s30, 760) - 360.0)) - np.exp(c.f_5 * (760.0 - 360.0))
+        )
+        f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
+
+        # Add the basin effect to the site term
+        F_dz1 = np.zeros_like(c.period)
+
+        # Compute the average from the Chiou and Youngs (2014)
+        # model convert from m to km.
+        ln_mz1 = np.log(CY14.calc_depth_1_0(v_s30, region))
+
+        if depth_1_0 is not None:
+            delta_depth_1_0 = depth_1_0 - np.exp(ln_mz1)
+        else:
+            delta_depth_1_0 = 0.0
+
+        mask = c.period >= 0.65
+        F_dz1[mask] = np.minimum(c.f_6 * delta_depth_1_0, c.f_7)[mask]
+
+        site = f_lin + f_nl + F_dz1
+
+        return site
 
     def _calc_ln_std(self) -> np.ndarray:
         """Calculate the logarithmic standard deviation.

@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 """Chiou and Youngs (2014, :cite:`chiou14`) model."""
 import logging
+from typing import Optional
 
 import numpy as np
 
 from . import model
+from .types import ArrayLike
 
 __author__ = "Albert Kottke"
 
@@ -151,10 +153,43 @@ class ChiouYoungs2014(model.GroundMotionModel):
             natural log of the response including the site effects
 
         """
-        c = self.COEFF
         s = self._scenario
 
-        if s.region in ["japan"]:
+        site_term = self.calc_site_term(
+            np.exp(ln_resp_ref), s.v_s30, s.depth_1_0, s.region
+        )
+        return ln_resp_ref + site_term
+
+    @classmethod
+    def calc_site_term(
+        cls, resp_ref: ArrayLike, v_s30: float, depth_1_0: float, region: Optional[str]
+    ) -> ArrayLike:
+        """Calculate the site term, which includes site and basin effects.
+
+        Parameters
+        ----------
+        resp_ref : :class:`np.array`
+            natural logarithm of the response at the reference site condition
+            at each of the periods specified by the model coefficients.
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        depth_1_0 : float
+            depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
+            :math:`Z_{1.0}` in (km).
+        region : str, optional
+            region of basin model. Valid options: 'california', 'japan'. If
+            *None*, then 'california' is used as the default value.
+
+        Returns
+        -------
+        site_term: :class:`np.ndarray`
+            site term that is applied to the natural log response.
+        """
+
+        c = cls.COEFF
+
+        if region in ["japan"]:
             phi_1 = c.phi_1jp
             phi_5 = c.phi_5jp
             phi_6 = c.phi_6jp
@@ -163,22 +198,24 @@ class ChiouYoungs2014(model.GroundMotionModel):
             phi_5 = c.phi_5
             phi_6 = c.phi_6
 
-        ln_resp = np.array(ln_resp_ref)
-        ln_resp += phi_1 * min(np.log(s.v_s30 / 1130.0), 0)
+        ln_resp_ref = np.log(resp_ref)
 
-        ln_resp += (
+        # Linear scaling
+        site_term = phi_1 * min(np.log(v_s30 / 1130.0), 0)
+        # Nonlinear scaling
+        site_term += (
             c.phi_2
             * (
-                np.exp(c.phi_3 * (min(s.v_s30, 1130.0) - 360.0))
+                np.exp(c.phi_3 * (min(v_s30, 1130.0) - 360.0))
                 - np.exp(c.phi_3 * (1130.0 - 360.0))
             )
             * np.log((np.exp(ln_resp_ref) + c.phi_4) / c.phi_4)
         )
+        # Basin model
+        diff_depth_1_0 = 1000 * (depth_1_0 - cls.calc_depth_1_0(v_s30, region))
+        site_term += phi_5 * (1 - np.exp(-diff_depth_1_0 / phi_6))
 
-        diff_depth_1_0 = 1000 * (s.depth_1_0 - self.calc_depth_1_0(s.v_s30, s.region))
-        ln_resp += phi_5 * (1 - np.exp(-diff_depth_1_0 / phi_6))
-
-        return ln_resp
+        return site_term
 
     def _calc_ln_std(self, resp_ref: np.ndarray) -> np.ndarray:
         """Calculate the logarithmic standard deviation.

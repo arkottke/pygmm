@@ -175,46 +175,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         f_hng = c.c_10 * f_hngRx * f_hngRrup * f_hngM * f_hngZ * f_hngDip
 
-        # Site term
-        f_site = np.zeros_like(c.period)
-        vs_ratio = v_s30 / c.k_1
-        mask = v_s30 <= c.k_1
-        f_site[mask] = (
-            c.c_11 * np.log(vs_ratio)
-            + c.k_2
-            * (
-                np.log(pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N)
-                - np.log(pga_ref + self.COEFF_C)
-            )
-        )[mask]
-        f_site[~mask] = ((c.c_11 + c.k_2 * self.COEFF_N) * np.log(vs_ratio))[~mask]
-
-        if s.region == "japan":
-            # Apply regional correction for Japan
-            if v_s30 <= 200:
-                f_site += (c.c_12 + c.k_2 * self.COEFF_N) * (
-                    np.log(vs_ratio) - np.log(200 / c.k_1)
-                )
-            else:
-                f_site += (c.c_13 + c.k_2 * self.COEFF_N) * np.log(vs_ratio)
-
-        # Basin response term
-        if np.isnan(pga_ref):
-            # Use model to compute depth_2_5 for the reference velocity case
-            depth_2_5 = self.calc_depth_2_5(v_s30, s.region)
-        else:
-            depth_2_5 = s.depth_2_5
-
-        if depth_2_5 <= 1:
-            f_sed = c.c_14 * (depth_2_5 - 1)
-            if s.region == "japan":
-                f_sed += c.c_15 * (depth_2_5 - 1)
-        elif depth_2_5 <= 3:
-            f_sed = 0
-        else:
-            f_sed = (
-                c.c_16 * c.k_3 * np.exp(-0.75) * (1 - np.exp(-0.25 * (depth_2_5 - 3)))
-            )
+        site_term = self.calc_site_term(pga_ref, v_s30, s.depth_2_5, s.region)
 
         # Hypocentral depth term
         f_hypH = np.clip(s.depth_hyp - 7, 0, 13)
@@ -234,8 +195,84 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         f_atn = (c.c_20 + dc_20) * max(s.dist_rup - 80, 0)
 
-        ln_resp = f_mag + f_dis + f_flt + f_hng + f_site + f_sed + f_hyp + f_dip + f_atn
+        ln_resp = f_mag + f_dis + f_flt + f_hng + site_term + f_hyp + f_dip + f_atn
         return ln_resp
+
+    @classmethod
+    def calc_site_term(
+        cls,
+        pga_ref: float,
+        v_s30: float,
+        depth_2_5: float,
+        region: str = "california",
+    ) -> ArrayLike:
+        """Calculate the site term, which includes site and basin effects.
+
+        Parameters
+        ----------
+        resp_ref :  array_like, optional
+            response at the reference condition
+        v_s30 : float
+            site condition. Set `v_s30` to the reference
+            velocity (e.g., 1180 m/s) for the reference response.
+        depth_2_5 : float
+            depth to the 2.5 km∕s shear-wave velocity horizon beneath the site,
+            :math:`Z_{2.5}` in (km).
+        region : str, optional
+            region of basin model. Valid options:
+            "global", "california", "japan", "italy", "china". If
+            *None*, then "global" is used as the default value.
+
+        Returns
+        -------
+        site_term: :class:`np.ndarray`
+            site term that is applied to the natural log response.
+        """
+
+        c = cls.COEFF
+
+        # Site term
+        f_site = np.zeros_like(c.period)
+        vs_ratio = v_s30 / c.k_1
+        mask = v_s30 <= c.k_1
+        f_site[mask] = (
+            c.c_11 * np.log(vs_ratio)
+            + c.k_2
+            * (
+                np.log(pga_ref + cls.COEFF_C * vs_ratio ** cls.COEFF_N)
+                - np.log(pga_ref + cls.COEFF_C)
+            )
+        )[mask]
+        f_site[~mask] = ((c.c_11 + c.k_2 * cls.COEFF_N) * np.log(vs_ratio))[~mask]
+
+        if region == "japan":
+            # Apply regional correction for Japan
+            if v_s30 <= 200:
+                f_site += (c.c_12 + c.k_2 * cls.COEFF_N) * (
+                    np.log(vs_ratio) - np.log(200 / c.k_1)
+                )
+            else:
+                f_site += (c.c_13 + c.k_2 * cls.COEFF_N) * np.log(vs_ratio)
+
+        # Basin response term
+        if np.isnan(pga_ref):
+            # Use model to compute depth_2_5 for the reference velocity case
+            depth_2_5 = cls.calc_depth_2_5(v_s30, region)
+        else:
+            depth_2_5 = depth_2_5
+
+        if depth_2_5 <= 1:
+            f_sed = c.c_14 * (depth_2_5 - 1)
+            if region == "japan":
+                f_sed += c.c_15 * (depth_2_5 - 1)
+        elif depth_2_5 <= 3:
+            f_sed = 0
+        else:
+            f_sed = (
+                c.c_16 * c.k_3 * np.exp(-0.75) * (1 - np.exp(-0.25 * (depth_2_5 - 3)))
+            )
+
+        return f_site + f_sed
 
     def _calc_ln_std(self, pga_ref: ArrayLike) -> np.ndarray:
         """Calculate the logarithmic standard deviation.
