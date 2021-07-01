@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# encoding: utf-8
 """Gülerce and Abrahamson (2011, :cite:`gulerce11`) V/H model."""
 from __future__ import division
 
