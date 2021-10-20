@@ -1,6 +1,10 @@
 History
 =======
 
+0.6.2 (2021-10-19)
+--------------------
+- Changed: Move site amplification to static functions on some GMPEs
+
 0.6.1 (2020-06-03)
 ------------------
 - Added Coppersmith & Bommer (2014) model for Hanford

@@ -11,7 +11,7 @@ with open("HISTORY.rst") as fp:
 
 setup(
     name="pygmm",
-    version="0.6.1",
+    version="0.6.2",
     description="Ground motion models implemented in Python.",
     long_description=readme + "\n\n" + history,
     author="Albert Kottke",
