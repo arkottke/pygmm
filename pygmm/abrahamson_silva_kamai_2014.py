@@ -362,7 +362,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             c.a4 * (c.m2 - c.m1)
             + c.a8 * (8.5 - c.m2) ** 2
             + c.a6 * (s.mag - c.m2)
-            + c.a7 * (s.mag - c.m2)
+            + c.a7 * (s.mag - c.m2) ** 2
             + (c.a2 + c.a3 * (c.m2 - c.m1)) * np.log(dist)
             + c.a17 * s.dist_rup
         )[ma1]
