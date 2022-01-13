@@ -150,13 +150,14 @@ class Model(object):
     NAME = ""
     #: Short name of the model
     ABBREV = ""
+    #: Limits of model applicability
+    LIMITS = dict()
+    #: Model parameters
+    PARAMS = []
 
     def __init__(self, *args, **kwargs):
         """Initialize the model."""
         super(Model, self).__init__()
-
-        self._ln_resp = None
-        self._ln_std = None
 
         if len(args) == 1:
             scenario = args[0]
@@ -192,10 +193,6 @@ class GroundMotionModel(Model):
     INDEX_PGV = None
     #: Index of the peak ground displacement
     INDEX_PGD = None
-    #: Limits of model applicability
-    LIMITS = dict()
-    #: Model parameters
-    PARAMS = []
     #: Scale factor to apply to get PGV in cm/sec
     PGV_SCALE = 1.0
     #: Scale factor to apply to get PGD in cm
@@ -207,13 +204,6 @@ class GroundMotionModel(Model):
 
         self._ln_resp = None
         self._ln_std = None
-
-        # Select the used parameters and check them against the recommended
-        # values
-        self._scenario = Scenario(
-            **{p.name: scenario.get(p.name, None) for p in self.PARAMS}
-        )
-        self._check_inputs()
 
     def interp_ln_spec_accels(
         self, periods: ArrayLike, kind: Optional[str] = "linear"
@@ -376,10 +366,6 @@ class GroundMotionModel(Model):
     def _resp(self, index) -> np.ndarray:
         if index is not None:
             return np.exp(self._ln_resp[index])
-
-    def _check_inputs(self) -> None:
-        for p in self.PARAMS:
-            self._scenario[p.name] = p.check(self._scenario[p.name])
 
 
 class Parameter(object):

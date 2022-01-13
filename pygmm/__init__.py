@@ -9,6 +9,7 @@ from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
+from .bayless_abrahamson_2018 import BaylessAbrahamson18
 from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
 from .campbell_2003 import Campbell2003
 from .campbell_bozorgnia_2014 import CampbellBozorgnia2014
@@ -30,6 +31,7 @@ __all__ = [
     "AbrahamsonGregorAddo2016",
     "AkkarSandikkayaBommer2014",
     "AtkinsonBoore2006",
+    "BaylessAbrahamson18",
     "BooreStewartSeyhanAtkinson2014",
     "Campbell2003",
     "CampbellBozorgnia2014",
@@ -61,9 +63,11 @@ except ImportError:
 logging.getLogger(__name__).addHandler(NullHandler())
 
 models = [
+    AbrahamsonSilva1996,
     AbrahamsonSilvaKamai2014,
     AkkarSandikkayaBommer2014,
     AtkinsonBoore2006,
+    BaylessAbrahamson18,
     BooreStewartSeyhanAtkinson2014,
     Campbell2003,
     CampbellBozorgnia2014,
