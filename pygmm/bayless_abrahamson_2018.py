@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
-
 """Bayless and Abrahamson (2018, :cite:`bayless19`) model."""
-
-from typing import Optional, Union
+from typing import Optional
+from typing import Union
 
 import numpy as np
 
@@ -105,10 +104,7 @@ class BaylessAbrahamson18(model.Model):
             + c.c2 * (s.mag - mbreak)
             + ((c.c2 - c.c3) / c.cn) * np.log(1 + np.exp(c.cn * (c.cM - s.mag)))
             + c.c4
-            * np.log(
-                s.dist_rup
-                + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0))
-            )
+            * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
             + (c4a - c.c4) * np.log(np.sqrt(s.dist_rup ** 2 + 50 ** 2))
             + c.c7 * s.dist_rup
             + c.c8 * np.log(np.minimum(v_s30, 1000) / self.V_REF)

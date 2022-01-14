@@ -1,4 +1,5 @@
 import os
+
 import matplotlib.pyplot as plt
 
 import pygmm
@@ -19,7 +20,7 @@ for m in models:
     ax.plot(m.freqs, m.eas, label=f"{m.scenario.v_s30:.0f}")
     print(m.freqs, m.eas)
 
-ax.legend(title='$V_{s30}$ m/s')
+ax.legend(title="$V_{s30}$ m/s")
 
 ax.set(
     xlabel="Frequency (Hz)",
