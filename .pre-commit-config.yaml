@@ -1,6 +1,6 @@
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.0.1
+    rev: v4.1.0
     hooks:
       - id: trailing-whitespace
       - id: check-json
@@ -11,7 +11,7 @@ repos:
     hooks:
       - id: reorder-python-imports
   - repo: https://github.com/psf/black
-    rev: 21.8b0 # Replace by any tag/version: https://github.com/psf/black/tags
+    rev: 21.12b0 # Replace by any tag/version: https://github.com/psf/black/tags
     hooks:
       - id: black
         language_version: python3 # Should be a command that runs python3.6+
