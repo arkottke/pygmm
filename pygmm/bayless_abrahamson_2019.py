@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""Bayless and Abrahamson (2018, :cite:`bayless19`) model."""
+"""Bayless and Abrahamson (2019, :cite:`bayless19`) model."""
 from typing import Optional
 from typing import Union
 
+import matplotlib.pyplot as plt
 import numpy as np
 
 from . import model
@@ -11,8 +12,8 @@ from . import model
 __author__ = "Albert Kottke"
 
 
-class BaylessAbrahamson18(model.Model):
-    """Bayless and Abrahamson (2018, :cite:`bayless19`) model.
+class BaylessAbrahamson2019(model.Model):
+    """Bayless and Abrahamson (2019, :cite:`bayless19`) model.
 
     This Fourier-amplitude spectra model was developed for active tectonic regions.
 
@@ -23,18 +24,18 @@ class BaylessAbrahamson18(model.Model):
 
     """
 
-    NAME = "Bayless and Abrahamson (2018)"
-    ABBREV = "BA18"
+    NAME = "Bayless and Abrahamson (2019)"
+    ABBREV = "BA19"
 
     # Reference velocity (m/s)
-    V_REF = 1000.0
+    V_REF = 760.0
 
     # Load the coefficients for the model
-    COEFF = model.load_data_file("bayless_abrahamson_2018.csv", 2)
+    COEFF = model.load_data_file("bayless_abrahamson_2019.csv", 2)
 
     FREQS = COEFF["freq_hz"]
 
-    IDX_5Hz = 174
+    IDX_5Hz = 170
     IDX_MAX = 238
 
     PARAMS = [
@@ -72,7 +73,7 @@ class BaylessAbrahamson18(model.Model):
         return self._ln_std
 
     def _check_inputs(self) -> None:
-        super(BaylessAbrahamson18, self)._check_inputs()
+        super(BaylessAbrahamson2019, self)._check_inputs()
         s = self._scenario
 
         if s["depth_1_0"] is None:
@@ -82,44 +83,47 @@ class BaylessAbrahamson18(model.Model):
         """Compute the effective amplitude."""
         s = self._scenario
 
-        # Constants
-        c4a = -0.5
-        mbreak = 6.0
-
         if ln_eas_ref is None:
+            # Compute the motion at the reference condition
             v_s30 = self.V_REF
+            depth_1_0 = self.calc_depth_1_0(self.V_REF)
             # Only perform the 5 Hz calculation
-            c = self.COEFF[self.IDX_MAX]
+            c = self.COEFF[self.IDX_5Hz]
         else:
+            # Use site-specific properties
             v_s30 = s.v_s30
+            depth_1_0 = s.depth_1_0
             # Only use the coefficients only the usable frequency range
             c = self.COEFF[: (self.IDX_MAX + 1)]
+
+        f_M = (
+            c.c1
+            + c.c2 * (s.mag - 6)
+            + ((c.c2 - c.c3) / c.cn) * np.log(1 + np.exp(c.cn * (c.cM - s.mag)))
+        )
+
+        f_P = (
+            c.c4
+            * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
+            + (-0.5 - c.c4) * np.log(np.sqrt(s.dist_rup ** 2 + 50 ** 2))
+            + c.c7 * s.dist_rup
+        )
+
+        f_Ztor = c.c9 * min(s.depth_tor, 20)
+
+        f_NM = c.c10 if s.mechanism == "NS" else 0
 
         c11 = np.select(
             [v_s30 <= 200, v_s30 <= 300, v_s30 <= 500], [c.c11a, c.c11b, c.c11c], c.c11d
         )
-
-        ln_eas = (
-            c.c1
-            + c.c2 * (s.mag - mbreak)
-            + ((c.c2 - c.c3) / c.cn) * np.log(1 + np.exp(c.cn * (c.cM - s.mag)))
-            + c.c4
-            * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
-            + (c4a - c.c4) * np.log(np.sqrt(s.dist_rup ** 2 + 50 ** 2))
-            + c.c7 * s.dist_rup
-            + c.c8 * np.log(np.minimum(v_s30, 1000) / self.V_REF)
-            + c.c9 * s.depth_tor
-            + c11
-            * np.log(
-                (np.minimum(s.depth_1_0, 2) + 0.01)
-                / (self.calc_depth_1_0(v_s30) + 0.01)
-            )
+        f_Z1 = c11 * np.log(
+            (min(depth_1_0, 2) + 0.01) / (self.calc_depth_1_0(v_s30) + 0.01)
         )
 
-        if s.mechanism == "NS":
-            ln_eas += c.c10
+        ln_eas = f_M + f_P + f_Ztor + f_NM + f_Z1
 
         if ln_eas_ref is not None:
+            # Add the site term
             ln_eas += self._calc_site_response(ln_eas_ref)
 
             # Extrapolate to 100 Hz using the kappa
@@ -147,8 +151,28 @@ class BaylessAbrahamson18(model.Model):
             - np.exp(c.f5 * (self.V_REF - 360))
         )
 
-        f_nl = f2 + np.log((I_R + c.f3) / c.f3)
+        f_nl = f2 * np.log((I_R + c.f3) / c.f3)
+
+        # Use the minimum value at higher frequencies as described in the text and
+        # referenced to Bayless and Abrahamson (2018b)
+        i = np.argmin(f_nl)
+        f_nl[(i + 1) :] = f_nl[i]
+        width = 7
+        kernel = np.ones(width) / width
+        f_nl = np.convolve(f_nl, kernel, mode="same")
+        # End needs to be forced down
+        f_nl[-width:] = f_nl[i]
+
         f_s = f_sl + f_nl
+
+        if v_s30 < 800:
+            freqs = self.FREQS[: (self.IDX_MAX + 1)]
+            fig, ax = plt.subplots()
+            ax.plot(freqs, f_nl)
+
+            ax.set(xscale="log")
+
+            fig.savefig("test_fnl.png", dpi=200)
 
         return f_s
 

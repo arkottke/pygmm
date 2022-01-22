@@ -8,7 +8,7 @@ from pygmm import AbrahamsonSilvaKamai2014 as ASK14
 
 def test_depth_1_0():
     # Value calculated from NGAW2 spreadsheet
-    assert_allclose(ASK14.calc_depth_1_0(600), 0.1424470)
+    assert_allclose(ASK14.calc_depth_1_0(600), 0.1424470, rtol=1e-5)
 
 
 def test_depth_tor():
