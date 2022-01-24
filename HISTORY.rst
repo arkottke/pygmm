@@ -1,6 +1,10 @@
 History
 =======
 
+0.6.4 (2022-01-24)
+------------------
+- Added: Bayless and Abrahamson (2019)
+
 0.6.3 (2021-12-08)
 --------------------
 - Fixed: error in ASK14 on a7 term

@@ -47,20 +47,6 @@ def iter_scenarios():
     "scenario", iter_scenarios(), ids=lambda s: f'M {s["mag"]}, Vs30 {s["v_s30"]} m/s'
 )
 def test_ba19(scenario):
-    print(scenario)
     m = BA19(scenario)
-
-    if False:
-        fig, ax = plt.subplots()
-
-        ax.plot(scenario["freqs"], scenario["eas_median"] * TO_G, label="Reference")
-        ax.plot(m.freqs, m.eas, label="Calculated")
-
-        ax.legend()
-        ax.set(xlabel="Freq. (Hz)", xscale="log", ylabel="EAS (g-s)", yscale="log")
-
-        fig.savefig("ba19_test_{mag:.0f}_{v_s30:.0f}.png".format(**scenario), dpi=200)
-
     assert_allclose(m.freqs, scenario["freqs"])
-
     assert_allclose(m.eas, scenario["eas_median"] * TO_G, rtol=0.005)
