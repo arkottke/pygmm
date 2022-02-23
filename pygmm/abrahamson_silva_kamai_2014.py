@@ -246,7 +246,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         # Remove period independent site amplification uncertainty of 0.4
         phi_amp = 0.4
-        phi_b = np.sqrt(phi_al ** 2 - phi_amp ** 2)
+        phi_b = np.sqrt(np.maximum(phi_al ** 2 - phi_amp ** 2, 0))
 
         # The partial derivative of the amplification with respect to
         # the reference intensity
