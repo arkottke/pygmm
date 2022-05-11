@@ -23,3 +23,9 @@ def test_calc_cond_spectrum(test, key):
     actual = getattr(m, key)
     expected = test["output"][key]
     np.testing.assert_allclose(actual, expected, atol=0.001, rtol=0.005)
+
+
+@pytest.mark.parametrize("method", ["interp_ratio", "interp_ln_std"])
+def test_interp(method):
+    m = GA11(TESTS[0]["params"])
+    getattr(m, method)(np.geomspace(0.01, 10))

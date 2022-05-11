@@ -5,6 +5,7 @@ import numpy as np
 
 from . import model
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014 as ASK14
+from .types import ArrayLike
 
 __author__ = "Albert Kottke"
 
@@ -33,7 +34,7 @@ class GulerceAbrahamson2011(model.Model):
 
     INDEX_PGA = 0
     INDEX_PGV = 1
-    INDICES_PSA = 2 + np.arange(27)
+    INDICES_PSA = 2 + np.arange(22)
 
     PARAMS = [
         model.NumericParameter("dist_rup", True, None, 200),
@@ -64,11 +65,61 @@ class GulerceAbrahamson2011(model.Model):
     def ln_std(self):
         return self._ln_std
 
+    def interp_ratio(self, periods: ArrayLike) -> np.ndarray:
+        """Interpolate the spectral ratio.
+
+        Interpolation of the spectral ratio done in log-period and log-ratio space.
+
+        Parameters
+        ----------
+        periods : array_like
+            spectral periods to interpolate the response.
+
+        Returns
+        -------
+        ratio : np.ndarray
+            interpolated ratio
+
+        """
+
+        return np.exp(
+            np.interp(
+                np.log(periods),
+                np.log(self.PERIODS[self.INDICES_PSA]),
+                self._ln_ratio[self.INDICES_PSA],
+            )
+        )
+
+    def interp_ln_std(self, periods: ArrayLike) -> np.ndarray:
+        """Interpolate the spectral ratio.
+
+        Interpolation of the spectral ratio done in log-period space.
+
+        Parameters
+        ----------
+        periods : array_like
+            spectral periods to interpolate the response.
+
+        Returns
+        -------
+        ratio : np.ndarray
+            interpolated ratio
+
+        """
+
+        return np.exp(
+            np.interp(
+                np.log(periods),
+                np.log(self.PERIODS[self.INDICES_PSA]),
+                self._ln_std[self.INDICES_PSA],
+            )
+        )
+
     def _calc_ln_ratio(self):
         s = self._scenario
         c = self.COEFF
 
-        dist = np.sqrt(s.dist_rup ** 2 + c.c4 ** 2)
+        dist = np.sqrt(s.dist_rup**2 + c.c4**2)
 
         # Magnitude and distance scaling
         f1 = (
@@ -103,7 +154,7 @@ class GulerceAbrahamson2011(model.Model):
             [v_s30_lim < c.v_lin, True],
             [
                 -c.b * np.log(s.pga_ref + c.c)
-                + c.b * np.log(s.pga_ref + c.c * vs_ratio ** c.n),
+                + c.b * np.log(s.pga_ref + c.c * vs_ratio**c.n),
                 c.b * c.n * np.log(vs_ratio),
             ],
         )
@@ -136,4 +187,4 @@ class GulerceAbrahamson2011(model.Model):
         between = self._calc_ln_std_between()
         within = self._calc_ln_std_within()
 
-        return np.sqrt(between ** 2 + within ** 2)
+        return np.sqrt(between**2 + within**2)
