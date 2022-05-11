@@ -137,7 +137,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
                 break
 
         # Geometric attenuation term
-        f_dis = (c.c_5 + c.c_6 * s.mag) * np.log(np.sqrt(s.dist_rup ** 2 + c.c_7 ** 2))
+        f_dis = (c.c_5 + c.c_6 * s.mag) * np.log(np.sqrt(s.dist_rup**2 + c.c_7**2))
 
         # Style of faulting term
         taper = np.clip(s.mag - 4.5, 0, 1)
@@ -155,10 +155,10 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             f_hngRx = 0
         elif s.dist_x <= R_1:
             ratio = s.dist_x / R_1
-            f_hngRx = c.h_1 + c.h_2 * ratio + c.h_3 * ratio ** 2
+            f_hngRx = c.h_1 + c.h_2 * ratio + c.h_3 * ratio**2
         else:
             ratio = (s.dist_x - R_1) / (R_2 - R_1)
-            f_hngRx = np.maximum(0, c.h_4 + c.h_5 * ratio + c.h_6 * ratio ** 2)
+            f_hngRx = np.maximum(0, c.h_4 + c.h_5 * ratio + c.h_6 * ratio**2)
 
         if s.dist_rup == 0:
             f_hngRrup = 1
@@ -239,7 +239,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             c.c_11 * np.log(vs_ratio)
             + c.k_2
             * (
-                np.log(pga_ref + cls.COEFF_C * vs_ratio ** cls.COEFF_N)
+                np.log(pga_ref + cls.COEFF_C * vs_ratio**cls.COEFF_N)
                 - np.log(pga_ref + cls.COEFF_C)
             )
         )[mask]
@@ -302,31 +302,31 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             c.k_2
             * pga_ref
             * (
-                (pga_ref + self.COEFF_C * vs_ratio ** self.COEFF_N) ** (-1)
+                (pga_ref + self.COEFF_C * vs_ratio**self.COEFF_N) ** (-1)
                 - (pga_ref + self.COEFF_C) ** -1
             )
         )[mask]
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
         tau = np.sqrt(
-            tau_lnY ** 2
-            + alpha ** 2 * tau_lnPGA ** 2
+            tau_lnY**2
+            + alpha**2 * tau_lnPGA**2
             + 2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA
         )
 
         phi_lnPGA = phi_lnY[self.INDEX_PGA]
         phi_lnAF_PGA = self.COEFF["phi_lnAF"][self.INDEX_PGA]
-        phi_lnPGA_B = np.sqrt(phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
-        phi_lnY_B = np.sqrt(phi_lnY ** 2 - c.phi_lnAF ** 2)
+        phi_lnPGA_B = np.sqrt(phi_lnPGA**2 - phi_lnAF_PGA**2)
+        phi_lnY_B = np.sqrt(phi_lnY**2 - c.phi_lnAF**2)
 
         phi = np.sqrt(
-            phi_lnY_B ** 2
-            + c.phi_lnAF ** 2
-            + alpha ** 2 * (phi_lnPGA ** 2 - phi_lnAF_PGA ** 2)
+            phi_lnY_B**2
+            + c.phi_lnAF**2
+            + alpha**2 * (phi_lnPGA**2 - phi_lnAF_PGA**2)
             + 2 * alpha * c.rho_lnPGAlnY * phi_lnY_B * phi_lnPGA_B
         )
 
-        ln_std = np.sqrt(phi ** 2 + tau ** 2)
+        ln_std = np.sqrt(phi**2 + tau**2)
 
         return ln_std
 

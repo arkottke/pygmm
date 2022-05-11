@@ -76,7 +76,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
             c.a_1
             + c.a_3 * (8.5 - s.mag) ** 2
             + (c.a_4 + c.a_5 * (s.mag - c.c_1))
-            * np.log(np.sqrt(dist ** 2 + c.a_6 ** 2))
+            * np.log(np.sqrt(dist**2 + c.a_6**2))
         )
         mask = s.mag <= c.c_1
         ln_resp_ref[mask] += (c.a_2 * (s.mag - c.c_1))[mask]
@@ -93,7 +93,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
         if s.v_s30 <= self.V_REF:
             vs_ratio = s.v_s30 / self.V_REF
             site = c.b_1 * np.log(vs_ratio) + c.b_2 * np.log(
-                (pga_ref + c.c * vs_ratio ** c.n) / ((pga_ref + c.c) * vs_ratio ** c.n)
+                (pga_ref + c.c * vs_ratio**c.n) / ((pga_ref + c.c) * vs_ratio**c.n)
             )
         else:
             site = c.b_1 * np.log(np.minimum(s.v_s30, c.v_con) / self.V_REF)

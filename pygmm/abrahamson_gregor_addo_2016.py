@@ -228,7 +228,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
             [
                 c.t_12 * np.log(vs_ratio)
                 - c.b * np.log(pga_ref + c.c)
-                + c.b * np.log(pga_ref + c.c * vs_ratio ** c.n),
+                + c.b * np.log(pga_ref + c.c * vs_ratio**c.n),
                 (c.t_12 + c.b * c.n) * np.log(vs_ratio),
             ],
         )
@@ -245,5 +245,5 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         """
         c = self.COEFF
 
-        ln_std = np.sqrt(c.phi ** 2 + c.tau ** 2)
+        ln_std = np.sqrt(c.phi**2 + c.tau**2)
         return ln_std

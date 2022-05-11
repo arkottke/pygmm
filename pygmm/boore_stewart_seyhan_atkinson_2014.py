@@ -193,7 +193,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             # s.region in 'global', 'california', 'new_zealand', 'taiwan'
             dc_3 = c.dc_3global
 
-        dist = np.sqrt(s.dist_jb ** 2 + c.h ** 2)
+        dist = np.sqrt(s.dist_jb**2 + c.h**2)
         path = (c.c_1 + c.c_2 * (s.mag - c.M_ref)) * np.log(dist / c.R_ref) + (
             c.c_3 + dc_3
         ) * (dist - c.R_ref)
@@ -297,5 +297,5 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             1,
         )
 
-        ln_std = np.sqrt(phi ** 2 + tau ** 2)
+        ln_std = np.sqrt(phi**2 + tau**2)
         return ln_std

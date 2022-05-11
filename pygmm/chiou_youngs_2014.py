@@ -103,7 +103,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
         ln_resp += c.c_4 * np.log(
             s.dist_rup + c.c_5 * np.cosh(c.c_6 * np.maximum(s.mag - c.c_hm, 0))
         )
-        ln_resp += (c.c_4a - c.c_4) * np.log(np.sqrt(s.dist_rup ** 2 + c.c_rb ** 2))
+        ln_resp += (c.c_4a - c.c_4) * np.log(np.sqrt(s.dist_rup**2 + c.c_rb**2))
 
         # Regional adjustment
         if s.region in ["japan", "italy"] and (6 < s.mag < 6.9):
@@ -133,7 +133,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
                 c.c_9
                 * np.cos(np.radians(s.dip))
                 * (c.c_9a + (1 - c.c_9a) * np.tanh(s.dist_x / c.c_9b))
-                * (1 - np.sqrt(s.dist_jb ** 2 + s.depth_tor ** 2) / (s.dist_rup + 1))
+                * (1 - np.sqrt(s.dist_jb**2 + s.depth_tor**2) / (s.dist_rup + 1))
             )
 
         return ln_resp
@@ -257,7 +257,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
             c.sigma_3 * (1 - flag_meas) + 0.7 * flag_meas + (1 + nl_0) ** 2
         )
 
-        ln_std = np.sqrt((1 + nl_0) ** 2 * tau ** 2 + phi_nl ** 2)
+        ln_std = np.sqrt((1 + nl_0) ** 2 * tau**2 + phi_nl**2)
         return ln_std
 
     def _check_inputs(self) -> None:
@@ -320,8 +320,8 @@ class ChiouYoungs2014(model.GroundMotionModel):
             np.exp(
                 slope
                 * np.log(
-                    (v_s30 ** power + v_ref ** power)
-                    / (1360.0 ** power + v_ref ** power)
+                    (v_s30**power + v_ref**power)
+                    / (1360.0**power + v_ref**power)
                 )
             )
             / 1000

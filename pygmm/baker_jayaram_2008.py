@@ -94,5 +94,5 @@ def calc_cond_mean_spectrum(
     )
 
     ln_psas_cms = ln_psas + ln_stds * correls * epsilon
-    ln_stds_cms = np.sqrt(ln_stds ** 2 * (1 - correls ** 2))
+    ln_stds_cms = np.sqrt(ln_stds**2 * (1 - correls**2))
     return ln_psas_cms, ln_stds_cms

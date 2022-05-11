@@ -105,7 +105,7 @@ class BaylessAbrahamson2019(model.Model):
         f_P = (
             c.c4
             * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
-            + (-0.5 - c.c4) * np.log(np.sqrt(s.dist_rup ** 2 + 50 ** 2))
+            + (-0.5 - c.c4) * np.log(np.sqrt(s.dist_rup**2 + 50**2))
             + c.c7 * s.dist_rup
         )
 
@@ -188,7 +188,7 @@ class BaylessAbrahamson2019(model.Model):
         phi_s2s = interp(c.s3, c.s4)
         phi_ss = interp(c.s5, c.s6)
 
-        ln_std = np.sqrt(tau ** 2 + phi_s2s ** 2 + phi_ss ** 2 + c.c1a ** 2)
+        ln_std = np.sqrt(tau**2 + phi_s2s**2 + phi_ss**2 + c.c1a**2)
         return ln_std
 
     @staticmethod
@@ -214,8 +214,8 @@ class BaylessAbrahamson2019(model.Model):
             np.exp(
                 slope
                 * np.log(
-                    (v_s30 ** power + v_ref ** power)
-                    / (1360.0 ** power + v_ref ** power)
+                    (v_s30**power + v_ref**power)
+                    / (1360.0**power + v_ref**power)
                 )
             )
             / 1000

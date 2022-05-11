@@ -61,7 +61,7 @@ class AbrahamsonSilva1996(model.Model):
         # Compute the increment due to the difference in the normalized Arias
         # intensity
         ln_i_ratio = np.log((nias - 0.05) / (1 - nias))
-        ln_dur_incr = -0.532 + 0.552 * ln_i_ratio - 0.0262 * ln_i_ratio ** 2
+        ln_dur_incr = -0.532 + 0.552 * ln_i_ratio - 0.0262 * ln_i_ratio**2
 
         return ln_dur_incr
 

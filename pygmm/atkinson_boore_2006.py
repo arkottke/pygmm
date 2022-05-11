@@ -75,7 +75,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         log10_resp = (
             c.c_1
             + c.c_2 * s.mag
-            + c.c_3 * s.mag ** 2
+            + c.c_3 * s.mag**2
             + (c.c_4 + c.c_5 * s.mag) * f1
             + (c.c_6 + c.c_7 * s.mag) * f2
             + (c.c_8 + c.c_9 * s.mag) * f0
@@ -96,7 +96,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         # Convert from cm/sec/sec to gravity
         log10_resp -= np.log10(980.665)
 
-        ln_resp = np.log(10 ** log10_resp)
+        ln_resp = np.log(10**log10_resp)
         return ln_resp
 
     def _calc_ln_std(self) -> np.ndarray:

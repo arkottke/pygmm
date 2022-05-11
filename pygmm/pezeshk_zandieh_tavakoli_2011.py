@@ -56,12 +56,12 @@ class PezeshkZandiehTavakoli2011(model.GroundMotionModel):
         s = self._scenario
         c = self.COEFF
 
-        dist = np.sqrt(s.dist_rup ** 2 + c.c_11 ** 2)
+        dist = np.sqrt(s.dist_rup**2 + c.c_11**2)
 
         log10_resp = (
             c.c_1
             + c.c_2 * s.mag
-            + c.c_3 * s.mag ** 2
+            + c.c_3 * s.mag**2
             + (c.c_4 + c.c_5 * s.mag) * np.minimum(np.log10(dist), np.log10(70.0))
             + (c.c_6 + c.c_7 * s.mag)
             * np.maximum(np.minimum(np.log10(dist / 70.0), np.log10(140.0 / 70.0)), 0.0)
@@ -89,6 +89,6 @@ class PezeshkZandiehTavakoli2011(model.GroundMotionModel):
         else:
             ln_std_mean = -6.95e-3 * s.mag + c.c_14
 
-        ln_std = np.sqrt(ln_std_mean ** 2 + c["sigma_reg"] ** 2)
+        ln_std = np.sqrt(ln_std_mean**2 + c["sigma_reg"] ** 2)
 
         return ln_std

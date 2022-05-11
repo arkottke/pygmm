@@ -193,7 +193,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         f5[mask] = (
             c.a10 * np.log(vs_ratio)
             - c.b * np.log(resp_ref + c.c)
-            + c.b * np.log(resp_ref + c.c * vs_ratio ** c.n)
+            + c.b * np.log(resp_ref + c.c * vs_ratio**c.n)
         )[mask]
 
         # Basin term
@@ -246,7 +246,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         # Remove period independent site amplification uncertainty of 0.4
         phi_amp = 0.4
-        phi_b = np.sqrt(np.maximum(phi_al ** 2 - phi_amp ** 2, 0))
+        phi_b = np.sqrt(np.maximum(phi_al**2 - phi_amp**2, 0))
 
         # The partial derivative of the amplification with respect to
         # the reference intensity
@@ -255,9 +255,9 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         )
         deriv[s.v_s30 >= c.v_lin] = 0
         tau = tau_b * (1 + deriv)
-        phi = np.sqrt(phi_b ** 2 * (1 + deriv) ** 2 + phi_amp ** 2)
+        phi = np.sqrt(phi_b**2 * (1 + deriv) ** 2 + phi_amp**2)
 
-        ln_std = np.sqrt(phi ** 2 + tau ** 2)
+        ln_std = np.sqrt(phi**2 + tau**2)
         return ln_std
 
     @staticmethod
@@ -336,8 +336,8 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             np.exp(
                 slope
                 * np.log(
-                    (v_s30 ** power + v_ref ** power)
-                    / (1360.0 ** power + v_ref ** power)
+                    (v_s30**power + v_ref**power)
+                    / (1360.0**power + v_ref**power)
                 )
             )
             / 1000
@@ -350,7 +350,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         # Magnitude dependent taper
         dist = np.sqrt(
-            s.dist_rup ** 2 + (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
+            s.dist_rup**2 + (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
         )
 
         # Magnitude scaling
@@ -410,7 +410,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         else:
             t3 = 0
 
-        t4 = np.clip(1 - s.depth_tor ** 2 / 100, 0, 1)
+        t4 = np.clip(1 - s.depth_tor**2 / 100, 0, 1)
 
         if s.dist_y0 is None:
             t5 = np.clip(1 - s.dist_jb / 30, 0, 1)
