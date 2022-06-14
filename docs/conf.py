@@ -44,6 +44,9 @@ intersphinx_mappings = {
     "matplotlib": ("http://matplotlib.sourceforge.net/", None),
 }
 
+# References for bibtex entries
+bibtex_bibfiles = ["refs.bib"]
+
 # Use recommonmark for Markdown files
 source_parsers = {
     ".md": "recommonmark.parser.CommonMarkParser",
@@ -62,8 +65,8 @@ source_suffix = [".rst", ".md"]
 master_doc = "index"
 
 # General information about the project.
-project = u"pygmm"
-copyright = u"2016, Albert Kottke"
+project = "pygmm"
+copyright = "2016, Albert Kottke"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout
@@ -211,7 +214,7 @@ latex_elements = {
 # (source start file, target name, title, author, documentclass
 # [howto/manual]).
 latex_documents = [
-    ("index", "pygmm.tex", u"pygmm Documentation", u"Albert Kottke", "manual"),
+    ("index", "pygmm.tex", "pygmm Documentation", "Albert Kottke", "manual"),
 ]
 
 # The name of an image file (relative to this directory) to place at
@@ -238,7 +241,7 @@ latex_documents = [
 
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
-man_pages = [("index", "pygmm", u"pygmm Documentation", [u"Albert Kottke"], 1)]
+man_pages = [("index", "pygmm", "pygmm Documentation", ["Albert Kottke"], 1)]
 
 # If true, show URL addresses after external links.
 # man_show_urls = False
@@ -252,8 +255,8 @@ texinfo_documents = [
     (
         "index",
         "pygmm",
-        u"pygmm Documentation",
-        u"Albert Kottke",
+        "pygmm Documentation",
+        "Albert Kottke",
         "pygmm",
         "One line description of project.",
         "Miscellaneous",

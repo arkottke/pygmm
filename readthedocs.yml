@@ -1,8 +1,0 @@
-build:
-  image: latest
-formats:
-  - pdf
-requirements_file: requirements_rtfd.txt
-python:
-  version: 3.6
-  setup_py_install: true
