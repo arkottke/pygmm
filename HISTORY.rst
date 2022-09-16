@@ -1,6 +1,11 @@
 History
 =======
 
+0.6.5 (2022-09-16)
+------------------
+- Added: Afshari and Stewart (2016) duration model
+- Added: Kempton and Stewart (2006) duration model
+
 0.6.4 (2022-01-24)
 ------------------
 - Added: Bayless and Abrahamson (2019)
