@@ -10,4 +10,6 @@ Development Lead
 Contributors
 ------------
 
-None yet. Why not be the first?
+* Greg Lavrentiadis
+
+* Artie Rodgers

@@ -165,16 +165,6 @@ class BaylessAbrahamson2019(model.Model):
 
         f_s = f_sl + f_nl
 
-        flag_test = False
-        if v_s30 < 800 and flag_test:
-            freqs = self.FREQS[: (self.IDX_MAX + 1)]
-            fig, ax = plt.subplots()
-            ax.plot(freqs, f_nl)
-
-            ax.set(xscale="log")
-
-            fig.savefig("test_fnl.png", dpi=200)
-
         return f_s
 
     def _calc_ln_std(self) -> np.ndarray:

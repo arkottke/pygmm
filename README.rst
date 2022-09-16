@@ -44,8 +44,13 @@ Conditional spectra models:
 
 * Kishida (2017) with unit tests
 
-Unit tests means that each test cases are used to test the implemention of
-the model.
+Duration models:
+
+* Kempton and Stewart (2006)
+
+* Afshari and Stewart (2016)
+
+Most models are tested with unit tests that test the implemention of the model.
 
 Citation
 --------
@@ -53,6 +58,15 @@ Citation
 Please cite this software using the DOI_.
 
 .. _DOI: https://zenodo.org/badge/latestdoi/53176693
+
+Contributors
+------------
+
+* Albert Kottke
+
+* Greg Lavrentiadis
+
+* Artie Rodgers
 
 
 .. |PyPi Cheese Shop| image:: https://img.shields.io/pypi/v/pygmm.svg
