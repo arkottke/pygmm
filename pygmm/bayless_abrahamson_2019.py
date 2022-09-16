@@ -165,7 +165,8 @@ class BaylessAbrahamson2019(model.Model):
 
         f_s = f_sl + f_nl
 
-        if v_s30 < 800:
+        flag_test = False
+        if v_s30 < 800 and flag_test:
             freqs = self.FREQS[: (self.IDX_MAX + 1)]
             fig, ax = plt.subplots()
             ax.plot(freqs, f_nl)
