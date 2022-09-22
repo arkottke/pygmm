@@ -80,7 +80,7 @@ models = [
     CoppersmithBommer2014,
     DerrasBardCotton2014,
     GulerceAbrahamson2011,
-    KemptonStewart2006
+    KemptonStewart2006,
     Idriss2014,
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
