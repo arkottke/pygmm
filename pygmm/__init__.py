@@ -21,6 +21,8 @@ from .idriss_2014 import Idriss2014
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
+from .kempton_stewart_2006 import KemptonStewart2006
+from .afshari_stewart_2016 import AfshariStewart2016
 
 # from .abrahamson_et_al_2018 import AbrahamsonEtAl2018
 
@@ -29,6 +31,7 @@ __all__ = [
     "AbrahamsonEtAl2018",
     "AbrahamsonSilvaKamai2014",
     "AbrahamsonGregorAddo2016",
+    "AfshariStewart2016",
     "AkkarSandikkayaBommer2014",
     "AtkinsonBoore2006",
     "BaylessAbrahamson2019",
@@ -39,6 +42,7 @@ __all__ = [
     "CoppersmithBommer2014",
     "DerrasBardCotton2014",
     "GulerceAbrahamson2011",
+    "KemptonStewart2006"
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
     "TavakoliPezeshk05",
@@ -65,6 +69,7 @@ logging.getLogger(__name__).addHandler(NullHandler())
 models = [
     AbrahamsonSilva1996,
     AbrahamsonSilvaKamai2014,
+    AfshariStewart2016,
     AkkarSandikkayaBommer2014,
     AtkinsonBoore2006,
     BaylessAbrahamson2019,
@@ -75,6 +80,7 @@ models = [
     CoppersmithBommer2014,
     DerrasBardCotton2014,
     GulerceAbrahamson2011,
+    KemptonStewart2006
     Idriss2014,
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
