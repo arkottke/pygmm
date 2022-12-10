@@ -74,9 +74,9 @@ Contributors
 .. |Build Status| image:: https://github.com/arkottke/pygmm/actions/workflows/python-app.yml/badge.svg
    :target: https://github.com/arkottke/pygmm/actions/workflows/python-app.yml
 .. |Code Quality| image:: https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7
-   :target: https://www.codacy.com/manual/arkottke/pygmm
+   :target: https://app.codacy.com/gh/arkottke/pygmm/dashboard
 .. |Test Coverage| image:: https://api.codacy.com/project/badge/Coverage/abc9878c890143c8b590e6f3602056b7
-   :target: https://www.codacy.com/manual/arkottke/pygmm
+   :target: https://app.codacy.com/gh/arkottke/pygmm/dashboard
 .. |License| image:: https://img.shields.io/badge/license-MIT-blue.svg
 .. |DOI| image:: https://zenodo.org/badge/53176693.svg
    :target: https://zenodo.org/badge/latestdoi/53176693
