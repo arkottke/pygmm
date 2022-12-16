@@ -7,6 +7,7 @@ import pkg_resources
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
 from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
+from .afshari_stewart_2016 import AfshariStewart2016
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
 from .bayless_abrahamson_2019 import BaylessAbrahamson2019
@@ -18,11 +19,10 @@ from .coppersmith_bommer_2014 import CoppersmithBommer2014
 from .derras_bard_cotton_2014 import DerrasBardCotton2014
 from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
 from .idriss_2014 import Idriss2014
+from .kempton_stewart_2006 import KemptonStewart2006
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
-from .kempton_stewart_2006 import KemptonStewart2006
-from .afshari_stewart_2016 import AfshariStewart2016
 
 # from .abrahamson_et_al_2018 import AbrahamsonEtAl2018
 
@@ -42,7 +42,7 @@ __all__ = [
     "CoppersmithBommer2014",
     "DerrasBardCotton2014",
     "GulerceAbrahamson2011",
-    "KemptonStewart2006"
+    "KemptonStewart2006",
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
     "TavakoliPezeshk05",
