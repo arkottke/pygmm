@@ -6,6 +6,6 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@latest
-      - uses: actions/setup-python@latest
-      - uses: psf/black@latest
+      - uses: actions/checkout@v3
+      - uses: actions/setup-python@v4
+      - uses: psf/black@main
