@@ -9,10 +9,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@latest
         with:  # https://github.com/stefanzweifel/git-auto-commit-action#checkout-the-correct-branch
             ref: ${{ github.head_ref }}
-      - uses: actions/setup-python@v2
+      - uses: actions/setup-python@latest
       - run: pip install black
       - run: black --check .
       - name: If needed, commit black changes to the pull request
