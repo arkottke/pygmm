@@ -80,7 +80,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         resp_ref = np.exp(self._calc_ln_resp(self.V_REF, np.nan))
 
         self._ln_resp = self._calc_ln_resp(self._scenario.v_s30, resp_ref)
-        self._ln_std = self._calc_ln_std(resp_ref)
+        self._ln_std, self._tau, self._phi = self._calc_ln_std(resp_ref)
 
     def _calc_ln_resp(self, v_s30: float, resp_ref: ArrayLike) -> np.ndarray:
         """Calculate the natural logarithm of the response.
@@ -216,7 +216,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
         return f5 + f10
 
-    def _calc_ln_std(self, psa_ref: ArrayLike) -> np.ndarray:
+    def _calc_ln_std(self, psa_ref: ArrayLike) -> (np.ndarray, np.ndarray, np.ndarray):
         """Calculate the logarithmic standard deviation.
 
         Parameters
@@ -258,7 +258,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         phi = np.sqrt(phi_b**2 * (1 + deriv) ** 2 + phi_amp**2)
 
         ln_std = np.sqrt(phi**2 + tau**2)
-        return ln_std
+        return ln_std, tau, phi
 
     @staticmethod
     def calc_width(mag: float, dip: float) -> float:
