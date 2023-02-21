@@ -86,7 +86,7 @@ class AfshariStewart2016(model.Model):
         V_ref = np.array([368.2, 369.9, 369.6])
         dz_1ref = 200
         # depth to bedrock duration
-        if not s.depth_1_0 is None:
+        if s.depth_1_0 is not None:
             dz_1 = s.depth_1_0 - self.calc_depth_1_0(s.v_s30, s.mechanism)
             F_dz1 = c_5 * (dz_1 if dz_1 <= dz_1ref else dz_1ref)
         else:
