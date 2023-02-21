@@ -105,7 +105,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         pga_ref = np.exp(self._calc_ln_resp(np.nan, self.V_REF)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref, self._scenario.v_s30)
-        self._ln_std = self._calc_ln_std(pga_ref)
+        self._ln_std, self._tau, self._phi = self._calc_ln_std(pga_ref)
 
     def _calc_ln_resp(self, pga_ref: float, v_s30: float) -> np.ndarray:
         """Calculate the natural logarithm of the response.
@@ -274,7 +274,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         return f_site + f_sed
 
-    def _calc_ln_std(self, pga_ref: ArrayLike) -> np.ndarray:
+    def _calc_ln_std(self, pga_ref: ArrayLike) -> (np.ndarray,np.ndarray,np.ndarray):
         """Calculate the logarithmic standard deviation.
 
         Parameters
@@ -328,7 +328,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         ln_std = np.sqrt(phi**2 + tau**2)
 
-        return ln_std
+        return ln_std, tau, phi
 
     @staticmethod
     def calc_depth_2_5(
