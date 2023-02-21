@@ -121,7 +121,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         super(BooreStewartSeyhanAtkinson2014, self).__init__(scenario)
         pga_ref = np.exp(self._calc_ln_resp(np.nan)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref)
-        self._ln_std = self._calc_ln_std()
+        self._ln_std, self._tau, self._phi = self._calc_ln_std()
 
     def _check_inputs(self) -> None:
         """Check the inputs."""
@@ -270,7 +270,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
 
         return site
 
-    def _calc_ln_std(self) -> np.ndarray:
+    def _calc_ln_std(self) -> (np.ndarray, np.ndarray, np.ndarray):
         """Calculate the logarithmic standard deviation.
 
         Returns
@@ -298,4 +298,4 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         )
 
         ln_std = np.sqrt(phi**2 + tau**2)
-        return ln_std
+        return ln_std, tau, phi
