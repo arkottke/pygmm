@@ -115,7 +115,6 @@ class AfshariStewart2016(model.Model):
 
     @staticmethod
     def calc_depth_1_0(v_s30: float, region: str = "california") -> float:
-
         if region in ["japan"]:
             # Japan
             power = 2
