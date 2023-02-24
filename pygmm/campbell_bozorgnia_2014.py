@@ -274,7 +274,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         return f_site + f_sed
 
-    def _calc_ln_std(self, pga_ref: ArrayLike) -> (np.ndarray,np.ndarray,np.ndarray):
+    def _calc_ln_std(self, pga_ref: ArrayLike) -> (np.ndarray, np.ndarray, np.ndarray):
         """Calculate the logarithmic standard deviation.
 
         Parameters
