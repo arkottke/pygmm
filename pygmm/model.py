@@ -538,3 +538,22 @@ def load_data_file(name, skip_header=None) -> np.recarray:
     return np.recfromcsv(fname, skip_header=skip_header, case_sensitive=True).view(
         np.recarray
     )
+
+
+class Coefficients(collections.abc.Mapping):
+    """Read-only container for model coefficients."""
+
+    def __init__(self, **kwds):
+        self._data = kwds
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __getattr__(self, key):
+        return self.__getitem__(key)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __iter__(self):
+        return iter(self._data)
