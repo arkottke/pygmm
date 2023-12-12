@@ -1,6 +1,10 @@
 History
 =======
 
+0.6.6 (2023-12-11)
+------------------
+- Added: Return tau and phi in the standard deviation calculations
+
 0.6.5 (2022-09-16)
 ------------------
 - Added: Afshari and Stewart (2016) duration model
