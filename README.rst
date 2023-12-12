@@ -70,7 +70,7 @@ Contributors
 
 
 .. |PyPi Cheese Shop| image:: https://img.shields.io/pypi/v/pygmm.svg
-   :target: https://img.shields.io/pypi/v/pygmm.svg
+   :target: https://pypi.org/project/pygmm/
 .. |Build Status| image:: https://github.com/arkottke/pygmm/actions/workflows/python-app.yml/badge.svg
    :target: https://github.com/arkottke/pygmm/actions/workflows/python-app.yml
 .. |Code Quality| image:: https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7
