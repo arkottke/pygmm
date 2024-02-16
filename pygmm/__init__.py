@@ -4,13 +4,14 @@ import logging
 
 import pkg_resources
 
+from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
 from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
-from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .afshari_stewart_2016 import AfshariStewart2016
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
+from .bayless_abrahamson_2018 import BaylessAbrahamson2018
 from .bayless_abrahamson_2019 import BaylessAbrahamson2019
 from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
 from .campbell_2003 import Campbell2003
@@ -35,6 +36,7 @@ __all__ = [
     "AfshariStewart2016",
     "AkkarSandikkayaBommer2014",
     "AtkinsonBoore2006",
+    "BaylessAbrahamson2018",
     "BaylessAbrahamson2019",
     "BooreStewartSeyhanAtkinson2014",
     "Campbell2003",
