@@ -86,10 +86,10 @@ class BaylessAbrahamson2018:
         corr = cls.corr(freqs)
         if std is None and component is not None:
             fp = getattr(cls.COEFF, component)
-            ln_std = np.interp(freqs, cls.FREQS, fp, left=fp[0], right=fp[-1])
-        else:
+            std = np.interp(freqs, cls.FREQS, fp, left=fp[0], right=fp[-1])
+        elif std is None and component is None:
             raise NotImplementedError
 
         n = len(freqs)
-        ln_std = np.full((n, n), ln_std)
-        return corr * ln_std * ln_std.T - np.diag(ln_std)
+        std = np.full((n, n), std)
+        return corr * std * std.T
