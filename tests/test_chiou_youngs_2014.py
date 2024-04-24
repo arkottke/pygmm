@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Test calculation of CY14 static methods."""
-from numpy.testing import assert_allclose
 
+from numpy.testing import assert_allclose
 from pygmm import ChiouYoungs2014 as CY14
 
 

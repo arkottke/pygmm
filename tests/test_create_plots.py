@@ -1,15 +1,14 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Create plots for visual comparison."""
+
 import os
 
 import matplotlib
 
 matplotlib.use("agg")  # NOQA
 import matplotlib.pyplot as plt
-import pytest
-
 import pygmm
+import pytest
 
 DEFAULT_PROPS = dict(
     depth_2_5=5,

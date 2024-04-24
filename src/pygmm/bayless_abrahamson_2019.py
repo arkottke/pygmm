@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 """Bayless and Abrahamson (2019, :cite:`bayless19`) model."""
-from typing import Optional
-from typing import Union
+
+from typing import Optional, Union
 
 import numpy as np
 
@@ -72,13 +71,13 @@ class BaylessAbrahamson2019(model.Model):
         return self._ln_std
 
     def _check_inputs(self) -> None:
-        super(BaylessAbrahamson2019, self)._check_inputs()
+        super()._check_inputs()
         s = self._scenario
 
         if s["depth_1_0"] is None:
             s["depth_1_0"] = self.calc_depth_1_0(s["v_s30"])
 
-    def _calc_ln_eas(self, ln_eas_ref: Optional[float]) -> Union[float, np.ndarray]:
+    def _calc_ln_eas(self, ln_eas_ref: float | None) -> float | np.ndarray:
         """Compute the effective amplitude."""
         s = self._scenario
 

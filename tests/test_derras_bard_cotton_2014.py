@@ -1,12 +1,10 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 import gzip
 import json
 import os
 
 import numpy as np
 import pytest
-
 from pygmm import DerrasBardCotton2014 as DBC14
 from pygmm.model import Scenario
 

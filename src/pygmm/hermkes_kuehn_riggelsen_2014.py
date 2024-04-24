@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-# encoding: utf-8
 """Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model."""
+
 import logging
 import pathlib
 
@@ -15,8 +15,8 @@ fname_data = pathlib.Path(__file__).parent.joinpath("data", "hermkes_kuehn_rigge
 
 if not fname_data.exists():
     # Download the model data if not found.
-    import urllib.request
     import shutil
+    import urllib.request
 
     url = "https://www.dropbox.com/s/1tu9ss1s3inctej/" "hermkes_kuehn_riggelsen_2014.npz?dl=0"
 

@@ -1,10 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Test model interface using C03 model."""
-import pytest
-from numpy.testing import assert_allclose
-from numpy.testing import assert_array_equal
 
+import pytest
+from numpy.testing import assert_allclose, assert_array_equal
 from pygmm import Campbell2003 as C03
 from pygmm.model import Scenario
 
@@ -24,9 +22,7 @@ def test_scenario():
     assert_allclose(s.dist_jb, s["dist_jb"])
 
 
-@pytest.mark.parametrize(
-    "attr", ["pga", "ln_std_pga", "pgv", "ln_std_pgv", "pgd", "ln_std_pgd"]
-)
+@pytest.mark.parametrize("attr", ["pga", "ln_std_pga", "pgv", "ln_std_pgv", "pgd", "ln_std_pgd"])
 def test_pga(model, attr):
     with pytest.raises(NotImplementedError):
         getattr(model, attr)

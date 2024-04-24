@@ -1,17 +1,13 @@
 import os
 
 import matplotlib.pyplot as plt
-
 import pygmm
-
 
 scenario = pygmm.Scenario(mag=6.5, dist_rup=30, v_s30=500, mechanism="SS", depth_tor=0)
 
 models = [
     pygmm.BaylessAbrahamson2019(scenario),
-    pygmm.BaylessAbrahamson2019(
-        scenario.copy_with(v_s30=pygmm.BaylessAbrahamson2019.V_REF)
-    ),
+    pygmm.BaylessAbrahamson2019(scenario.copy_with(v_s30=pygmm.BaylessAbrahamson2019.V_REF)),
 ]
 
 fig, ax = plt.subplots()

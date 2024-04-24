@@ -1,14 +1,11 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 import json
 import os
 
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-
-from pygmm.baker_jayaram_2008 import calc_cond_mean_spectrum
-from pygmm.baker_jayaram_2008 import calc_correls
+from pygmm.baker_jayaram_2008 import calc_cond_mean_spectrum, calc_correls
 
 fpath = os.path.join(os.path.dirname(__file__), "data", "baker_jayaram_2008.json")
 

@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """Basic models."""
+
 import collections
 import logging
 import os
-from typing import List
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -145,7 +144,7 @@ class Scenario(collections.UserDict):
                 raise Warning("%s is not a recognized scenario key!" % k)
 
 
-class Model(object):
+class Model:
     #: Long name of the model
     NAME = ""
     #: Short name of the model
@@ -157,7 +156,7 @@ class Model(object):
 
     def __init__(self, *args, **kwargs):
         """Initialize the model."""
-        super(Model, self).__init__()
+        super().__init__()
 
         if len(args) == 1:
             scenario = args[0]
@@ -198,14 +197,12 @@ class GroundMotionModel(Model):
 
     def __init__(self, scenario: Scenario):
         """Initialize the model."""
-        super(GroundMotionModel, self).__init__(scenario)
+        super().__init__(scenario)
 
         self._ln_resp = None
         self._ln_std = None
 
-    def interp_ln_spec_accels(
-        self, periods: ArrayLike, kind: Optional[str] = "linear"
-    ) -> np.ndarray:
+    def interp_ln_spec_accels(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -235,7 +232,7 @@ class GroundMotionModel(Model):
             fill_value=np.nan,
         )(np.log(periods))
 
-    def interp_spec_accels(self, periods: ArrayLike, kind: Optional[str] = "linear") -> np.ndarray:
+    def interp_spec_accels(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -258,7 +255,7 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(self, periods: ArrayLike, kind: Optional[str] = "linear") -> np.ndarray:
+    def interp_ln_stds(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -362,7 +359,7 @@ class GroundMotionModel(Model):
             return np.exp(self._ln_resp[index])
 
 
-class Parameter(object):
+class Parameter:
     """Model parameter.
 
     Parameters
@@ -378,7 +375,7 @@ class Parameter(object):
 
     def __init__(self, name, required=False, default=None):
         """Initialize the parameter."""
-        super(Parameter, self).__init__()
+        super().__init__()
         self._name = name
         self._required = required
         self._default = default
@@ -426,12 +423,12 @@ class NumericParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        min_: Optional[float] = None,
-        max_: Optional[float] = None,
-        default: Optional[float] = None,
+        min_: float | None = None,
+        max_: float | None = None,
+        default: float | None = None,
     ):
         """Initialize parameter."""
-        super(NumericParameter, self).__init__(name, required, default)
+        super().__init__(name, required, default)
         self._min = min_
         self._max = max_
 
@@ -447,7 +444,7 @@ class NumericParameter(Parameter):
 
     def check(self, value) -> float:
         """Check the value against the limits."""
-        value = super(NumericParameter, self).check(value)
+        value = super().check(value)
         if value is not None:
             if self.min is not None and value < self.min:
                 logging.warning(
@@ -487,21 +484,21 @@ class CategoricalParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        options: Optional[List[str]] = None,
-        default: Optional[str] = None,
+        options: list[str] | None = None,
+        default: str | None = None,
     ):
         """Initialize parameter."""
-        super(CategoricalParameter, self).__init__(name, required, default)
+        super().__init__(name, required, default)
         self._options = options or []
 
     @property
-    def options(self) -> List[str]:
+    def options(self) -> list[str]:
         """Possible options."""
         return self._options
 
     def check(self, value) -> str:
         """Check the value against the limits."""
-        value = super(CategoricalParameter, self).check(value)
+        value = super().check(value)
         if value not in self.options:
             alert = logging.error if self.required else logging.warning
             alert(

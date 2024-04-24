@@ -1,14 +1,12 @@
 #!/usr/bin/python
-# -*- coding: utf-8 -*-
 import gzip
 import itertools
 import json
 import os
 
 import numpy as np
-import pytest
-
 import pygmm
+import pytest
 
 models = [
     pygmm.AbrahamsonSilvaKamai2014,
@@ -26,10 +24,7 @@ fname = os.path.join(os.path.dirname(__file__), "data", "ngaw2_tests.json.gz")
 with gzip.open(fname, "rt") as fp:
     tests = json.load(fp)
 
-testdata = [
-    (m, t["params"], t["results"][m.ABBREV])
-    for m, t in itertools.product(models, tests)
-]
+testdata = [(m, t["params"], t["results"][m.ABBREV]) for m, t in itertools.product(models, tests)]
 
 
 @pytest.mark.parametrize("model,params,expected", testdata)

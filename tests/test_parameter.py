@@ -1,11 +1,8 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Test model interface using C03 model."""
-import pytest
 
-from pygmm.model import CategoricalParameter
-from pygmm.model import NumericParameter
-from pygmm.model import Parameter
+import pytest
+from pygmm.model import CategoricalParameter, NumericParameter, Parameter
 
 
 def test_parameter():
