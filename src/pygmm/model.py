@@ -202,7 +202,9 @@ class GroundMotionModel(Model):
         self._ln_resp = None
         self._ln_std = None
 
-    def interp_ln_spec_accels(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
+    def interp_ln_spec_accels(
+        self, periods: ArrayLike, kind: Optional[str] = "linear"
+    ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -232,7 +234,7 @@ class GroundMotionModel(Model):
             fill_value=np.nan,
         )(np.log(periods))
 
-    def interp_spec_accels(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
+    def interp_spec_accels(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -255,7 +257,7 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(self, periods: ArrayLike, kind: str | None = "linear") -> np.ndarray:
+    def interp_ln_stds(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -423,9 +425,9 @@ class NumericParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        min_: float | None = None,
-        max_: float | None = None,
-        default: float | None = None,
+        min_: Optional[float] = None,
+        max_: Optional[float] = None,
+        default: Optional[float] = None,
     ):
         """Initialize parameter."""
         super().__init__(name, required, default)
@@ -484,8 +486,8 @@ class CategoricalParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        options: list[str] | None = None,
-        default: str | None = None,
+        options: Optional[list[str]] = None,
+        default: Optional[str] = None,
     ):
         """Initialize parameter."""
         super().__init__(name, required, default)
