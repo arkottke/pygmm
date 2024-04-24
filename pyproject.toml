@@ -51,6 +51,9 @@ run-coverage = "pytest --cov-config=pyproject.toml --cov=pkg --cov=tests"
 run-coverage-xml = "run-coverage --cov-report xml"
 run = "run-coverage --no-cov"
 
+[[tool.hatch.envs.test.matrix]]
+python = ["3.8", "3.10", "3.11"]
+
 [tool.hatch.envs.style]
 detached = true
 dependencies = ["ruff"]

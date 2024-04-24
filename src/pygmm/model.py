@@ -475,7 +475,7 @@ class CategoricalParameter(Parameter):
         parameter name
     required : bool
         if the parameter is required
-    options : list[str]
+    options : List[str]
         list of options
     default : str
         (optional) default option. Use *None* for no default value.
@@ -486,7 +486,7 @@ class CategoricalParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        options: Optional[list[str]] = None,
+        options: Optional[List[str]] = None,
         default: Optional[str] = None,
     ):
         """Initialize parameter."""
@@ -494,7 +494,7 @@ class CategoricalParameter(Parameter):
         self._options = options or []
 
     @property
-    def options(self) -> list[str]:
+    def options(self) -> List[str]:
         """Possible options."""
         return self._options
 

@@ -77,7 +77,7 @@ class BaylessAbrahamson2019(model.Model):
         if s["depth_1_0"] is None:
             s["depth_1_0"] = self.calc_depth_1_0(s["v_s30"])
 
-    def _calc_ln_eas(self, ln_eas_ref: float | None) -> float | np.ndarray:
+    def _calc_ln_eas(self, ln_eas_ref: Optional[float]) -> Union[float, np.ndarray]:
         """Compute the effective amplitude."""
         s = self._scenario
 

@@ -324,7 +324,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_2_5(
-        v_s30: float, region: str = "global", depth_1_0: float | None = None
+        v_s30: float, region: str = "global", depth_1_0: Optional[float] = None
     ) -> float:
         """Calculate the depth to a shear-wave velocity of 2.5 km/sec
         (:math:`Z_{2.5}`).
