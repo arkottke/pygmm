@@ -11,19 +11,14 @@ from . import model
 
 __author__ = "Albert Kottke"
 
-fname_data = pathlib.Path(__file__).parent.joinpath(
-    "data", "hermkes_kuehn_riggelsen_2014.npz"
-)
+fname_data = pathlib.Path(__file__).parent.joinpath("data", "hermkes_kuehn_riggelsen_2014.npz")
 
 if not fname_data.exists():
     # Download the model data if not found.
     import urllib.request
     import shutil
 
-    url = (
-        "https://www.dropbox.com/s/1tu9ss1s3inctej/"
-        "hermkes_kuehn_riggelsen_2014.npz?dl=0"
-    )
+    url = "https://www.dropbox.com/s/1tu9ss1s3inctej/" "hermkes_kuehn_riggelsen_2014.npz?dl=0"
 
     try:
         urllib.request.urlretrieve(url, str(fname_data))
@@ -99,9 +94,7 @@ class HermkesKuehnRiggelsen2014(model.GroundMotionModel):
         global INTERPOLATOR
         if INTERPOLATOR is None:
             with np.load(fname_data) as data:
-                INTERPOLATOR = NearestNDInterpolator(
-                    data["events"], data["predictions"]
-                )
+                INTERPOLATOR = NearestNDInterpolator(data["events"], data["predictions"])
         prediction = INTERPOLATOR(event)
         self._ln_resp = prediction[0::2]
         self._ln_std = np.sqrt(prediction[1::2])

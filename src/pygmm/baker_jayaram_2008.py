@@ -1,4 +1,5 @@
 """Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
+
 import numpy as np
 
 from .types import ArrayLike
@@ -24,9 +25,7 @@ def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
     period_min = np.minimum(periods, period_cond)
     period_max = np.maximum(periods, period_cond)
 
-    c_1 = 1 - np.cos(
-        np.pi / 2 - 0.366 * np.log(period_max / np.maximum(period_min, 0.109))
-    )
+    c_1 = 1 - np.cos(np.pi / 2 - 0.366 * np.log(period_max / np.maximum(period_min, 0.109)))
 
     # The minimum() is added to prevent an overflow issue
     c_2 = np.select(

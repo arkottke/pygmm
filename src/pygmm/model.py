@@ -166,9 +166,7 @@ class Model(object):
 
         # Select the used parameters and check them against the recommended
         # values
-        self._scenario = Scenario(
-            **{p.name: scenario.get(p.name, None) for p in self.PARAMS}
-        )
+        self._scenario = Scenario(**{p.name: scenario.get(p.name, None) for p in self.PARAMS})
         self._check_inputs()
 
     def _check_inputs(self):
@@ -237,9 +235,7 @@ class GroundMotionModel(Model):
             fill_value=np.nan,
         )(np.log(periods))
 
-    def interp_spec_accels(
-        self, periods: ArrayLike, kind: Optional[str] = "linear"
-    ) -> np.ndarray:
+    def interp_spec_accels(self, periods: ArrayLike, kind: Optional[str] = "linear") -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -262,9 +258,7 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(
-        self, periods: ArrayLike, kind: Optional[str] = "linear"
-    ) -> np.ndarray:
+    def interp_ln_stds(self, periods: ArrayLike, kind: Optional[str] = "linear") -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -535,9 +529,7 @@ def load_data_file(name, skip_header=None) -> np.recarray:
 
     """
     fname = os.path.join(os.path.dirname(__file__), "data", name)
-    return np.recfromcsv(fname, skip_header=skip_header, case_sensitive=True).view(
-        np.recarray
-    )
+    return np.recfromcsv(fname, skip_header=skip_header, case_sensitive=True).view(np.recarray)
 
 
 class Coefficients(collections.abc.Mapping):

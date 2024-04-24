@@ -25,11 +25,7 @@ class DerrasBardCotton2014(model.GroundMotionModel):
 
     # Load the coefficients for the model
     COEFF = json.load(
-        open(
-            os.path.join(
-                os.path.dirname(__file__), "data", "derras_bard_cotton_2014.json"
-            )
-        )
+        open(os.path.join(os.path.dirname(__file__), "data", "derras_bard_cotton_2014.json"))
     )
     GRAVITY = 9.80665
     PERIODS = np.array(COEFF["period"])
@@ -61,9 +57,7 @@ class DerrasBardCotton2014(model.GroundMotionModel):
         keys = ["log10_dist_jb", "mag", "log10_v_s30", "depth_hyp", "mechanism"]
         values = np.array([s[k] for k in keys])
         limits = np.rec.array([c["min_max"][k] for k in keys], names="min,max")
-        p_n = np.array(
-            2 * (values - limits["min"]) / (limits["max"] - limits["min"]) - 1
-        ).T
+        p_n = np.array(2 * (values - limits["min"]) / (limits["max"] - limits["min"]) - 1).T
 
         # Compute the normalized response
         b_1 = np.array(c["b_1"]).T
@@ -76,9 +70,7 @@ class DerrasBardCotton2014(model.GroundMotionModel):
         # Convert from normalized values
         log10_resp_limits = np.rec.array(c["min_max"]["log10_resp"], names="min,max")
         log10_resp = (
-            0.5
-            * (log10_resp_n + 1)
-            * (log10_resp_limits["max"] - log10_resp_limits["min"])
+            0.5 * (log10_resp_n + 1) * (log10_resp_limits["max"] - log10_resp_limits["min"])
             + log10_resp_limits["min"]
         )
         # Convert from m/sec and m/sec² into cm/sec and g

@@ -1,4 +1,5 @@
 """Kempton and Stewart (2006, :cite:`kempton2006`) duration model."""
+
 from __future__ import division
 
 import numpy as np

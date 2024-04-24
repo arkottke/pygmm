@@ -68,10 +68,7 @@ class Idriss2014(model.GroundMotionModel):
             flag_mech = 0
 
         f_mag = c.alpha_1 + c.alpha_2 * s.mag + c.alpha_3 * (8.5 - s.mag) ** 2
-        f_dst = (
-            -(c.beta_1 + c.beta_2 * s.mag) * np.log(s.dist_rup + 10)
-            + c.gamma * s.dist_rup
-        )
+        f_dst = -(c.beta_1 + c.beta_2 * s.mag) * np.log(s.dist_rup + 10) + c.gamma * s.dist_rup
         f_ste = c.epsilon * np.log(s.v_s30)
         f_mec = c.phi * flag_mech
 

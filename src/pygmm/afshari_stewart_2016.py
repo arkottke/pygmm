@@ -1,4 +1,5 @@
 """Afshari and Stewart (2016, :cite:`afshari2016`) duration model."""
+
 from __future__ import division
 
 import numpy as np
@@ -100,12 +101,12 @@ class AfshariStewart2016(model.Model):
         phi_1 = np.array([0.54, 0.43, 0.56])
         phi_2 = np.array([0.41, 0.35, 0.45])
         # aleatory variability
-        tau = tau_1 + (tau_2 - tau_1) * (
-            np.minimum(np.maximum(s.mag, 6.5), 7.0) - 6.5
-        ) / (7.0 - 6.5)
-        phi = phi_1 + (phi_2 - phi_1) * (
-            np.minimum(np.maximum(s.mag, 5.5), 5.75) - 5.5
-        ) / (5.75 - 5.50)
+        tau = tau_1 + (tau_2 - tau_1) * (np.minimum(np.maximum(s.mag, 6.5), 7.0) - 6.5) / (
+            7.0 - 6.5
+        )
+        phi = phi_1 + (phi_2 - phi_1) * (np.minimum(np.maximum(s.mag, 5.5), 5.75) - 5.5) / (
+            5.75 - 5.50
+        )
 
         # total druation
         self._ln_dur = np.log(F_E + F_P) + F_S
@@ -127,13 +128,7 @@ class AfshariStewart2016(model.Model):
             slope = -7.15 / power
 
         return (
-            np.exp(
-                slope
-                * np.log(
-                    (v_s30**power + v_ref**power)
-                    / (1360.0**power + v_ref**power)
-                )
-            )
+            np.exp(slope * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power)))
             / 1000
         )
 

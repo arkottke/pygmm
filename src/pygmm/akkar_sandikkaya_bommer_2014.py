@@ -75,8 +75,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
         ln_resp_ref = (
             c.a_1
             + c.a_3 * (8.5 - s.mag) ** 2
-            + (c.a_4 + c.a_5 * (s.mag - c.c_1))
-            * np.log(np.sqrt(dist**2 + c.a_6**2))
+            + (c.a_4 + c.a_5 * (s.mag - c.c_1)) * np.log(np.sqrt(dist**2 + c.a_6**2))
         )
         mask = s.mag <= c.c_1
         ln_resp_ref[mask] += (c.a_2 * (s.mag - c.c_1))[mask]

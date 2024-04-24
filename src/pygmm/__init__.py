@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 """pyGMM: Ground motion models implemented in Python."""
 import logging
-
-import pkg_resources
+from importlib.metadata import version
 
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
@@ -26,11 +25,9 @@ from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 
-# from .abrahamson_et_al_2018 import AbrahamsonEtAl2018
-
 __all__ = [
     "Scenario",
-    "AbrahamsonEtAl2018",
+    "AbrahamsonBhasin2020",
     "AbrahamsonSilvaKamai2014",
     "AbrahamsonGregorAddo2016",
     "AfshariStewart2016",
@@ -54,8 +51,8 @@ __all__ = [
 __author__ = "Albert Kottke"
 __copyright__ = "Copyright 2016 Albert Kottke"
 __license__ = "MIT"
-__title__ = "pygmm"
-__version__ = pkg_resources.get_distribution("pygmm").version
+__title__ = "pyGMM"
+__version__ = version("pyGMM")
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+

@@ -132,9 +132,7 @@ class AbrahamsonBhasin2020(model.Model):
                 elif s.mag > C.mag_2:
                     val = var_2
                 else:
-                    val = var_1 + (var_2 - var_1) * (s.mag - C.mag_1) / (
-                        C.mag_2 - C.mag_1
-                    )
+                    val = var_1 + (var_2 - var_1) * (s.mag - C.mag_1) / (C.mag_2 - C.mag_1)
                 return val
 
             phi = interp(C.phi_1, C.phi_2)

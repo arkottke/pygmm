@@ -1,4 +1,5 @@
 """Abrahamson, Gregor, and Addo (2016) ground motion moodel."""
+
 from __future__ import division
 
 import numpy as np

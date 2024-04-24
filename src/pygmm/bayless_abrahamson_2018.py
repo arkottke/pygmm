@@ -62,11 +62,7 @@ class BaylessAbrahamson2018:
 
     @classmethod
     def cov(
-        cls,
-        freqs,
-        *,
-        std: Optional[npt.ArrayLike] = None,
-        component: Optional[str] = None
+        cls, freqs, *, std: Optional[npt.ArrayLike] = None, component: Optional[str] = None
     ) -> np.ndarray:
         """
         Parameters
