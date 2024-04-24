@@ -2,6 +2,11 @@
 title: History
 ---
 
+# 0.7.0 (2024-04-24)
+
+-   Added: Abrahamson and Bhasin (2020)
+-   Changed to Hatch build system
+
 # 0.6.6 (2023-12-11)
 
 -   Added: Return tau and phi in the standard deviation calculations
