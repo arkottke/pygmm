@@ -11,13 +11,13 @@ jobs:
         python-version: ['3.8', '3.9', '3.10']
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4.1.3
     - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5.1.0
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v3
+      uses: actions/cache@v4.0.2
       with:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
@@ -45,7 +45,7 @@ jobs:
         make test
         coverage xml
     - name: Run codacy-coverage-reporter
-      uses: codacy/codacy-coverage-reporter-action@v1
+      uses: codacy/codacy-coverage-reporter-action@v1.3.0
       with:
         project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
         coverage-reports: coverage.xml
