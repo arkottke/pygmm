@@ -1,6 +1,4 @@
----
-title: pyGMM
----
+# pyGMM
 
 [![PyPi Cheese
 Shop](https://img.shields.io/pypi/v/pygmm.svg)](https://pypi.org/project/pygmm/)
@@ -20,7 +18,7 @@ implemented through GEM\'s OpenQuake
 [Hazardlib](https://github.com/gem/oq-hazardlib), which I recommend
 checking out.
 
-# Features
+## Features
 
 Models currently supported:
 
@@ -50,12 +48,12 @@ Duration models:
 Most models are tested with unit tests that test the implemention of the
 model.
 
-# Citation
+## Citation
 
 Please cite this software using the
 [DOI](https://zenodo.org/badge/latestdoi/53176693).
 
-# Contributors
+## Contributors
 
 -   Albert Kottke
 -   Greg Lavrentiadis
