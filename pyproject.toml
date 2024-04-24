@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pyGMM"
-version = "0.7.0"
+dynamic = ["version"]
 authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description="Ground motion models implemented in Python."
 readme = "README.md"
@@ -53,11 +53,11 @@ run = "run-coverage --no-cov"
 
 [tool.hatch.envs.style]
 detached = true
-dependencies = ["black", "isort"]
+dependencies = ["ruff"]
 
 [tool.hatch.envs.style.scripts]
-check = ["black --check --diff .", "isort --check-only --diff ."]
-fmt = ["isort .", "black .", "check"]
+check = ["ruff check --diff"]
+fmt = ["ruff check --fix", "check"]
 
 [tool.hatch.envs.docs]
 dependencies = [
@@ -96,3 +96,5 @@ line-ending = "auto"
 select = ["I"]
 
 ignore = []
+
+[tool.setuptools_scm]
