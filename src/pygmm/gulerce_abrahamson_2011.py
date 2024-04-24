@@ -1,7 +1,5 @@
 """Gülerce and Abrahamson (2011, :cite:`gulerce11`) V/H model."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -47,7 +45,7 @@ class GulerceAbrahamson2011(model.Model):
 
     def __init__(self, *args, **kwargs):
         """Initialize the model."""
-        super(GulerceAbrahamson2011, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
         if "pga_ref" not in self._scenario:
             s = model.Scenario(self._scenario)

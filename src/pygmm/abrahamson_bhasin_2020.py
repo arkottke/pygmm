@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Abrahamson and Bhasin (2020, :cite:`abrahamson20`) model."""
+
 from typing import Optional
 
 import numpy as np

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model."""
+
 import numpy as np
 from scipy.interpolate import interp1d
 
@@ -63,7 +63,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
     def _check_inputs(self) -> None:
         """Check the inputs."""
-        super(AbrahamsonSilvaKamai2014, self)._check_inputs()
+        super()._check_inputs()
         s = self._scenario
         if s["width"] is None:
             s["width"] = self.calc_width(s.mag, s.dip)
@@ -73,7 +73,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
     def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(AbrahamsonSilvaKamai2014, self).__init__(scenario)
+        super().__init__(scenario)
         # Compute the response at the reference velocity
         resp_ref = np.exp(self._calc_ln_resp(self.V_REF, np.nan))
 
@@ -200,9 +200,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             f10 = 0
         else:
             # Ratio between site depth_1_0 and model center
-            ln_depth_ratio = np.log(
-                (depth_1_0 + 0.01) / (cls.calc_depth_1_0(v_s30, region) + 0.01)
-            )
+            ln_depth_ratio = np.log((depth_1_0 + 0.01) / (cls.calc_depth_1_0(v_s30, region) + 0.01))
             slope = interp1d(
                 [150, 250, 400, 700],
                 np.c_[c.a43, c.a44, c.a45, c.a46],
@@ -260,7 +258,7 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_width(mag: float, dip: float) -> float:
-        """Compute the fault width based on equation in NGW2 spreadsheet.
+        r"""Compute the fault width based on equation in NGW2 spreadsheet.
 
         This equation is not provided in the paper.
 

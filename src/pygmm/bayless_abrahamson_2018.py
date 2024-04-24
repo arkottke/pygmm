@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Bayless and Abrahamson (2018, :cite:`bayless19`) correlation."""
+
 from typing import Optional
 
 import numpy as np
@@ -51,7 +51,7 @@ class BaylessAbrahamson2018:
         # Compute the frequency parameters
         f_r = np.abs(np.log(freqs / freqs_mat))
         f_m = np.minimum(freqs, freqs_mat)
-        a, b, c, d = [do_interp(f_m, param) for param in "ABCD"]
+        a, b, c, d = (do_interp(f_m, param) for param in "ABCD")
         # Lower matrix
         lower = np.tanh(a * np.exp(b * f_r) + c * np.exp(d * f_r)).reshape(n, n)
 

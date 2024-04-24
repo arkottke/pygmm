@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Atkinson and Boore (2006, :cite:`atkinson06`) model."""
+
 import numpy as np
 
 from . import model
@@ -47,7 +47,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
 
     def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(AtkinsonBoore2006, self).__init__(scenario)
+        super().__init__(scenario)
         self._ln_resp = self._calc_ln_resp()
         self._ln_std = self._calc_ln_std()
 

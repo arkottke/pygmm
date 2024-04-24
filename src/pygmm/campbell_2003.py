@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Model for the Campbell (2003) ground motion model."""
+
 import numpy as np
 
 from . import model

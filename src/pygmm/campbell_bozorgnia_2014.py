@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
+
 import logging
 from typing import Optional
 
@@ -324,7 +324,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_2_5(
-        v_s30: float, region: str = "global", depth_1_0: Optional[float] = None
+        v_s30: float, region: str = "global", depth_1_0: float | None = None
     ) -> float:
         """Calculate the depth to a shear-wave velocity of 2.5 km/sec
         (:math:`Z_{2.5}`).
@@ -398,7 +398,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         mag : float
             moment magnitude of the event (:math:`M_w`)
         dip : float
-            fault dip angle (:math:`\phi`, deg).
+            fault dip angle (:math:`\\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).
@@ -431,7 +431,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         mag : float
             moment magnitude of the event (:math:`M_w`)
         dip : float
-            fault dip angle (:math:`\phi`, deg).
+            fault dip angle (:math:`\\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).
@@ -458,7 +458,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         Parameters
         ----------
         dip : float
-            fault dip angle (:math:`\phi`, deg).
+            fault dip angle (:math:`\\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model."""
+
 import collections
 
 import numpy as np
@@ -60,7 +60,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
 
     def __init__(self, scenario: model.Scenario):
         """Initialize the model."""
-        super(AkkarSandikkayaBommer2014, self).__init__(scenario)
+        super().__init__(scenario)
 
         s = self._scenario
         for k in self.COEFF:

@@ -1,8 +1,6 @@
 """Coppersmith and Bommer (2014) ground motion model, part of the PNNL Site
 Wide Hazard."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -56,9 +54,7 @@ class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
         Args:
             scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(CoppersmithBommer2014, self).__init__(
-            scenario, adjust_c1=None, adjust_c4=0, scale_atten=scale_atten
-        )
+        super().__init__(scenario, adjust_c1=None, adjust_c4=0, scale_atten=scale_atten)
 
     def _calc_ln_resp(self, pga_ref):
         """Calculate the natural logarithm of the response.

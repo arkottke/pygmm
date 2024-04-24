@@ -1,7 +1,5 @@
 """Abrahamson, Gregor, and Addo (2016) ground motion moodel."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -60,7 +58,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         Args:
             scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(AbrahamsonGregorAddo2016, self).__init__(scenario)
+        super().__init__(scenario)
 
         n = len(self.COEFF)
         if adjust_c1 is None:

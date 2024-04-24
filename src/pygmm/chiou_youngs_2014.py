@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Chiou and Youngs (2014, :cite:`chiou14`) model."""
+
 import logging
 from typing import Optional
 
@@ -255,7 +255,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
     def _check_inputs(self) -> None:
         """Check the inputs."""
-        super(ChiouYoungs2014, self)._check_inputs()
+        super()._check_inputs()
         s = self._scenario
 
         if s.mechanism in ["RS", "NS"]:

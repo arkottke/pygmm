@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Pezeshk, Zandieh, and Tavakoli (2011, :cite:`pezeshk11`) model."""
+
 import numpy as np
 
 from . import model

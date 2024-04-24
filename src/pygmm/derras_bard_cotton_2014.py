@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
+
 import json
 import os
 

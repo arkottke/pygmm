@@ -1,7 +1,5 @@
 """Abrahamson and Silva (1996, :cite:`abrahamson96`) duration model."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -30,7 +28,7 @@ class AbrahamsonSilva1996(model.Model):
     ]
 
     def __init__(self, scenario):
-        super(AbrahamsonSilva1996, self).__init__(scenario)
+        super().__init__(scenario)
 
         s = self._scenario
 

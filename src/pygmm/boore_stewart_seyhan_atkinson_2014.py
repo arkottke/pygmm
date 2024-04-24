@@ -119,14 +119,14 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         Args:
             scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
         """
-        super(BooreStewartSeyhanAtkinson2014, self).__init__(scenario)
+        super().__init__(scenario)
         pga_ref = np.exp(self._calc_ln_resp(np.nan)[self.INDEX_PGA])
         self._ln_resp = self._calc_ln_resp(pga_ref)
         self._ln_std, self._tau, self._phi = self._calc_ln_std()
 
     def _check_inputs(self) -> None:
         """Check the inputs."""
-        super(BooreStewartSeyhanAtkinson2014, self)._check_inputs()
+        super()._check_inputs()
         s = self._scenario
         # Mechanism specific limits
         if s.mechanism == "SS":

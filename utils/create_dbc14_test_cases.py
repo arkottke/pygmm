@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Create test cases for the DBC14 model."""
+
 import gzip
 import json
 import os
@@ -54,7 +54,7 @@ def get_results(wb):
 
     # Collect response spectrum
     for key, rc in zip(["periods", "spec_accels"], "NO"):
-        d[key] = xw.Range("ANN(PGA)", "%s17:%s78" % (rc, rc), wkb=wb).value
+        d[key] = xw.Range("ANN(PGA)", f"{rc}17:{rc}78", wkb=wb).value
 
     return d
 

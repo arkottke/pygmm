@@ -1,7 +1,5 @@
 """Afshari and Stewart (2016, :cite:`afshari2016`) duration model."""
 
-from __future__ import division
-
 import numpy as np
 
 from . import model
@@ -29,7 +27,7 @@ class AfshariStewart2016(model.Model):
     ]
 
     def __init__(self, scenario):
-        super(AfshariStewart2016, self).__init__(scenario)
+        super().__init__(scenario)
 
         # scenario
         s = self._scenario
@@ -57,9 +55,7 @@ class AfshariStewart2016(model.Model):
         # stress drop indices for duration measures
 
         stress_drop = np.exp(
-            b_1
-            + b_2 * (np.minimum(s.mag, mag_2) - mag_star)
-            + b_3 * np.maximum((s.mag - mag_2), 0)
+            b_1 + b_2 * (np.minimum(s.mag, mag_2) - mag_star) + b_3 * np.maximum((s.mag - mag_2), 0)
         )
         # corner frequency
         f_0 = self._corner_freq(stress_drop)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Create test cases for the DBC13 model."""
+
 import gzip
 import json
 import os
@@ -57,7 +57,7 @@ def get_results(wb):
 
         # Collect response spectrum
         for key, c in zip(["periods", "spec_accels"], ["F", col]):
-            d[key] = xw.Range("Input-Output", "%s5:%s66" % (c, c), wkb=wb).value
+            d[key] = xw.Range("Input-Output", f"{c}5:{c}66", wkb=wb).value
 
         results.append(("dist_" + dist, d))
 

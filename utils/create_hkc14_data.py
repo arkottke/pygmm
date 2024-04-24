@@ -1,6 +1,6 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
 """Move the predictor into a arrays for usage."""
+
 import os
 
 import numpy as np

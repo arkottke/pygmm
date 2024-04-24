@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Idriss (2014, :cite:`idriss14`) model."""
+
 import numpy as np
 
 from . import model

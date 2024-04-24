@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """pyGMM: Ground motion models implemented in Python."""
+
 import logging
 from importlib.metadata import version
 
