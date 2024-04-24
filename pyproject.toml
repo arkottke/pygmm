@@ -9,11 +9,11 @@ authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description="Ground motion models implemented in Python."
 readme = "README.md"
 license = "MIT"
-requires-python = ">=3.7"
+requires-python = ">=3.8"
 dependencies = [
-"matplotlib",
-  "numpy",
-  "scipy",
+    "matplotlib",
+    "numpy",
+    "scipy",
 ]
 
 [project.urls]

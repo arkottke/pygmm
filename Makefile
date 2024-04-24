@@ -49,10 +49,7 @@ lint:
 	flake8 pygmm tests
 
 test:
-	python setup.py test
-
-test-all:
-	tox
+	pytest --cov-config=pyproject.toml --cov=pkg --cov=tests
 
 coverage:
 	coverage run --source pygmm setup.py test
