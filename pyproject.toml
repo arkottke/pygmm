@@ -20,19 +20,11 @@ dependencies = [
 Homepage = "https://github.com/arkottke/pygmm"
 Documentation = "https://pygmm.readthedocs.io"
 
-[tool.black]
-line-length = 99
-target-version = ['py37', 'py38', 'py39', 'py310', 'py311', 'py312']
-
 [tool.hatch.build.targets.sdist]
 exclude = ["/*.yml", "/.*", "/.github", "/docs"]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pygmm"]
-
-[tool.isort]
-profile = "black"
-filter_files = true
 
 [tool.hatch.version]
 source = "vcs"
