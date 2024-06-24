@@ -518,7 +518,7 @@ class CategoricalParameter(Parameter):
         return value
 
 
-def load_data_file(name, skip_header=None) -> np.recarray:
+def load_data_file(name, skip_header: int = 0) -> np.recarray:
     """Load a data file.
 
     Returns
@@ -528,7 +528,9 @@ def load_data_file(name, skip_header=None) -> np.recarray:
 
     """
     fname = os.path.join(os.path.dirname(__file__), "data", name)
-    return np.recfromcsv(fname, skip_header=skip_header, case_sensitive=True).view(np.recarray)
+    return np.genfromtxt(
+        fname, skip_header=skip_header, delimiter=",", names=True, case_sensitive=True
+    ).view(np.recarray)
 
 
 class Coefficients(collections.abc.Mapping):
