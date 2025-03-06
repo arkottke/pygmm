@@ -2,6 +2,10 @@
 title: History
 ---
 
+# 0.7.1 (2025-03-05)
+
+-   Added compatibility with numpy 2.0
+
 # 0.7.0 (2024-04-24)
 
 -   Added: Abrahamson and Bhasin (2020)
