@@ -1,6 +1,7 @@
 import os
 
 import matplotlib.pyplot as plt
+
 import pygmm
 
 scenario = pygmm.Scenario(mag=6.5, dist_rup=30, v_s30=500, mechanism="SS", depth_tor=0)

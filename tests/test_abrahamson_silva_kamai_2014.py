@@ -2,6 +2,7 @@
 """Test calculation of ASK14 static methods."""
 
 from numpy.testing import assert_allclose
+
 from pygmm import AbrahamsonSilvaKamai2014 as ASK14
 
 

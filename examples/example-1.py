@@ -2,6 +2,7 @@
 """Plot influence of V_s30 predicted by CY14 model."""
 
 import matplotlib.pyplot as plt
+
 import pygmm
 
 fig, ax = plt.subplots()

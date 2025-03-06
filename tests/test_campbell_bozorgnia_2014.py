@@ -2,6 +2,7 @@
 """Test calculation of CB14 static methods."""
 
 from numpy.testing import assert_allclose
+
 from pygmm import CampbellBozorgnia2014 as CB14
 
 

@@ -2,6 +2,7 @@
 """Test calculation of CY14 static methods."""
 
 from numpy.testing import assert_allclose
+
 from pygmm import ChiouYoungs2014 as CY14
 
 

@@ -7,8 +7,9 @@ import matplotlib
 
 matplotlib.use("agg")  # NOQA
 import matplotlib.pyplot as plt
-import pygmm
 import pytest
+
+import pygmm
 
 DEFAULT_PROPS = dict(
     depth_2_5=5,

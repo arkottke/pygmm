@@ -3,6 +3,7 @@
 
 import pytest
 from numpy.testing import assert_allclose, assert_array_equal
+
 from pygmm import Campbell2003 as C03
 from pygmm.model import Scenario
 

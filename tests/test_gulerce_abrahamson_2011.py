@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from pygmm import GulerceAbrahamson2011 as GA11
 
 from . import load_tests
@@ -10,7 +11,7 @@ TESTS = load_tests("gulerce_abrahamson_2011.json.gz")
 def idfn(test):
     if isinstance(test, dict):
         p = test["params"]
-        return f'M={p["mag"]}, Rjb={["dist_rup"]} km'
+        return f"M={p['mag']}, Rjb={['dist_rup']} km"
     else:
         return test
 

@@ -5,8 +5,9 @@ import json
 import os
 
 import numpy as np
-import pygmm
 import pytest
+
+import pygmm
 
 models = [
     pygmm.AbrahamsonSilvaKamai2014,

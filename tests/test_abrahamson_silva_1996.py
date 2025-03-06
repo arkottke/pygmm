@@ -4,9 +4,10 @@ Gregor."""
 import json
 import os
 
-import pygmm
 import pytest
 from numpy.testing import assert_allclose
+
+import pygmm
 
 fpath = os.path.join(os.path.dirname(__file__), "data", "as96.json")
 with open(fpath) as fp:

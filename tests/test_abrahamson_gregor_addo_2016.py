@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from pygmm import AbrahamsonGregorAddo2016 as AGA16
 from pygmm.model import Scenario
 

@@ -6,8 +6,9 @@ import csv
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
-from pygmm import BaylessAbrahamson2019 as BA19
 from scipy.constants import g as GRAVITY
+
+from pygmm import BaylessAbrahamson2019 as BA19
 
 from . import FPATH_DATA
 
@@ -44,7 +45,7 @@ def iter_scenarios():
 
 
 @pytest.mark.parametrize(
-    "scenario", iter_scenarios(), ids=lambda s: f'M {s["mag"]}, Vs30 {s["v_s30"]} m/s'
+    "scenario", iter_scenarios(), ids=lambda s: f"M {s['mag']}, Vs30 {s['v_s30']} m/s"
 )
 def test_ba19(scenario):
     m = BA19(scenario)

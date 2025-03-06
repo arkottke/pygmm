@@ -2,6 +2,7 @@
 """Test model interface using C03 model."""
 
 import pytest
+
 from pygmm.model import CategoricalParameter, NumericParameter, Parameter
 
 

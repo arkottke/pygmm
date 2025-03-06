@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from pygmm import CoppersmithBommer2014 as Model
 from pygmm.model import Scenario
 

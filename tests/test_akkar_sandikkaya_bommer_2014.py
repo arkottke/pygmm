@@ -5,6 +5,7 @@ import os
 
 import numpy as np
 import pytest
+
 from pygmm import AkkarSandikkayaBommer2014 as ASB14
 from pygmm.model import Scenario
 
