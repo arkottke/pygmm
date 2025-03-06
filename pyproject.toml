@@ -8,7 +8,7 @@ dynamic = ["version"]
 authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description = "Ground motion models implemented in Python."
 readme = "README.md"
-license = "MIT"
+license = { text = "MIT" }
 requires-python = ">=3.8"
 dependencies = ["matplotlib", "numpy", "scipy"]
 
