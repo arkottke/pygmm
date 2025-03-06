@@ -6,15 +6,11 @@ build-backend = "hatchling.build"
 name = "pyGMM"
 dynamic = ["version"]
 authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
-description="Ground motion models implemented in Python."
+description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.8"
-dependencies = [
-    "matplotlib",
-    "numpy",
-    "scipy",
-]
+dependencies = ["matplotlib", "numpy", "scipy"]
 
 [project.urls]
 Homepage = "https://github.com/arkottke/pygmm"
@@ -31,11 +27,11 @@ source = "vcs"
 
 [tool.hatch.envs.test]
 dependencies = [
-  "coverage[toml]",
-  "pytest",
-  "pytest-cov",
-  "pytest-runner",
-  "pytest-flake8",
+    "coverage[toml]",
+    "pytest",
+    "pytest-cov",
+    "pytest-runner",
+    "pytest-flake8",
 ]
 
 [tool.hatch.envs.test.scripts]
@@ -44,7 +40,7 @@ run-coverage-xml = "run-coverage --cov-report xml"
 run = "run-coverage --no-cov"
 
 [[tool.hatch.envs.test.matrix]]
-python = ["3.8", "3.10", "3.11"]
+python = ["3.8", "3.10", "3.12"]
 
 [tool.hatch.envs.style]
 detached = true
@@ -55,12 +51,7 @@ check = ["ruff check --diff"]
 fmt = ["ruff check --fix", "check"]
 
 [tool.hatch.envs.docs]
-dependencies = [
-    "jinja2",
-    "sphinx",
-    "sphinx_rtd_theme",
-    "sphinxcontrib-bibtex",
-]
+dependencies = ["jinja2", "sphinx", "sphinx_rtd_theme", "sphinxcontrib-bibtex"]
 [tool.hatch.envs.docs.scripts]
 build = "mkdocs build --clean --strict"
 serve = "mkdocs serve --dev-addr localhost:8000"
