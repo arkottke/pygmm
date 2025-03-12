@@ -53,9 +53,8 @@ class BaylessAbrahamson2018:
         f_m = np.minimum(freqs, freqs_mat)
         a, b, c, d = (do_interp(f_m, param) for param in "ABCD")
         # Lower matrix
-        lower = np.tanh(a * np.exp(b * f_r) + c * np.exp(d * f_r)).reshape(n, n)
+        corr = np.tanh(a * np.exp(b * f_r) + c * np.exp(d * f_r)).reshape(n, n)
 
-        corr = lower + lower.T
         np.fill_diagonal(corr, 1)
 
         return corr
