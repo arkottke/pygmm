@@ -24,6 +24,7 @@ from .kempton_stewart_2006 import KemptonStewart2006
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
+from .stafford_2017 import Stafford2017
 
 __all__ = [
     "Scenario",
@@ -46,6 +47,7 @@ __all__ = [
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
     "TavakoliPezeshk05",
+    "Stafford2017"
 ]
 
 __author__ = "Albert Kottke"
@@ -84,4 +86,5 @@ models = [
     Idriss2014,
     PezeshkZandiehTavakoli2011,
     TavakoliPezeshk05,
+    Stafford2017
 ]
