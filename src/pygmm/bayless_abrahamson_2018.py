@@ -41,22 +41,20 @@ class BaylessAbrahamson2018:
 
         # Create two matrices of frequencies
         n = freqs.shape[0]
-        triu = np.triu(np.full((n, n), freqs))
-        freqs_mat = triu + triu.T - np.diag(freqs)
+        freqs_row = np.full((n, n), freqs)
+        freqs_col = freqs_row.T
 
         def do_interp(f_m, attr):
             fp = getattr(cls.COEFF, attr)
             return np.interp(f_m, cls.FREQS, fp, left=fp[0], right=fp[-1])
 
         # Compute the frequency parameters
-        f_r = np.abs(np.log(freqs / freqs_mat))
-        f_m = np.minimum(freqs, freqs_mat)
+        f_r = np.abs(np.log(freqs_row / freqs_col))
+        f_m = np.minimum(freqs_row, freqs_col)
         a, b, c, d = (do_interp(f_m, param) for param in "ABCD")
-        # Lower matrix
         corr = np.tanh(a * np.exp(b * f_r) + c * np.exp(d * f_r)).reshape(n, n)
-
         np.fill_diagonal(corr, 1)
-
+        corr = (corr+corr.T) / 2 # forces symmetry
         return corr
 
     @classmethod
