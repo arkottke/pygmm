@@ -2,6 +2,9 @@
 title: History
 ---
 
+# 0.7.3 (2025-03-12)
+-   Fixed Bayless and Abrahamson (2018) correlation model.
+
 # 0.7.1 (2025-03-05)
 
 -   Added compatibility with numpy 2.0
