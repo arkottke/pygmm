@@ -1,8 +1,8 @@
 """Basic models."""
 
 import collections
-import logging
 import os
+import warnings
 from typing import List, Optional
 
 import numpy as np
@@ -449,18 +449,16 @@ class NumericParameter(Parameter):
         value = super().check(value)
         if value is not None:
             if self.min is not None and value < self.min:
-                logging.warning(
-                    "%s (%g) is less than the recommended limit (%g).",
-                    self.name,
-                    value,
-                    self.min,
+                warnings.warn(
+                    f"{self.name} ({value}) is less than the recommended limit ({self.min}).",
+                    UserWarning,
+                    stacklevel=2,
                 )
             elif self.max is not None and self.max < value:
-                logging.warning(
-                    "%s (%g) is greater than the recommended limit (%g).",
-                    self.name,
-                    value,
-                    self.max,
+                warnings.warn(
+                    f"{self.name} ({value}) is greater than the recommended limit ({self.max}).",
+                    UserWarning,
+                    stacklevel=2,
                 )
 
         return value
@@ -502,17 +500,19 @@ class CategoricalParameter(Parameter):
         """Check the value against the limits."""
         value = super().check(value)
         if value not in self.options:
-            alert = logging.error if self.required else logging.warning
-            alert(
-                '%s value of "%s" is not one of the options. The following'
-                " options are possible: %s",
-                self.name,
-                value,
-                ", ".join([str(o) for o in self._options]),
-            )
-
-            if not self.required:
-                logging.warning("Using default value for %s", self.name)
+            if self.required:
+                raise ValueError(
+                    f'{self.name} value of "{value}" is not one of the options. The following'
+                    f" options are possible: {', '.join([str(o) for o in self._options])}"
+                )
+            else:
+                warnings.warn(
+                    f'{self.name} value of "{value}" is not one of the options. The following'
+                    f" options are possible: {', '.join([str(o) for o in self._options])}",
+                    UserWarning,
+                    stacklevel=2,
+                )
+                warnings.warn(f"Using default value for {self.name}", UserWarning, stacklevel=2)
                 value = self.default
 
         return value
