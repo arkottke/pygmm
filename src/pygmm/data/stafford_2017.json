@@ -1,0 +1,58 @@
+{
+    "CF_C1": 2.181,
+    "CF_C2": 0.496,
+    
+    "gamma_E0": -0.4690,
+    "gamma_E1": 0.1275,
+    "gamma_E2": 0.7793,
+    "gamma_E3": 3.0324,
+    "gamma_E4": 0.0106,
+    
+    "eta_A0": 0.7606,
+    "eta_A1": 0.2993,
+    "eta_A2": 1.5837,
+    "eta_A3": -0.5094,
+    "eta_A4": 24.579,
+    "eta_A5": 2.3518,
+    
+    "gamma_A0": 0.9515,
+    "gamma_A1": 1.2752,
+    "gamma_A2": 1.4802,
+    "gamma_A3": -0.3361,
+    "gamma_A_FREF": 10.0,
+    
+    "eta_S0": 0.1126,
+    "eta_S1": -0.1068,
+    "eta_S_FREF1": 0.25,
+    "eta_S_FREF2": 4.0,
+    
+    "gamma_S0": -0.6968,
+    "gamma_S1": -0.2963,
+    "gamma_S2": 0.3326,
+    "gamma_S3": 5.0078,
+    "gamma_S4": 0.5703,
+    "gamma_S5": 2.3973,
+    "gamma_S6": 3.5779,
+    
+    "nugget_exp": 50.0,
+    
+    "sigma_E0": 0.8757,
+    "sigma_E1": -0.3309,
+    "sigma_E2": 0.5871,
+    "sigma_E3": 5.4264,
+    "sigma_E4": 0.5177,
+    "sigma_E5": 16.357,
+    "sigma_E6": 1.4689,
+    
+    "sigma_S0": 0.6167,
+    "sigma_S1": -0.1495,
+    "sigma_S2": 0.7248,
+    "sigma_S3": 3.6985,
+    "sigma_S4": 0.3640,
+    "sigma_S5": 13.457,
+    "sigma_S6": 2.2497,
+    
+    "sigma_A0": 0.7260,
+    "sigma_A1": 0.0328,
+    "sigma_A_FREF": 5.0
+}
