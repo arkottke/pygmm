@@ -71,7 +71,8 @@ class TavakoliPezeshk05(model.GroundMotionModel):
         # Calculate scaled, magnitude dependent distance R for use when
         # calculating f3
         dist = np.sqrt(
-            s.dist_rup**2 + (c.c_5 * np.exp(c.c_6 * s.mag + c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2
+            s.dist_rup**2
+            + (c.c_5 * np.exp(c.c_6 * s.mag + c.c_7 * (8.5 - s.mag) ** 2.5)) ** 2
         )
         f3 = (c.c_4 + c.c_13 * s.mag) * np.log(dist) + (c.c_8 + c.c_12 * s.mag) * dist
 

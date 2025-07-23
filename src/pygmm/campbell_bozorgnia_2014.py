@@ -83,7 +83,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             s.depth_tor = CY14.calc_depth_tor(s.mag, s.mechanism)
 
         if s.width is None:
-            s.width = CampbellBozorgnia2014.calc_width(s.mag, s.dip, s.depth_tor, s.depth_bot)
+            s.width = CampbellBozorgnia2014.calc_width(
+                s.mag, s.dip, s.depth_tor, s.depth_bot
+            )
 
         if s.depth_bor is None:
             s.depth_bor = self.calc_depth_bor(s.depth_tor, s.dip, s.width)
@@ -246,7 +248,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         if region == "japan":
             # Apply regional correction for Japan
             if v_s30 <= 200:
-                f_site += (c.c_12 + c.k_2 * cls.COEFF_N) * (np.log(vs_ratio) - np.log(200 / c.k_1))
+                f_site += (c.c_12 + c.k_2 * cls.COEFF_N) * (
+                    np.log(vs_ratio) - np.log(200 / c.k_1)
+                )
             else:
                 f_site += (c.c_13 + c.k_2 * cls.COEFF_N) * np.log(vs_ratio)
 
@@ -264,7 +268,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         elif depth_2_5 <= 3:
             f_sed = 0
         else:
-            f_sed = c.c_16 * c.k_3 * np.exp(-0.75) * (1 - np.exp(-0.25 * (depth_2_5 - 3)))
+            f_sed = (
+                c.c_16 * c.k_3 * np.exp(-0.75) * (1 - np.exp(-0.25 * (depth_2_5 - 3)))
+            )
 
         return f_site + f_sed
 
@@ -303,7 +309,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         tau_lnPGA = tau_lnY[self.INDEX_PGA]
         tau = np.sqrt(
-            tau_lnY**2 + alpha**2 * tau_lnPGA**2 + 2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA
+            tau_lnY**2
+            + alpha**2 * tau_lnPGA**2
+            + 2 * alpha * c.rho_lnPGAlnY * tau_lnY * tau_lnPGA
         )
 
         phi_lnPGA = phi_lnY[self.INDEX_PGA]
@@ -390,7 +398,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         return np.exp(intercept - slope * np.log(param))
 
     @staticmethod
-    def calc_depth_hyp(mag: float, dip: float, depth_tor: float, depth_bor: float) -> float:
+    def calc_depth_hyp(
+        mag: float, dip: float, depth_tor: float, depth_bor: float
+    ) -> float:
         """Estimate the depth to hypocenter.
 
         Parameters
@@ -423,7 +433,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         return depth_hyp
 
     @staticmethod
-    def calc_width(mag: float, dip: float, depth_tor: float, depth_bot: float = 15.0) -> float:
+    def calc_width(
+        mag: float, dip: float, depth_tor: float, depth_bot: float = 15.0
+    ) -> float:
         """Estimate the fault width using Equation (39) of CB14.
 
         Parameters

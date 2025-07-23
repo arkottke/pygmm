@@ -1,6 +1,6 @@
 [build-system]
-requires = ["hatchling", "hatch-vcs"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=64", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
 
 [project]
 name = "pyGMM"
@@ -9,78 +9,82 @@ authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dependencies = ["matplotlib", "numpy", "scipy"]
+
+[project.optional-dependencies]
+test = [
+    "coverage[toml]",
+    "pytest",
+    "pytest-cov",
+    "pandas",
+]
+docs = [
+    "sphinx",
+    "furo",
+    "sphinx-copybutton",
+    "sphinx-design",
+    "sphinxcontrib-bibtex",
+    "sphinxext-opengraph",
+    "sphinx-autobuild",
+    "matplotlib",
+    "myst-parser",
+    "nbsphinx",
+    "ipython",
+    "linkify-it-py",
+    "lxml[html_clean]",
+    # Core dependencies needed for docs
+    "numpy",
+    "scipy",
+]
+style = [
+    "black[colorama,jupyter]",
+    "ruff",
+]
 
 [project.urls]
 Homepage = "https://github.com/arkottke/pygmm"
 Documentation = "https://pygmm.readthedocs.io"
 
-[tool.hatch.build.targets.sdist]
-exclude = ["/*.yml", "/.*", "/.github", "/docs"]
+[tool.setuptools.packages.find]
+where = ["src"]
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/pygmm"]
+[tool.setuptools_scm]
+write_to = "src/pygmm/_version.py"
 
-[tool.hatch.version]
-source = "vcs"
+[tool.ruff]
+exclude = ["docs"]
+line-length = 88
+indent-width = 4
+target-version = "py310"
+extend-include = ["*.ipynb"]
 
-[tool.hatch.envs.test]
-dependencies = [
-    "coverage[toml]",
-    "pytest",
-    "pytest-cov",
-    "pytest-runner",
-    "pytest-flake8",
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "Q", "I"]
+ignore = ["E203"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
+addopts = ["--strict-markers", "--strict-config"]
+
+[tool.coverage.run]
+source = ["src/pygmm"]
+omit = ["*/tests/*", "*/test_*"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
 ]
-
-[tool.hatch.envs.test.scripts]
-run-coverage = "pytest --cov-config=pyproject.toml --cov=pkg --cov=tests"
-run-coverage-xml = "run-coverage --cov-report xml"
-run = "run-coverage --no-cov"
-
-[[tool.hatch.envs.test.matrix]]
-python = ["3.8", "3.10", "3.12"]
-
-[tool.hatch.envs.style]
-detached = true
-dependencies = ["ruff"]
-
-[tool.hatch.envs.style.scripts]
-check = ["ruff check --diff"]
-fmt = ["ruff check --fix", "check"]
-
-[tool.hatch.envs.docs]
-dependencies = ["jinja2", "sphinx", "sphinx_rtd_theme", "sphinxcontrib-bibtex"]
-[tool.hatch.envs.docs.scripts]
-build = "mkdocs build --clean --strict"
-serve = "mkdocs serve --dev-addr localhost:8000"
 
 [tool.pydocstyle]
 inherit = false
 convention = "numpy"
 match = "(?!test_).*\\.py"
-
-[tool.ruff]
-line-length = 100
-indent-width = 4
-
-[tool.ruff.format]
-# Like Black, use double quotes for strings.
-quote-style = "double"
-
-# Like Black, indent with spaces, rather than tabs.
-indent-style = "space"
-
-# Like Black, respect magic trailing commas.
-skip-magic-trailing-comma = false
-
-# Like Black, automatically detect the appropriate line ending.
-line-ending = "auto"
-
-[tool.ruff.lint]
-select = ["I"]
-
-ignore = []
-
-[tool.setuptools_scm]

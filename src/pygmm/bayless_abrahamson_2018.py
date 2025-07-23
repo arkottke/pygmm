@@ -54,12 +54,16 @@ class BaylessAbrahamson2018:
         a, b, c, d = (do_interp(f_m, param) for param in "ABCD")
         corr = np.tanh(a * np.exp(b * f_r) + c * np.exp(d * f_r)).reshape(n, n)
         np.fill_diagonal(corr, 1)
-        corr = (corr+corr.T) / 2 # forces symmetry
+        corr = (corr + corr.T) / 2  # forces symmetry
         return corr
 
     @classmethod
     def cov(
-        cls, freqs, *, std: Optional[npt.ArrayLike] = None, component: Optional[str] = None
+        cls,
+        freqs,
+        *,
+        std: Optional[npt.ArrayLike] = None,
+        component: Optional[str] = None,
     ) -> np.ndarray:
         """
         Parameters
@@ -69,7 +73,8 @@ class BaylessAbrahamson2018:
         std : array_like, optional
             Standard deviation at the frequencies
         component : str, optional
-            Component of the published standard deviation. Possible options: tau, phi_s2s, phi_s, sigma
+            Component of the published standard deviation.
+            Possible options: tau, phi_s2s, phi_s, sigma
         Returns
         -------
         corr : np.ndarray

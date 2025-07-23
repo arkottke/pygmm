@@ -34,13 +34,19 @@ class TestPinillaRamosEtAl2024:
             ValueError, match="No model available for interface earthquakes in Taiwan"
         ):
             scenario = Scenario(
-                mag=7.0, dist_rup=100.0, v_s30=600.0, region="Taiwan", event_type="interface"
+                mag=7.0,
+                dist_rup=100.0,
+                v_s30=600.0,
+                region="Taiwan",
+                event_type="interface",
             )
             PinillaRamosEtAl2024(scenario)
 
     def test_invalid_event_type(self):
         """Test validation of event type."""
-        with pytest.raises(ValueError, match="event_type must be 'interface' or 'slab'"):
+        with pytest.raises(
+            ValueError, match="event_type must be 'interface' or 'slab'"
+        ):
             scenario = Scenario(
                 mag=7.0,
                 dist_rup=100.0,
@@ -82,7 +88,9 @@ class TestPinillaRamosEtAl2024:
 
     def test_slab_earthquake_taiwan(self):
         """Test slab earthquake in Taiwan."""
-        scenario = Scenario(mag=6.5, dist_rup=25.0, v_s30=600.0, region="Taiwan", event_type="slab")
+        scenario = Scenario(
+            mag=6.5, dist_rup=25.0, v_s30=600.0, region="Taiwan", event_type="slab"
+        )
         model = PinillaRamosEtAl2024(scenario)
 
         duration = model.duration
@@ -169,7 +177,9 @@ class TestPinillaRamosEtAl2024:
 
     def test_distance_scaling(self):
         """Test distance scaling behavior."""
-        base_scenario = Scenario(mag=7.0, v_s30=600.0, region="Japan", event_type="interface")
+        base_scenario = Scenario(
+            mag=7.0, v_s30=600.0, region="Japan", event_type="interface"
+        )
 
         durations = []
         for dist in [10.0, 100.0, 200.0]:
@@ -183,7 +193,9 @@ class TestPinillaRamosEtAl2024:
 
     def test_vs30_scaling(self):
         """Test Vs30 scaling behavior."""
-        base_scenario = Scenario(mag=7.0, dist_rup=100.0, region="Japan", event_type="interface")
+        base_scenario = Scenario(
+            mag=7.0, dist_rup=100.0, region="Japan", event_type="interface"
+        )
 
         durations = []
         for vs30 in [200.0, 600.0, 1200.0]:
@@ -197,7 +209,9 @@ class TestPinillaRamosEtAl2024:
 
     def test_regional_differences(self):
         """Test regional differences for interface earthquakes."""
-        base_scenario = Scenario(mag=7.0, dist_rup=100.0, v_s30=600.0, event_type="interface")
+        base_scenario = Scenario(
+            mag=7.0, dist_rup=100.0, v_s30=600.0, event_type="interface"
+        )
 
         durations = {}
         for region in ["Japan", "New Zealand", "South America"]:
@@ -271,9 +285,21 @@ class TestPinillaRamosEtAl2024:
         # Test that model handles edge cases of parameter ranges
         scenarios = [
             # Minimum values
-            Scenario(mag=4.5, dist_rup=0.0, v_s30=150.0, region="Japan", event_type="interface"),
+            Scenario(
+                mag=4.5,
+                dist_rup=0.0,
+                v_s30=150.0,
+                region="Japan",
+                event_type="interface",
+            ),
             # Maximum values
-            Scenario(mag=8.5, dist_rup=300.0, v_s30=2000.0, region="Japan", event_type="interface"),
+            Scenario(
+                mag=8.5,
+                dist_rup=300.0,
+                v_s30=2000.0,
+                region="Japan",
+                event_type="interface",
+            ),
         ]
 
         for scenario in scenarios:

@@ -8,7 +8,9 @@ import pygmm
 fig, ax = plt.subplots()
 
 for v_s30 in [300, 600, 900]:
-    s = pygmm.model.Scenario(mag=7, dist_jb=20, dist_x=20, dist_rup=25, dip=90, v_s30=v_s30)
+    s = pygmm.model.Scenario(
+        mag=7, dist_jb=20, dist_x=20, dist_rup=25, dip=90, v_s30=v_s30
+    )
     m = pygmm.ChiouYoungs2014(s)
     ax.plot(m.periods, m.spec_accels, label=str(v_s30))
 

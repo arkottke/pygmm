@@ -56,7 +56,9 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             ["global", "california", "china", "italy", "japan", "taiwan"],
             "global",
         ),
-        model.CategoricalParameter("vs_source", False, ["measured", "inferred"], "measured"),
+        model.CategoricalParameter(
+            "vs_source", False, ["measured", "inferred"], "measured"
+        ),
         model.CategoricalParameter("is_aftershock", False, [True, False], False),
         model.CategoricalParameter("on_hanging_wall", False, [True, False], False),
     ]
@@ -200,7 +202,9 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             f10 = 0
         else:
             # Ratio between site depth_1_0 and model center
-            ln_depth_ratio = np.log((depth_1_0 + 0.01) / (cls.calc_depth_1_0(v_s30, region) + 0.01))
+            ln_depth_ratio = np.log(
+                (depth_1_0 + 0.01) / (cls.calc_depth_1_0(v_s30, region) + 0.01)
+            )
             slope = interp1d(
                 [150, 250, 400, 700],
                 np.c_[c.a43, c.a44, c.a45, c.a46],
@@ -329,7 +333,10 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
             slope = -7.67 / power
 
         return (
-            np.exp(slope * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power)))
+            np.exp(
+                slope
+                * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power))
+            )
             / 1000
         )
 
@@ -339,7 +346,9 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         s = self._scenario
 
         # Magnitude dependent taper
-        dist = np.sqrt(s.dist_rup**2 + (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2)
+        dist = np.sqrt(
+            s.dist_rup**2 + (c.c4 - (c.c4 - 1) * np.clip(5 - s.mag, 0, 1)) ** 2
+        )
 
         # Magnitude scaling
         # Need to copy c.a1 to that it isn't modified during the following

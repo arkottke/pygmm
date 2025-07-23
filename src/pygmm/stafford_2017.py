@@ -5,8 +5,6 @@ import os
 
 import numpy as np
 
-from . import model
-
 __author__ = "Mahdi Bahrampouri"
 
 
@@ -22,14 +20,17 @@ class Stafford2017:
     ABBREV = "PJS17"
 
     # Load the coefficients for the model
-    COEFF = json.load(open(os.path.join(os.path.dirname(__file__), "data", "stafford_2017.json")))
+    COEFF = json.load(
+        open(os.path.join(os.path.dirname(__file__), "data", "stafford_2017.json"))
+    )
 
     @classmethod
     def compute_corner_frequency(cls, magnitude):
         """
         Compute the corner frequency based on magnitude.
-        This implementation follows the model in the paper using the Yenier and Atkinson (2015)
-        stress parameter model with a single-corner source spectrum.
+
+        This implementation follows the model in the paper using the Yenier and Atkinson
+        (2015) stress parameter model with a single-corner source spectrum.
         """
         # Approximate implementation based on common scaling relationships
         # A more accurate implementation would use the full YA15 model parameters
@@ -52,7 +53,9 @@ class Stafford2017:
             return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
 
         # Apply equation 12
-        sigmoid_term = S(f_min_norm, cls.COEFF.gamma_E1, cls.COEFF.gamma_E2, cls.COEFF.gamma_E3)
+        sigmoid_term = S(
+            f_min_norm, cls.COEFF.gamma_E1, cls.COEFF.gamma_E2, cls.COEFF.gamma_E3
+        )
         log_term = cls.COEFF.gamma_E4 * np.log(f_min_norm / cls.COEFF.gamma_E2)
 
         return cls.COEFF.gamma_E0 + sigmoid_term + log_term
@@ -202,7 +205,9 @@ class Stafford2017:
                 return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
 
             return (
-                sigma_E0 + S(f, sigma_E1, sigma_E2, sigma_E3) + S(f, sigma_E4, sigma_E5, sigma_E6)
+                sigma_E0
+                + S(f, sigma_E1, sigma_E2, sigma_E3)
+                + S(f, sigma_E4, sigma_E5, sigma_E6)
             )
 
         # Function to compute between-site standard deviation
@@ -219,7 +224,9 @@ class Stafford2017:
                 return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
 
             return (
-                sigma_S0 + S(f, sigma_S1, sigma_S2, sigma_S3) + S(f, sigma_S4, sigma_S5, sigma_S6)
+                sigma_S0
+                + S(f, sigma_S1, sigma_S2, sigma_S3)
+                + S(f, sigma_S4, sigma_S5, sigma_S6)
             )
 
         # Function to compute within-event standard deviation
@@ -274,7 +281,9 @@ class Stafford2017:
         for i in range(n):
             for j in range(n):
                 # Between-event contribution
-                rho_E = cls.between_event_correlation(frequencies[i], frequencies[j], magnitude)
+                rho_E = cls.between_event_correlation(
+                    frequencies[i], frequencies[j], magnitude
+                )
                 cov_E = rho_E * sigma_E[i] * sigma_E[j]
 
                 # Between-site contribution

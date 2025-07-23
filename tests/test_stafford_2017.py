@@ -9,9 +9,9 @@ import pytest
 
 from pygmm import Stafford2017
 
-from . import FPATH_DATA
-
-fname = os.path.join(os.path.dirname(__file__), "data", "PJS2017_cor_M4pt5_fmin0pt06.csv")
+fname = os.path.join(
+    os.path.dirname(__file__), "data", "PJS2017_cor_M4pt5_fmin0pt06.csv"
+)
 testdata = pd.read_csv(fname, sep=",", header=0)
 
 

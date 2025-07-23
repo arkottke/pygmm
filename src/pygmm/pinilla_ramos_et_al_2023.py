@@ -1,11 +1,10 @@
 """Pinilla-Ramos et al. (2023, :cite:`pinilla-ramos23`) duration model."""
 
-from typing import Optional, Tuple, Union
+from typing import Tuple
 
 import numpy as np
 
 from . import model
-from .types import ArrayLike
 
 __author__ = "Albert Kottke"
 
@@ -39,8 +38,8 @@ class PinillaRamosEtAl2023(model.Model):
         super().__init__(scenario)
 
         # Calculate the duration for D5-75 by default
-        self._duration, self._duration_plus_sigma, self._duration_minus_sigma = self._calc_duration(
-            0.75
+        self._duration, self._duration_plus_sigma, self._duration_minus_sigma = (
+            self._calc_duration(0.75)
         )
 
     def _calc_duration(self, energy: float = 0.75) -> Tuple[float, float, float]:
@@ -268,7 +267,12 @@ class PinillaRamosEtAl2023(model.Model):
         sigma_vs30 += (
             (vs30 < v2)
             * (vs30 >= v1)
-            * (phi + (phi_max - phi) * (np.log(v2) - np.log(vs30)) / (np.log(v2) - np.log(v1)))
+            * (
+                phi
+                + (phi_max - phi)
+                * (np.log(v2) - np.log(vs30))
+                / (np.log(v2) - np.log(v1))
+            )
         )
         sigma_vs30 += (vs30 < v1) * phi_max
 
@@ -328,7 +332,11 @@ class PinillaRamosEtAl2023(model.Model):
             model_plus_sigma = ((c_model * median) ** n3 + sigma_cond) ** (1 / n3)
             model_minus_sigma = ((c_model * median) ** n3 - sigma_cond) ** (1 / n3)
 
-            return float(c_model * median), float(model_plus_sigma), float(model_minus_sigma)
+            return (
+                float(c_model * median),
+                float(model_plus_sigma),
+                float(model_minus_sigma),
+            )
 
     @property
     def duration(self) -> float:
@@ -365,6 +373,8 @@ class PinillaRamosEtAl2023(model.Model):
             If energy threshold is outside valid range
         """
         if energy < 0.10 or energy > 0.95:
-            raise ValueError(f"Energy threshold {energy} is outside valid range [0.10, 0.95]")
+            raise ValueError(
+                f"Energy threshold {energy} is outside valid range [0.10, 0.95]"
+            )
 
         return self._calc_duration(energy)

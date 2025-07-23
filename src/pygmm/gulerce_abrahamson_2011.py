@@ -125,7 +125,9 @@ class GulerceAbrahamson2011(model.Model):
             c.a1
             + c.a8 * (8.5 - s.mag) ** 2
             + (c.a2 + c.a3 * (s.mag - c.c1)) * np.log(dist)
-            + np.select([(s.mag < c.c1), True], [c.a4 * (s.mag - c.c1), c.a5 * (s.mag - c.c1)])
+            + np.select(
+                [(s.mag < c.c1), True], [c.a4 * (s.mag - c.c1), c.a5 * (s.mag - c.c1)]
+            )
         )
         # Site model
         v_1 = np.select(
@@ -150,7 +152,8 @@ class GulerceAbrahamson2011(model.Model):
         f5 = c.a10 * np.log(vs_ratio) - np.select(
             [v_s30_lim < c.v_lin, True],
             [
-                -c.b * np.log(s.pga_ref + c.c) + c.b * np.log(s.pga_ref + c.c * vs_ratio**c.n),
+                -c.b * np.log(s.pga_ref + c.c)
+                + c.b * np.log(s.pga_ref + c.c * vs_ratio**c.n),
                 c.b * c.n * np.log(vs_ratio),
             ],
         )

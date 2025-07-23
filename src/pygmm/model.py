@@ -165,7 +165,9 @@ class Model:
 
         # Select the used parameters and check them against the recommended
         # values
-        self._scenario = Scenario(**{p.name: scenario.get(p.name, None) for p in self.PARAMS})
+        self._scenario = Scenario(
+            **{p.name: scenario.get(p.name, None) for p in self.PARAMS}
+        )
         self._check_inputs()
 
     def _check_inputs(self):
@@ -234,7 +236,9 @@ class GroundMotionModel(Model):
             fill_value=np.nan,
         )(np.log(periods))
 
-    def interp_spec_accels(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
+    def interp_spec_accels(
+        self, periods: ArrayLike, kind: Optional[None] = "linear"
+    ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -257,7 +261,9 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
+    def interp_ln_stds(
+        self, periods: ArrayLike, kind: Optional[None] = "linear"
+    ) -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -450,13 +456,15 @@ class NumericParameter(Parameter):
         if value is not None:
             if self.min is not None and value < self.min:
                 warnings.warn(
-                    f"{self.name} ({value}) is less than the recommended limit ({self.min}).",
+                    f"{self.name} ({value}) "
+                    "is less than the recommended limit ({self.min}).",
                     UserWarning,
                     stacklevel=2,
                 )
             elif self.max is not None and self.max < value:
                 warnings.warn(
-                    f"{self.name} ({value}) is greater than the recommended limit ({self.max}).",
+                    f"{self.name} ({value}) "
+                    "is greater than the recommended limit ({self.max}).",
                     UserWarning,
                     stacklevel=2,
                 )
@@ -502,17 +510,21 @@ class CategoricalParameter(Parameter):
         if value not in self.options:
             if self.required:
                 raise ValueError(
-                    f'{self.name} value of "{value}" is not one of the options. The following'
-                    f" options are possible: {', '.join([str(o) for o in self._options])}"
+                    f"{self.name} value of '{value}' "
+                    "is not one of the options. The following options are possible: "
+                    f"{', '.join([str(o) for o in self._options])}"
                 )
             else:
                 warnings.warn(
-                    f'{self.name} value of "{value}" is not one of the options. The following'
-                    f" options are possible: {', '.join([str(o) for o in self._options])}",
+                    f"{self.name} value of '{value}' "
+                    "is not one of the options. The following options are possible: "
+                    f"{', '.join([str(o) for o in self._options])}",
                     UserWarning,
                     stacklevel=2,
                 )
-                warnings.warn(f"Using default value for {self.name}", UserWarning, stacklevel=2)
+                warnings.warn(
+                    f"Using default value for {self.name}", UserWarning, stacklevel=2
+                )
                 value = self.default
 
         return value

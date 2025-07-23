@@ -5,7 +5,6 @@ import gzip
 import json
 import os
 
-import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
@@ -13,7 +12,9 @@ import pygmm
 from pygmm.pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
 
 # Load test data
-fpath = os.path.join(os.path.dirname(__file__), "data", "pinilla_ramos_et_al_2023.json.gz")
+fpath = os.path.join(
+    os.path.dirname(__file__), "data", "pinilla_ramos_et_al_2023.json.gz"
+)
 with gzip.open(fpath, "rt", encoding="utf-8") as fp:
     data = json.load(fp)
 
@@ -28,7 +29,11 @@ def idfn(case):
 
 @pytest.mark.parametrize(
     "case",
-    [case for case in data["test_cases"] if not isinstance(case["inputs"]["mag"], list)],
+    [
+        case
+        for case in data["test_cases"]
+        if not isinstance(case["inputs"]["mag"], list)
+    ],
     ids=idfn,
 )
 def test_model_class(case):
@@ -49,11 +54,15 @@ def test_model_class(case):
         minus_val = model_inst.duration_minus_sigma
     else:
         # Test custom energy threshold
-        duration_val, plus_val, minus_val = model_inst.duration_for_energy(inputs["energy"])
+        duration_val, plus_val, minus_val = model_inst.duration_for_energy(
+            inputs["energy"]
+        )
 
     # Extract expected values
     expected_duration = (
-        expected["duration"][0] if isinstance(expected["duration"], list) else expected["duration"]
+        expected["duration"][0]
+        if isinstance(expected["duration"], list)
+        else expected["duration"]
     )
     expected_plus = (
         expected["duration_plus_sigma"][0]

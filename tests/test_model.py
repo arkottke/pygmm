@@ -23,7 +23,9 @@ def test_scenario():
     assert_allclose(s.dist_jb, s["dist_jb"])
 
 
-@pytest.mark.parametrize("attr", ["pga", "ln_std_pga", "pgv", "ln_std_pgv", "pgd", "ln_std_pgd"])
+@pytest.mark.parametrize(
+    "attr", ["pga", "ln_std_pga", "pgv", "ln_std_pgv", "pgd", "ln_std_pgd"]
+)
 def test_pga(model, attr):
     with pytest.raises(NotImplementedError):
         getattr(model, attr)

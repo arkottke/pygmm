@@ -83,7 +83,9 @@ def calc_cond_mean_spectrum_vector(
     ]
     # Compute standard deviation, Equation (4)
     ln_stds_cmsv = np.r_[
-        np.sqrt(np.diag(mat_covar_11 - (mat_covar_12 @ mat_covar_22_inv @ mat_covar_21))),
+        np.sqrt(
+            np.diag(mat_covar_11 - (mat_covar_12 @ mat_covar_22_inv @ mat_covar_21))
+        ),
         np.zeros(ln_psas_cond.count()),
     ]
     # Sort to the original period indices

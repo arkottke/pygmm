@@ -1,6 +1,6 @@
 """Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model."""
 
-from typing import Optional, Tuple, Union
+from typing import Tuple
 
 import numpy as np
 
@@ -88,8 +88,8 @@ class PinillaRamosEtAl2024(model.Model):
         self._validate_region_event_type()
 
         # Calculate the duration for D5-75 by default
-        self._duration, self._duration_plus_sigma, self._duration_minus_sigma = self._calc_duration(
-            0.75
+        self._duration, self._duration_plus_sigma, self._duration_minus_sigma = (
+            self._calc_duration(0.75)
         )
 
     def _validate_region_event_type(self) -> None:
@@ -101,7 +101,9 @@ class PinillaRamosEtAl2024(model.Model):
             raise ValueError("No model available for interface earthquakes in Taiwan.")
 
         if event_type not in ["interface", "slab"]:
-            raise ValueError(f"event_type must be 'interface' or 'slab', got: {event_type}")
+            raise ValueError(
+                f"event_type must be 'interface' or 'slab', got: {event_type}"
+            )
 
         valid_regions = ["Japan", "New Zealand", "South America", "Taiwan"]
         if region not in valid_regions:
@@ -164,9 +166,9 @@ class PinillaRamosEtAl2024(model.Model):
             if mag < mag_th:
                 source_component = c1 * 10 ** ((mag - m0) * c2_base)
             else:
-                source_component = c1 * 10 ** ((mag_th - m0) * c2_base) + d1 * (mag - mag_th) / (
-                    8.5 - mag_th
-                )
+                source_component = c1 * 10 ** ((mag_th - m0) * c2_base) + d1 * (
+                    mag - mag_th
+                ) / (8.5 - mag_th)
 
         # Site term
         site_component = c4_1 * np.log(vs30 / v3)
@@ -659,12 +661,14 @@ class PinillaRamosEtAl2024(model.Model):
             sigma_575 = self._calc_d575_sigma()
 
             # Get energy-specific coefficients
-            c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2 = self._get_energy_coefficients(
-                energy
+            c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2 = (
+                self._get_energy_coefficients(energy)
             )
 
             # Calculate conditional model components
-            c_ratio = c_median + a0 + m1 * mag + r1 * rrup / 100 + v1 * np.log(vs30 / 3100)
+            c_ratio = (
+                c_median + a0 + m1 * mag + r1 * rrup / 100 + v1 * np.log(vs30 / 3100)
+            )
 
             # Median duration for this energy threshold
             d5x_median = d575_median * c_ratio
@@ -732,7 +736,9 @@ class PinillaRamosEtAl2024(model.Model):
         >>> d5_95_median, d5_95_plus, d5_95_minus = model.duration_for_energy(0.95)
         """
         if energy < 0.10 or energy > 0.95:
-            raise ValueError(f"Energy threshold {energy} is outside valid range [0.10, 0.95]")
+            raise ValueError(
+                f"Energy threshold {energy} is outside valid range [0.10, 0.95]"
+            )
 
         if not np.any(np.isclose(self.ENERGY_THRESHOLDS, energy, atol=1e-3)):
             # Find closest supported threshold
@@ -751,7 +757,12 @@ class PinillaRamosEtAl2024(model.Model):
 
 # Legacy function for backward compatibility
 def duration_model(
-    mag: ArrayLike, rrup: ArrayLike, vs30: ArrayLike, region: str, eq_type: str, energy: float
+    mag: ArrayLike,
+    rrup: ArrayLike,
+    vs30: ArrayLike,
+    region: str,
+    eq_type: str,
+    energy: float,
 ) -> Tuple[ArrayLike, ArrayLike, ArrayLike]:
     """Legacy duration model function for backward compatibility.
 
@@ -784,7 +795,11 @@ def duration_model(
 
     # Create scenario and model
     scenario = Scenario(
-        mag=mag_arr[0], dist_rup=rrup_arr[0], v_s30=vs30_arr[0], event_type=eq_type, region=region
+        mag=mag_arr[0],
+        dist_rup=rrup_arr[0],
+        v_s30=vs30_arr[0],
+        event_type=eq_type,
+        region=region,
     )
     model_inst = PinillaRamosEtAl2024(scenario)
 
@@ -806,7 +821,9 @@ if __name__ == "__main__":
     How to use:
     The model predicts significant duration for subduction earthquakes.
     Supports both interface and intraslab (slab) events.
-    To calculate D5-X, define energy as X as a decimal. For example, for D5-45, use 0.45.
+    To calculate D5-X, define energy as X as a decimal.
+
+    For example, for D5-45, use 0.45.
     """
     from .model import Scenario
 

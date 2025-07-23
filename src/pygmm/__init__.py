@@ -1,7 +1,12 @@
 """pyGMM: Ground motion models implemented in Python."""
 
 import logging
-from importlib.metadata import version
+
+try:
+    from ._version import __version__
+except ImportError:
+    # For development installs
+    __version__ = "unknown"
 
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
@@ -54,7 +59,6 @@ __author__ = "Albert Kottke"
 __copyright__ = "Copyright 2016 Albert Kottke"
 __license__ = "MIT"
 __title__ = "pyGMM"
-__version__ = version("pyGMM")
 
 # Set default logging handler to avoid "No handler found" warnings.
 try:  # Python 2.7+

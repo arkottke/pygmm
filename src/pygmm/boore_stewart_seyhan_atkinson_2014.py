@@ -195,16 +195,18 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
             dc_3 = c.dc_3global
 
         dist = np.sqrt(s.dist_jb**2 + c.h**2)
-        path = (c.c_1 + c.c_2 * (s.mag - c.M_ref)) * np.log(dist / c.R_ref) + (c.c_3 + dc_3) * (
-            dist - c.R_ref
-        )
+        path = (c.c_1 + c.c_2 * (s.mag - c.M_ref)) * np.log(dist / c.R_ref) + (
+            c.c_3 + dc_3
+        ) * (dist - c.R_ref)
 
         if np.isnan(pga_ref):
             # Reference condition. No site effect
             site = 0
         else:
             # Compute the site term
-            site = self.calc_site_term(pga_ref, s.v_s30, s.depth_1_0, s.get("depth_1_0", None))
+            site = self.calc_site_term(
+                pga_ref, s.v_s30, s.depth_1_0, s.get("depth_1_0", None)
+            )
 
         ln_resp = event + path + site
         return ln_resp
@@ -245,7 +247,9 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         f_lin = c.c * np.log(np.minimum(v_s30, c.V_c) / c.V_ref)
 
         # Add the nonlinearity to the site term
-        f_2 = c.f_4 * (np.exp(c.f_5 * (min(v_s30, 760) - 360.0)) - np.exp(c.f_5 * (760.0 - 360.0)))
+        f_2 = c.f_4 * (
+            np.exp(c.f_5 * (min(v_s30, 760) - 360.0)) - np.exp(c.f_5 * (760.0 - 360.0))
+        )
         f_nl = c.f_1 + f_2 * np.log((pga_ref + c.f_3) / c.f_3)
 
         # Add the basin effect to the site term
