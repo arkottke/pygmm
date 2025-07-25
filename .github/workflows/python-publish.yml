@@ -26,10 +26,12 @@ jobs:
         enable-cache: true
     - name: Set up Python
       run: uv python install
+    - name: Install package with dependencies
+      run: uv sync --all-extras
     - name: Validate version for PyPI
       run: |
-        # Get the version that would be built
-        VERSION=$(uv run python -c "import pygmm; print(pygmm.__version__)")
+        # Get the version from git tags/setuptools_scm without importing
+        VERSION=$(uv run python -c "from setuptools_scm import get_version; print(get_version())")
         echo "Detected version: $VERSION"
 
         # Check if version contains local identifier (+ character)
