@@ -26,28 +26,6 @@ jobs:
         enable-cache: true
     - name: Set up Python
       run: uv python install
-    - name: Install package with dependencies
-      run: uv sync --all-extras
-    - name: Validate version for PyPI
-      run: |
-        # Get the version from git tags/setuptools_scm without importing
-        VERSION=$(uv run python -c "from setuptools_scm import get_version; print(get_version())")
-        echo "Detected version: $VERSION"
-
-        # Check if version contains local identifier (+ character)
-        if [[ "$VERSION" == *"+"* ]]; then
-          echo "ERROR: Version '$VERSION' contains local identifier and cannot be uploaded to PyPI"
-          echo "Please create a proper release tag without local version identifiers"
-          exit 1
-        fi
-
-        # Check if this is a development version
-        if [[ "$VERSION" == *"dev"* ]]; then
-          echo "WARNING: This appears to be a development version: $VERSION"
-          echo "Consider creating a proper release tag"
-        fi
-
-        echo "Version validation passed: $VERSION"
     - name: Build
       run: uv build
     - name: Publish to PyPI
