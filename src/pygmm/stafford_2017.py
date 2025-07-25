@@ -4,6 +4,7 @@ import json
 import os
 
 import numpy as np
+import pandas as pd
 
 __author__ = "Mahdi Bahrampouri"
 
@@ -20,12 +21,33 @@ class Stafford2017:
     ABBREV = "PJS17"
 
     # Load the coefficients for the model
-    COEFF = json.load(
-        open(os.path.join(os.path.dirname(__file__), "data", "stafford_2017.json"))
+    COEFF = pd.Series(
+        json.load(
+            open(os.path.join(os.path.dirname(__file__), "data", "stafford_2017.json"))
+        )
     )
 
+    @staticmethod
+    def _sigmoid(f, alpha0, alpha1, alpha2):
+        """
+        Compute sigmoid function used throughout the model.
+
+        Parameters:
+        -----------
+        f : float or array-like
+            Frequency value(s)
+        alpha0, alpha1, alpha2 : float
+            Sigmoid function parameters
+
+        Returns:
+        --------
+        float or array-like
+            Sigmoid function value(s)
+        """
+        return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
+
     @classmethod
-    def compute_corner_frequency(cls, magnitude):
+    def compute_corner_frequency(cls, mag):
         """
         Compute the corner frequency based on magnitude.
 
@@ -34,7 +56,7 @@ class Stafford2017:
         """
         # Approximate implementation based on common scaling relationships
         # A more accurate implementation would use the full YA15 model parameters
-        return 10 ** (cls.COEFF.C1 - cls.COEFF.C2 * magnitude)
+        return 10 ** (cls.COEFF.CF_C1 - cls.COEFF.CF_C2 * mag)
 
     @classmethod
     def compute_gamma_E(cls, f_min, mag):
@@ -48,12 +70,8 @@ class Stafford2017:
         # Normalized frequency
         f_min_norm = f_min / fc
 
-        # Sigmoid function (equation 13)
-        def S(f, alpha0, alpha1, alpha2):
-            return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
-
         # Apply equation 12
-        sigmoid_term = S(
+        sigmoid_term = cls._sigmoid(
             f_min_norm, cls.COEFF.gamma_E1, cls.COEFF.gamma_E2, cls.COEFF.gamma_E3
         )
         log_term = cls.COEFF.gamma_E4 * np.log(f_min_norm / cls.COEFF.gamma_E2)
@@ -66,14 +84,13 @@ class Stafford2017:
         Compute eta_A parameter for within-event correlations nugget effect.
         Uses equation 16 from the paper.
         """
-
-        # Sigmoid function
-        def S(f, alpha0, alpha1, alpha2):
-            return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
-
         # Apply equation 16
-        term1 = S(f_min, cls.COEFF.eta_A0, cls.COEFF.eta_A1, cls.COEFF.eta_A2)
-        term2 = S(f_min, cls.COEFF.eta_A3, cls.COEFF.eta_A4, cls.COEFF.eta_A5)
+        term1 = cls._sigmoid(
+            f_min, cls.COEFF.eta_A0, cls.COEFF.eta_A1, cls.COEFF.eta_A2
+        )
+        term2 = cls._sigmoid(
+            f_min, cls.COEFF.eta_A3, cls.COEFF.eta_A4, cls.COEFF.eta_A5
+        )
 
         return term1 * (1 + term2)
 
@@ -84,9 +101,10 @@ class Stafford2017:
         Uses equation 17 from the paper.
         """
         # Apply equation 17
-        min_f = np.minimum(f_min, 10)
-        S_term = min_f / (min_f + cls.COEFF.gamma_A2 * (1 - min_f / 10))
-        log_term = cls.COEFF.gamma_A3 * np.log(np.maximum(f_min, 10) / 10) ** 2
+        f_ref = cls.COEFF.gamma_A_FREF
+        min_f = np.minimum(f_min, f_ref)
+        S_term = min_f / (min_f + cls.COEFF.gamma_A2 * (1 - min_f / f_ref))
+        log_term = cls.COEFF.gamma_A3 * np.log(np.maximum(f_min, f_ref) / f_ref) ** 2
 
         return cls.COEFF.gamma_A0 + S_term * cls.COEFF.gamma_A1 + log_term
 
@@ -96,10 +114,14 @@ class Stafford2017:
         Compute eta_S parameter for between-site correlations nugget effect.
         Uses equation 18 from the paper.
         """
+        f_ref1 = cls.COEFF.eta_S_FREF1  # 0.25
+        f_ref2 = cls.COEFF.eta_S_FREF2  # 4.0
 
         # Apply equation 18
-        term1 = cls.COEFF.eta_S0 * np.log(np.maximum(np.minimum(f_min, 4), 0.25) / 0.25)
-        term2 = cls.COEFF.eta_S1 * np.log(np.maximum(f_min, 4) / 4)
+        term1 = cls.COEFF.eta_S0 * np.log(
+            np.maximum(np.minimum(f_min, f_ref2), f_ref1) / f_ref1
+        )
+        term2 = cls.COEFF.eta_S1 * np.log(np.maximum(f_min, f_ref2) / f_ref2)
 
         return term1 + term2
 
@@ -109,14 +131,13 @@ class Stafford2017:
         Compute gamma_S parameter for between-site correlations.
         Uses equation 19 from the paper.
         """
-
-        # Sigmoid function
-        def S(f, alpha0, alpha1, alpha2):
-            return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
-
         # Apply equation 19
-        sigmoid1 = S(f_min, cls.COEFF.gamma_S1, cls.COEFF.gamma_S2, cls.COEFF.gamma_S3)
-        sigmoid2 = S(f_min, cls.COEFF.gamma_S4, cls.COEFF.gamma_S5, cls.COEFF.gamma_S6)
+        sigmoid1 = cls._sigmoid(
+            f_min, cls.COEFF.gamma_S1, cls.COEFF.gamma_S2, cls.COEFF.gamma_S3
+        )
+        sigmoid2 = cls._sigmoid(
+            f_min, cls.COEFF.gamma_S4, cls.COEFF.gamma_S5, cls.COEFF.gamma_S6
+        )
 
         return cls.COEFF.gamma_S0 + sigmoid1 + sigmoid2
 
@@ -191,75 +212,78 @@ class Stafford2017:
             return rho_S
 
     @classmethod
-    def compute_variances(cls, frequencies):
+    def compute_variances(cls, freqs):
+        """
+        Compute standard deviations for between-event, between-site,
+        and within-event terms.
+
+        Parameters:
+        -----------
+        freqs : array-like
+            Array of frequencies for which to compute standard deviations.
+
+        Returns:
+        --------
+        tuple of arrays
+            (sigma_E, sigma_S, sigma_A) arrays for each frequency
+        """
+
         def compute_sigma_E(f):
-            sigma_E0 = 0.8757
-            sigma_E1 = -0.3309
-            sigma_E2 = 0.5871
-            sigma_E3 = 5.4264
-            sigma_E4 = 0.5177
-            sigma_E5 = 16.357
-            sigma_E6 = 1.4689
-
-            def S(f, alpha0, alpha1, alpha2):
-                return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
-
-            return (
-                sigma_E0
-                + S(f, sigma_E1, sigma_E2, sigma_E3)
-                + S(f, sigma_E4, sigma_E5, sigma_E6)
+            """Compute between-event standard deviation."""
+            term1 = cls._sigmoid(
+                f, cls.COEFF.sigma_E1, cls.COEFF.sigma_E2, cls.COEFF.sigma_E3
             )
+            term2 = cls._sigmoid(
+                f, cls.COEFF.sigma_E4, cls.COEFF.sigma_E5, cls.COEFF.sigma_E6
+            )
+            return cls.COEFF.sigma_E0 + term1 + term2
 
-        # Function to compute between-site standard deviation
         def compute_sigma_S(f):
-            sigma_S0 = 0.6167
-            sigma_S1 = -0.1495
-            sigma_S2 = 0.7248
-            sigma_S3 = 3.6985
-            sigma_S4 = 0.3640
-            sigma_S5 = 13.457
-            sigma_S6 = 2.2497
+            """Compute between-site standard deviation."""
+            term1 = cls._sigmoid(
+                f, cls.COEFF.sigma_S1, cls.COEFF.sigma_S2, cls.COEFF.sigma_S3
+            )
+            term2 = cls._sigmoid(
+                f, cls.COEFF.sigma_S4, cls.COEFF.sigma_S5, cls.COEFF.sigma_S6
+            )
+            return cls.COEFF.sigma_S0 + term1 + term2
 
-            def S(f, alpha0, alpha1, alpha2):
-                return alpha0 / (1 + np.exp(-alpha2 * np.log(f / alpha1)))
-
+        def compute_sigma_A(f):
+            """Compute within-event standard deviation."""
+            f_ref = cls.COEFF.sigma_A_FREF  # 5.0
             return (
-                sigma_S0
-                + S(f, sigma_S1, sigma_S2, sigma_S3)
-                + S(f, sigma_S4, sigma_S5, sigma_S6)
+                cls.COEFF.sigma_A0
+                + cls.COEFF.sigma_A1 * np.log(np.maximum(f, f_ref) / f_ref) ** 2
             )
 
-        # Function to compute within-event standard deviation
-        def compute_sigma_A(f):
-            sigma_A0 = 0.7260
-            sigma_A1 = 0.0328
-
-            return sigma_A0 + sigma_A1 * np.log(np.maximum(f, 5) / 5) ** 2
-
-        # Compute standard deviations for example frequencies
-        sigma_E = np.array([compute_sigma_E(f) for f in frequencies])
-        sigma_S = np.array([compute_sigma_S(f) for f in frequencies])
-        sigma_A = np.array([compute_sigma_A(f) for f in frequencies])
+        # Compute standard deviations for all frequencies
+        sigma_E = np.array([compute_sigma_E(f) for f in freqs])
+        sigma_S = np.array([compute_sigma_S(f) for f in freqs])
+        sigma_A = np.array([compute_sigma_A(f) for f in freqs])
 
         return sigma_E, sigma_S, sigma_A
 
     @classmethod
-    def cov(cls, frequencies, sigma_E=None, sigma_S=None, sigma_A=None, magnitude=6.0):
+    def cov(cls, freqs, sigma_E=None, sigma_S=None, sigma_A=None, mag=6.0):
         """
         Compute the covariance matrix for Fourier spectral ordinates.
 
         Parameters:
         -----------
-        frequencies : array-like
+        freqs : array-like
             Array of frequencies for which to compute the covariance matrix.
-        sigma_E : array-like
+        sigma_E : array-like, optional
             Between-event standard deviations for each frequency.
-        sigma_S : array-like
+            If None, will be computed using model equations.
+        sigma_S : array-like, optional
             Between-site standard deviations for each frequency.
-        sigma_A : array-like
+            If None, will be computed using model equations.
+        sigma_A : array-like, optional
             Within-event standard deviations for each frequency.
-        magnitude : float, optional
+            If None, will be computed using model equations.
+        mag: float, optional
             Earthquake magnitude (used for between-event correlations).
+            Default is 6.0.
 
         Returns:
         --------
@@ -268,9 +292,10 @@ class Stafford2017:
         """
         if sigma_E is None or sigma_S is None or sigma_A is None:
             # Compute standard deviations if not provided
-            sigma_E, sigma_S, sigma_A = cls.compute_variances(frequencies)
+            sigma_E, sigma_S, sigma_A = cls.compute_variances(freqs)
+
         # Check input dimensions
-        n = len(frequencies)
+        n = len(freqs)
         if len(sigma_E) != n or len(sigma_S) != n or len(sigma_A) != n:
             raise ValueError("All input arrays must have the same length.")
 
@@ -281,17 +306,15 @@ class Stafford2017:
         for i in range(n):
             for j in range(n):
                 # Between-event contribution
-                rho_E = cls.between_event_correlation(
-                    frequencies[i], frequencies[j], magnitude
-                )
+                rho_E = cls.between_event_correlation(freqs[i], freqs[j], mag)
                 cov_E = rho_E * sigma_E[i] * sigma_E[j]
 
                 # Between-site contribution
-                rho_S = cls.between_site_correlation(frequencies[i], frequencies[j])
+                rho_S = cls.between_site_correlation(freqs[i], freqs[j])
                 cov_S = rho_S * sigma_S[i] * sigma_S[j]
 
                 # Within-event contribution
-                rho_A = cls.within_event_correlation(frequencies[i], frequencies[j])
+                rho_A = cls.within_event_correlation(freqs[i], freqs[j])
                 cov_A = rho_A * sigma_A[i] * sigma_A[j]
 
                 # Total covariance (equation 4)
@@ -300,29 +323,33 @@ class Stafford2017:
         return cov_matrix
 
     @classmethod
-    def cor(cls, frequencies, sigma_E=None, sigma_S=None, sigma_A=None, magnitude=6.0):
+    def cor(cls, freqs, sigma_E=None, sigma_S=None, sigma_A=None, mag=6.0):
         """
         Compute the correlation matrix for Fourier spectral ordinates.
 
         Parameters:
         -----------
-        frequencies : array-like
+        freqs : array-like
             Array of frequencies for which to compute the correlation matrix.
-        sigma_E : array-like
+        sigma_E : array-like, optional
             Between-event standard deviations for each frequency.
-        sigma_S : array-like
+            If None, will be computed using model equations.
+        sigma_S : array-like, optional
             Between-site standard deviations for each frequency.
-        sigma_A : array-like
+            If None, will be computed using model equations.
+        sigma_A : array-like, optional
             Within-event standard deviations for each frequency.
-        magnitude : float, optional
+            If None, will be computed using model equations.
+        mag: float, optional
             Earthquake magnitude (used for between-event correlations).
+            Default is 6.0.
 
         Returns:
         --------
         cor_matrix : ndarray
             The correlation matrix for the Fourier spectral ordinates.
         """
-        cov = cls.cov(frequencies, sigma_E, sigma_S, sigma_A, magnitude)
+        cov = cls.cov(freqs, sigma_E, sigma_S, sigma_A, mag)
         stds = np.sqrt(np.diag(cov))
         cor = cov / np.outer(stds, stds)
         return cor
