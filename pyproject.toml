@@ -36,6 +36,7 @@ docs = [
     # Core dependencies needed for docs
     "numpy",
     "scipy",
+    "pandas",
 ]
 style = [
     "black[colorama,jupyter]",
