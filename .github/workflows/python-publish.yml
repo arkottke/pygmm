@@ -5,7 +5,7 @@ name: Upload Python Package
 
 on:
   release:
-    types: [created]
+    types: [published]  # Changed from 'created' to 'published'
 
 jobs:
   deploy:
@@ -18,12 +18,34 @@ jobs:
       id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
     steps:
     - uses: actions/checkout@v4.2.2
+      with:
+        fetch-depth: 0  # Fetch full history for proper version detection
     - name: Set up uv
       uses: astral-sh/setup-uv@v4
       with:
         enable-cache: true
     - name: Set up Python
       run: uv python install
+    - name: Validate version for PyPI
+      run: |
+        # Get the version that would be built
+        VERSION=$(uv run python -c "import pygmm; print(pygmm.__version__)")
+        echo "Detected version: $VERSION"
+
+        # Check if version contains local identifier (+ character)
+        if [[ "$VERSION" == *"+"* ]]; then
+          echo "ERROR: Version '$VERSION' contains local identifier and cannot be uploaded to PyPI"
+          echo "Please create a proper release tag without local version identifiers"
+          exit 1
+        fi
+
+        # Check if this is a development version
+        if [[ "$VERSION" == *"dev"* ]]; then
+          echo "WARNING: This appears to be a development version: $VERSION"
+          echo "Consider creating a proper release tag"
+        fi
+
+        echo "Version validation passed: $VERSION"
     - name: Build
       run: uv build
     - name: Publish to PyPI
