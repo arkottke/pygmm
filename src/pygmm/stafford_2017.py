@@ -299,6 +299,7 @@ class Stafford2017:
 
         return cov_matrix
 
+    @classmethod
     def cor(cls, frequencies, sigma_E=None, sigma_S=None, sigma_A=None, magnitude=6.0):
         """
         Compute the correlation matrix for Fourier spectral ordinates.

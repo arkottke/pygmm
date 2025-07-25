@@ -508,24 +508,17 @@ class CategoricalParameter(Parameter):
         """Check the value against the limits."""
         value = super().check(value)
         if value not in self.options:
-            if self.required:
-                raise ValueError(
-                    f"{self.name} value of '{value}' "
-                    "is not one of the options. The following options are possible: "
-                    f"{', '.join([str(o) for o in self._options])}"
-                )
-            else:
-                warnings.warn(
-                    f"{self.name} value of '{value}' "
-                    "is not one of the options. The following options are possible: "
-                    f"{', '.join([str(o) for o in self._options])}",
-                    UserWarning,
-                    stacklevel=2,
-                )
-                warnings.warn(
-                    f"Using default value for {self.name}", UserWarning, stacklevel=2
-                )
-                value = self.default
+            warnings.warn(
+                f"{self.name} value of '{value}' "
+                "is not one of the options. The following options are possible: "
+                f"{', '.join([str(o) for o in self._options])}",
+                UserWarning,
+                stacklevel=2,
+            )
+            warnings.warn(
+                f"Using default value for {self.name}", UserWarning, stacklevel=2
+            )
+            value = self.default
 
         return value
 
