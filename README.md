@@ -1,5 +1,6 @@
 # pyGMM
 
+[![Docs](https://readthedocs.org/projects/pygmm/badge/?version=latest)](https://pygmm.readthedocs.io/en/latest/?badge=latest)
 [![PyPi Cheese
 Shop](https://img.shields.io/pypi/v/pygmm.svg)](https://pypi.org/project/pygmm/)
 [![Build
