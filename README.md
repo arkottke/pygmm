@@ -1,8 +1,8 @@
 # pyGMM
 
-[![Docs](https://readthedocs.org/projects/pygmm/badge/?version=latest)](https://pygmm.readthedocs.io/)
 [![PyPi Cheese
 Shop](https://img.shields.io/pypi/v/pygmm.svg)](https://pypi.org/project/pygmm/)
+[![Documentation](https://readthedocs.org/projects/pygmm/badge/?version=latest)](https://pygmm.readthedocs.io/?badge=latest)
 [![Build
 Status](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml/badge.svg)](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml)
 [![Code
