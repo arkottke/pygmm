@@ -2,6 +2,11 @@
 title: History
 ---
 
+# 0.8.0 (2025-07-24)
+- Added: Pinilla-Ramos et al. (2023) model for duration of crustal earthquakes
+- Added: Pinilla-Ramos et al. (2024) model for duration of subduction earthquakes
+- Added: Stafford (2017) model for FAS correlation
+
 # 0.7.3 (2025-03-12)
 -   Fixed Bayless and Abrahamson (2018) correlation model.
 
