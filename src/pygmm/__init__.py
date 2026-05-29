@@ -26,6 +26,7 @@ from .derras_bard_cotton_2014 import DerrasBardCotton2014
 from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
 from .idriss_2014 import Idriss2014
 from .kempton_stewart_2006 import KemptonStewart2006
+from .macedo_abrahamson_liu_2021 import MacedoAbrahamsonLiu2021
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .stafford_2017 import Stafford2017
@@ -49,6 +50,7 @@ __all__ = [
     "DerrasBardCotton2014",
     "GulerceAbrahamson2011",
     "KemptonStewart2006",
+    "MacedoAbrahamsonLiu2021",
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
     "TavakoliPezeshk05",

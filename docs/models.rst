@@ -228,6 +228,7 @@ Detailed Model List
    gulerce_abrahamson_2011.GulerceAbrahamson2011
    hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
    idriss_2014.Idriss2014
+   macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
    pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
    tavakoli_pezeshk_2005.TavakoliPezeshk05
 
@@ -368,6 +369,7 @@ following models have been implemented.
     ~campbell_2003.Campbell2003
     ~campbell_bozorgnia_2014.CampbellBozorgnia2014
     ~chiou_youngs_2014.ChiouYoungs2014
+    ~macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
     ~derras_bard_cotton_2014.DerrasBardCotton2014
     ~hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
     ~idriss_2014.Idriss2014

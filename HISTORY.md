@@ -2,6 +2,9 @@
 title: History
 ---
 
+# 0.9.0 (unreleased)
+- Added: Macedo, Abrahamson, & Liu (2021) conditional and scenario-based CAV models for shallow crustal settings
+
 # 0.8.0 (2025-07-24)
 - Added: Pinilla-Ramos et al. (2023) model for duration of crustal earthquakes
 - Added: Pinilla-Ramos et al. (2024) model for duration of subduction earthquakes
