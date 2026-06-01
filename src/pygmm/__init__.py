@@ -10,6 +10,7 @@ except ImportError:
 
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
+from .abrahamson_shi_yang_2016 import AbrahamsonShiYang2016
 from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .afshari_stewart_2016 import AfshariStewart2016
@@ -35,6 +36,7 @@ from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 __all__ = [
     "Scenario",
     "AbrahamsonBhasin2020",
+    "AbrahamsonShiYang2016",
     "AbrahamsonSilvaKamai2014",
     "AbrahamsonGregorAddo2016",
     "AfshariStewart2016",
