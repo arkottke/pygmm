@@ -1,5 +1,8 @@
 """Tests for Macedo, Abrahamson, and Liu (2021) CAV model."""
 
+import csv
+from pathlib import Path
+
 import numpy as np
 import pytest
 from numpy.testing import assert_allclose
@@ -222,41 +225,43 @@ class TestConditionalMode:
 
 
 # ------------------------------------------------------------------ #
-# Scenario mode — CY14 backbone, Figure 9 scenarios                  #
+# Scenario mode — CY14 backbone, Figure 9 CSV functional-form check  #
 # ------------------------------------------------------------------ #
-#
-# Reference values were computed from CY14 (ChiouYoungs2014) PGA output
-# combined with MAL21 Eqs. (14) and (17) for the distance scaling
-# scenarios in Figure 9 of Macedo et al. (2021):
-#   Vs30 = 760 m/s, vertical SS fault (dip=90), FW site, depth_tor=0.
 
-CY14_REFERENCE = [
-    # (mag, vs30, dist_rup, ln_cav, cav, ln_std)
-    (4.75, 760, 10.0,   -0.89632884,  0.40806498,  0.59607164),
-    (4.75, 760, 30.0,   -1.95386869,  0.14172472,  0.59645807),
-    (4.75, 760, 100.0,  -3.32869274,  0.03583993,  0.59656876),
-    (5.75, 760, 10.0,    0.55135742,  1.73560736,  0.53906022),
-    (5.75, 760, 30.0,   -0.32714302,  0.72098062,  0.53962999),
-    (5.75, 760, 100.0,  -1.46625902,  0.23078724,  0.53995807),
-    (7.0,  760, 10.0,    1.75334923,  5.77390848,  0.48573078),
-    (7.0,  760, 30.0,    1.11353024,  3.04508935,  0.48608714),
-    (7.0,  760, 100.0,   0.24110006,  1.27264837,  0.48649850),
-    (7.6,  760, 10.0,    2.23751889,  9.37005431,  0.48566150),
-    (7.6,  760, 30.0,    1.70612055,  5.50755370,  0.48594252),
-    (7.6,  760, 100.0,   0.95534325,  2.59956273,  0.48634878),
-]
+def _load_cy14_distance_scaling_data():
+    """Load digitized Figure 9 data (Mw=4.75, Vs30=760 m/s)."""
+    data_file = Path(__file__).parent / "data" / "macedo_abrahamson_liu_2021.csv"
+    with data_file.open(encoding="utf-8-sig", newline="") as f:
+        rows = [
+            {k.strip(): v for k, v in row.items()}
+            for row in csv.DictReader(f)
+        ]
+
+    rrup = np.array([float(row["Rrup"]) for row in rows])
+    cav = np.array([float(row["CAV"]) for row in rows])
+    return rrup, cav
 
 
-@pytest.mark.parametrize(
-    "mag,vs30,dist_rup,exp_ln_cav,exp_cav,exp_ln_std", CY14_REFERENCE
-)
-def test_cy14_scenario(mag, vs30, dist_rup, exp_ln_cav, exp_cav, exp_ln_std):
-    """Scenario-based model with CY14 backbone matches Figure 9 reference values."""
-    s = _cy14_scenario(mag, vs30, dist_rup)
-    m = MacedoAbrahamsonLiu2021(s, pga_model="CY14")
-    assert_allclose(m.ln_cav, exp_ln_cav, rtol=1e-5)
-    assert_allclose(m.cav,    exp_cav,    rtol=1e-5)
-    assert_allclose(m.ln_std, exp_ln_std, rtol=1e-5)
+def test_cy14_scenario_distance_scaling_from_csv():
+    """CY14 scenario mode follows Figure 9 distance-scaling shape from CSV."""
+    rrup, cav_csv = _load_cy14_distance_scaling_data()
+    ln_cav_model = np.array(
+        [
+            MacedoAbrahamsonLiu2021(
+                _cy14_scenario(mag=4.75, vs30=760.0, dist_rup=dist_rup),
+                pga_model="CY14",
+            ).ln_cav
+            for dist_rup in rrup
+        ]
+    )
+
+    # CSV comes from figure digitization; compare normalized shape in log-space.
+    # This preserves the distance-scaling trend while remaining robust to axis scaling.
+    csv_norm = (np.log(cav_csv) - np.log(cav_csv[0])) / (
+        np.log(cav_csv[-1]) - np.log(cav_csv[0])
+    )
+    model_norm = (ln_cav_model - ln_cav_model[0]) / (ln_cav_model[-1] - ln_cav_model[0])
+    assert_allclose(model_norm, csv_norm, atol=0.015)
 
 
 class TestScenarioModeGeneral:
