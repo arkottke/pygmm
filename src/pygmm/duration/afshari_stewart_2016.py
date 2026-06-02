@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from . import model
+from .. import model
 
 
 class AfshariStewart2016(model.Model):

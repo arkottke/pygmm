@@ -5,9 +5,9 @@ from typing import Optional
 
 import numpy as np
 
-from . import model
+from .. import model
 from .chiou_youngs_2014 import ChiouYoungs2014 as CY14
-from .types import ArrayLike
+from ..types import ArrayLike
 
 __author__ = "Albert Kottke"
 

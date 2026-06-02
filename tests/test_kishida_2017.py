@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from pygmm.kishida_2017 import calc_cond_mean_spectrum_vector
+from pygmm.correlation.kishida_2017 import calc_cond_mean_spectrum_vector
 
 fpath = os.path.join(os.path.dirname(__file__), "data", "kishida_2017.json")
 with open(fpath) as fp:

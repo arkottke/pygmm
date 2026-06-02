@@ -7,11 +7,11 @@ import pathlib
 import numpy as np
 from scipy.interpolate import NearestNDInterpolator
 
-from . import model
+from .. import model
 
 __author__ = "Albert Kottke"
 
-fname_data = pathlib.Path(__file__).parent.joinpath("data", "hermkes_kuehn_riggelsen_2014.npz")
+fname_data = pathlib.Path(__file__).parent.parent.joinpath("data", "hermkes_kuehn_riggelsen_2014.npz")
 
 if not fname_data.exists():
     # Download the model data if not found.

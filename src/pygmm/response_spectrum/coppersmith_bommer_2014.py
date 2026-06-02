@@ -3,7 +3,7 @@ Wide Hazard."""
 
 import numpy as np
 
-from . import model
+from .. import model
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
 
 __author__ = "Albert Kottke"

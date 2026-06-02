@@ -4,7 +4,7 @@ from typing import Optional, Union
 
 import numpy as np
 
-from . import model
+from .. import model
 
 # Based on code from Artie Rodgers
 __author__ = "Albert Kottke"

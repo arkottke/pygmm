@@ -1,7 +1,7 @@
 """Stafford (2017, :cite:`safford2017`) correlation."""
 
 import numpy as np
-from . import model
+from .. import model
 import json
 import os
 
@@ -20,7 +20,7 @@ class Stafford2017:
 
     # Load the coefficients for the model
     COEFF = json.load(
-        open(os.path.join(os.path.dirname(__file__), "data", "stafford_2017.json"))
+        open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "stafford_2017.json"))
     )    
     @classmethod
     def compute_corner_frequency(cls, magnitude):

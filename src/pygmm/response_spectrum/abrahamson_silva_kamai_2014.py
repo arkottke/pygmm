@@ -3,8 +3,8 @@
 import numpy as np
 from scipy.interpolate import interp1d
 
-from . import model
-from .types import ArrayLike
+from .. import model
+from ..types import ArrayLike
 
 __author__ = "Albert Kottke"
 

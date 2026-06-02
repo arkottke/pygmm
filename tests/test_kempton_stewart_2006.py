@@ -1,5 +1,5 @@
 from pygmm import Scenario
-from pygmm.kempton_stewart_2006 import KemptonStewart2006
+from pygmm.duration.kempton_stewart_2006 import KemptonStewart2006
 
 
 def test_run():

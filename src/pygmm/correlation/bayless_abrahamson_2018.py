@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 import numpy.typing as npt
 
-from . import model
+from .. import model
 
 __author__ = "Albert Kottke"
 

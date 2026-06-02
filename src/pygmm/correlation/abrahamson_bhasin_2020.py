@@ -4,7 +4,7 @@ from typing import Optional
 
 import numpy as np
 
-from . import model
+from .. import model
 
 __author__ = "Albert Kottke"
 

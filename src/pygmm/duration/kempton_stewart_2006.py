@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from . import model
+from .. import model
 
 __author__ = ""
 

@@ -5,7 +5,7 @@ import os
 
 import numpy as np
 
-from . import model
+from .. import model
 
 __author__ = "Albert Kottke"
 
@@ -25,7 +25,7 @@ class DerrasBardCotton2014(model.GroundMotionModel):
 
     # Load the coefficients for the model
     COEFF = json.load(
-        open(os.path.join(os.path.dirname(__file__), "data", "derras_bard_cotton_2014.json"))
+        open(os.path.join(os.path.dirname(os.path.dirname(__file__)), "data", "derras_bard_cotton_2014.json"))
     )
     GRAVITY = 9.80665
     PERIODS = np.array(COEFF["period"])

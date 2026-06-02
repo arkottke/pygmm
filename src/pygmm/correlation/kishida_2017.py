@@ -3,7 +3,7 @@
 import numpy as np
 
 from .baker_jayaram_2008 import calc_correls
-from .types import ArrayLike
+from ..types import ArrayLike
 
 
 def calc_cond_mean_spectrum_vector(
