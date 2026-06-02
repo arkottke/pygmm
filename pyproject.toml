@@ -10,7 +10,7 @@ description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.8"
-dependencies = ["matplotlib", "numpy", "scipy"]
+dependencies = ["matplotlib", "numpy", "pint", "scipy"]
 
 [project.urls]
 Homepage = "https://github.com/arkottke/pygmm"

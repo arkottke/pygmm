@@ -117,6 +117,23 @@ class Scenario(collections.UserDict):
         "v_s30",
         "vs_source",
         "width",
+        # Soil-curve model parameters
+        "coef_unif",
+        "diam_50",
+        "diam_mean",
+        "fines_cont",
+        "freq",
+        "lab_consol_ratio",
+        "num_cycles",
+        "ocr",
+        "organic_content",
+        "plas_index",
+        "stress_mean",
+        "void_ratio",
+        "water_cont",
+        # CPT / fault-displacement parameters
+        "slip_rate",
+        "water_table_depth",
     ]
 
     def __init__(self, **kwds):
@@ -299,6 +316,16 @@ class GroundMotionModel(Model):
     def spec_accels(self) -> np.ndarray:
         """Pseudo-spectral accelerations computed by the model (g)."""
         return self._resp(self.INDICES_PSA)
+
+    def response_spectrum(self) -> "contracts.ResponseSpectrum":
+        """Return the computed PSA as a :class:`~pygmm.contracts.ResponseSpectrum`."""
+        from . import contracts
+
+        return contracts.ResponseSpectrum(
+            periods=self.periods,
+            spec_accels=self.spec_accels,
+            damping=0.05,
+        )
 
     @property
     def ln_stds(self) -> np.ndarray:

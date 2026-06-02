@@ -25,6 +25,15 @@ from .model import Scenario
 from .response_spectrum.pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .response_spectrum.tavakoli_pezeshk_2005 import TavakoliPezeshk05
 from .correlation.stafford_2017 import Stafford2017
+from .soil_curves import (
+    AlemuEtAlSoilType,
+    DarendeliSoilType,
+    KishidaSoilType,
+    MenqSoilType,
+    RollinsEtAlSoilType,
+    WangSoilType,
+)
+from .velocity_profile import kea16_profile
 
 __all__ = [
     "Scenario",
@@ -47,7 +56,14 @@ __all__ = [
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
     "TavakoliPezeshk05",
-    "Stafford2017"
+    "Stafford2017",
+    "AlemuEtAlSoilType",
+    "DarendeliSoilType",
+    "KishidaSoilType",
+    "MenqSoilType",
+    "RollinsEtAlSoilType",
+    "WangSoilType",
+    "kea16_profile",
 ]
 
 __author__ = "Albert Kottke"

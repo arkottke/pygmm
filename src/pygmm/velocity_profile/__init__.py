@@ -1,7 +1,5 @@
-"""Shear-wave velocity profile models.
+"""Shear-wave velocity profile models."""
 
-TODO: Populate from pystrata in Phase 4 (kea16_profile / Kamai-Abrahamson-
-Silva profile generator).
-"""
+from .kamai_2016 import kea16_profile
 
-__all__: list[str] = []
+__all__ = ["kea16_profile"]

@@ -2,6 +2,27 @@
 title: History
 ---
 
+# 2.0.0 (unreleased)
+
+**Breaking change**: import paths for all models have moved into category subpackages.
+Top-level `import pygmm; pygmm.ModelName` imports are preserved for backward compatibility.
+
+-   Added: Categorized subpackage structure — `response_spectrum`, `fourier_spectrum`,
+    `duration`, `correlation`, `soil_curves`, `velocity_profile`, `cpt` (scaffold),
+    `fault_displacement` (scaffold).
+-   Added: `pygmm.contracts` — frozen dataclasses (`ResponseSpectrum`, `FourierSpectrum`,
+    `Duration`, `NonlinearSoilCurves`, `VelocityProfile`, …) as duck-typed data contracts.
+-   Added: `soil_curves` subpackage — `DarendeliSoilType`, `MenqSoilType`, `WangSoilType`,
+    `AlemuEtAlSoilType`, `RollinsEtAlSoilType`, `KishidaSoilType` (ported from pystrata).
+    Each exposes `.curves() -> NonlinearSoilCurves`.
+-   Added: `velocity_profile` subpackage — `kea16_profile()` returning `VelocityProfile`
+    (ported from pystrata).
+-   Added: `fourier_spectrum.SourceTheoryModel` and `fourier_spectrum.StaffordEtAl2022`
+    (FAS-only ports from pyrvt).
+-   Added: `GroundMotionModel.response_spectrum()` returning `ResponseSpectrum`.
+-   Changed: `Model.__init__` accepts `**kwargs` directly (no `Scenario` required).
+-   Changed: `Scenario.KNOWN_KEYS` extended with soil-curve and CPT parameters.
+
 # 0.7.1 (2025-03-05)
 
 -   Added compatibility with numpy 2.0
