@@ -23,7 +23,7 @@ def test_calc_cond_mean_spectrum_vector(case, param):
     model = data["model"]
     ln_psas_cond = np.ma.array(
         np.log(model["psas_target"]),
-        mask=(~np.in1d(model["periods"], case["periods_cond"])),
+        mask=(~np.isin(model["periods"], case["periods_cond"])),
     )
     results = calc_cond_mean_spectrum_vector(
         model["periods"], np.log(model["psas"]), model["ln_stds"], ln_psas_cond
