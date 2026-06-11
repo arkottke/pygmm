@@ -17,7 +17,9 @@ fname = os.path.join(os.path.dirname(__file__), "data", "asb14_tests.json.gz")
 with gzip.open(fname, "rt") as fp:
     tests = json.load(fp)
 
-testdata = [(dist, t["params"], results) for t in tests for dist, results in t["results"]]
+testdata = [
+    (dist, t["params"], results) for t in tests for dist, results in t["results"]
+]
 
 
 def create_model(params, dist):

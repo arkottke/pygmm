@@ -108,7 +108,9 @@ def get_results(wb, abbrev):
 
 
 wb_fname = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), "NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected.xlsm")
+    os.path.join(
+        os.path.dirname(__file__), "NGAW2_GMPE_Spreadsheets_v5.7_041415_Protected.xlsm"
+    )
 )
 
 # Parameters

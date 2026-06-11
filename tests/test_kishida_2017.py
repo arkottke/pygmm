@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 from numpy.testing import assert_allclose
 
-from pygmm.correlation.kishida_2017 import calc_cond_mean_spectrum_vector
+from pygmm.kishida_2017 import calc_cond_mean_spectrum_vector
 
 fpath = os.path.join(os.path.dirname(__file__), "data", "kishida_2017.json")
 with open(fpath) as fp:
@@ -23,7 +23,7 @@ def test_calc_cond_mean_spectrum_vector(case, param):
     model = data["model"]
     ln_psas_cond = np.ma.array(
         np.log(model["psas_target"]),
-        mask=(~np.isin(model["periods"], case["periods_cond"])),
+        mask=(~np.in1d(model["periods"], case["periods_cond"])),
     )
     results = calc_cond_mean_spectrum_vector(
         model["periods"], np.log(model["psas"]), model["ln_stds"], ln_psas_cond

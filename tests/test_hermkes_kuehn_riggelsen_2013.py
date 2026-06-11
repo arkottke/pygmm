@@ -2,7 +2,7 @@
 import numpy as np
 import pytest
 
-from pygmm.response_spectrum.hermkes_kuehn_riggelsen_2014 import HermkesKuehnRiggelsen2014 as HKR13
+from pygmm.hermkes_kuehn_riggelsen_2014 import HermkesKuehnRiggelsen2014 as HKR13
 from pygmm.model import Scenario
 
 # Relative tolerance for all tests

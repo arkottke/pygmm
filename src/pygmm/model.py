@@ -1,8 +1,8 @@
 """Basic models."""
 
 import collections
-import logging
 import os
+import warnings
 from typing import List, Optional
 
 import numpy as np
@@ -117,23 +117,6 @@ class Scenario(collections.UserDict):
         "v_s30",
         "vs_source",
         "width",
-        # Soil-curve model parameters
-        "coef_unif",
-        "diam_50",
-        "diam_mean",
-        "fines_cont",
-        "freq",
-        "lab_consol_ratio",
-        "num_cycles",
-        "ocr",
-        "organic_content",
-        "plas_index",
-        "stress_mean",
-        "void_ratio",
-        "water_cont",
-        # CPT / fault-displacement parameters
-        "slip_rate",
-        "water_table_depth",
     ]
 
     def __init__(self, **kwds):
@@ -182,7 +165,9 @@ class Model:
 
         # Select the used parameters and check them against the recommended
         # values
-        self._scenario = Scenario(**{p.name: scenario.get(p.name, None) for p in self.PARAMS})
+        self._scenario = Scenario(
+            **{p.name: scenario.get(p.name, None) for p in self.PARAMS}
+        )
         self._check_inputs()
 
     def _check_inputs(self):
@@ -251,7 +236,9 @@ class GroundMotionModel(Model):
             fill_value=np.nan,
         )(np.log(periods))
 
-    def interp_spec_accels(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
+    def interp_spec_accels(
+        self, periods: ArrayLike, kind: Optional[None] = "linear"
+    ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
         Interpolation of the spectral acceleration is done in natural log
@@ -274,7 +261,9 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(self, periods: ArrayLike, kind: Optional[None] = "linear") -> np.ndarray:
+    def interp_ln_stds(
+        self, periods: ArrayLike, kind: Optional[None] = "linear"
+    ) -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -316,16 +305,6 @@ class GroundMotionModel(Model):
     def spec_accels(self) -> np.ndarray:
         """Pseudo-spectral accelerations computed by the model (g)."""
         return self._resp(self.INDICES_PSA)
-
-    def response_spectrum(self) -> "contracts.ResponseSpectrum":
-        """Return the computed PSA as a :class:`~pygmm.contracts.ResponseSpectrum`."""
-        from . import contracts
-
-        return contracts.ResponseSpectrum(
-            periods=self.periods,
-            spec_accels=self.spec_accels,
-            damping=0.05,
-        )
 
     @property
     def ln_stds(self) -> np.ndarray:
@@ -476,18 +455,18 @@ class NumericParameter(Parameter):
         value = super().check(value)
         if value is not None:
             if self.min is not None and value < self.min:
-                logging.warning(
-                    "%s (%g) is less than the recommended limit (%g).",
-                    self.name,
-                    value,
-                    self.min,
+                warnings.warn(
+                    f"{self.name} ({value}) "
+                    "is less than the recommended limit ({self.min}).",
+                    UserWarning,
+                    stacklevel=2,
                 )
             elif self.max is not None and self.max < value:
-                logging.warning(
-                    "%s (%g) is greater than the recommended limit (%g).",
-                    self.name,
-                    value,
-                    self.max,
+                warnings.warn(
+                    f"{self.name} ({value}) "
+                    "is greater than the recommended limit ({self.max}).",
+                    UserWarning,
+                    stacklevel=2,
                 )
 
         return value
@@ -529,18 +508,17 @@ class CategoricalParameter(Parameter):
         """Check the value against the limits."""
         value = super().check(value)
         if value not in self.options:
-            alert = logging.error if self.required else logging.warning
-            alert(
-                '%s value of "%s" is not one of the options. The following'
-                " options are possible: %s",
-                self.name,
-                value,
-                ", ".join([str(o) for o in self._options]),
+            warnings.warn(
+                f"{self.name} value of '{value}' "
+                "is not one of the options. The following options are possible: "
+                f"{', '.join([str(o) for o in self._options])}",
+                UserWarning,
+                stacklevel=2,
             )
-
-            if not self.required:
-                logging.warning("Using default value for %s", self.name)
-                value = self.default
+            warnings.warn(
+                f"Using default value for {self.name}", UserWarning, stacklevel=2
+            )
+            value = self.default
 
         return value
 

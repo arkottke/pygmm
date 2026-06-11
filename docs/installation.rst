@@ -1,55 +1,219 @@
-.. highlight:: shell
-
 ============
 Installation
 ============
 
-Prior to using `pygmm`, Python and the following dependencies need to be
-installed:
+pyGMM supports Python 3.10 and later versions. We recommend using the latest stable version of Python.
 
-* matplotlib -- used for plotting
+.. grid:: 1 1 2 2
+    :gutter: 3
 
-* numpy -- fast vector operations
+    .. grid-item-card:: 🚀 Quick Install
+        :class-title: card-title-center
 
-`pygmm` supports both Python 2.7 and Python 3.
+        For most users, install with pip:
 
-Linux
------
+        .. code-block:: bash
 
-Install `pygmm` dependencies is best accomplished with a package manager. On Arch
-Linux this can be accomplished with::
+           pip install pygmm
 
-    pacman -S python-numpy python-matplotlib pip
+    .. grid-item-card:: 🔧 Development Install
+        :class-title: card-title-center
 
-Windows and OS-X
-----------------
+        For contributors and developers:
 
-On Windows, installing matplotlib and numpy can be simplified by using
-Miniconda3. Miniconda3 has installers for `Windows 32-bit`_, `Windows 64-bit`_,
-and `OS-X`_.
+        .. code-block:: bash
 
-.. _Windows 32-bit: http://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86.exe
-.. _Windows 64-bit: http://repo.continuum.io/miniconda/Miniconda3-latest-Windows-x86_64.exe
-.. _OS-X: http://repo.continuum.io/miniconda/Miniconda3-latest-MacOSX-x86_64.sh
+           git clone https://github.com/arkottke/pygmm.git
+           cd pygmm
+           pip install -e .
 
-After the installer is finished, install the required dependencies by opening a
-terminal. On Windows, this is best accomplished with ``Windows Key + r``, enter
-``cmd``. Next enter the following command::
+Requirements
+============
 
-  conda install --yes pip setuptools numpy matplotlib
+pyGMM requires the following packages:
 
-On Windows, the text can copied and pasted if *Quick Edit* mode is enabled. To
-enable this feature, right click on the icon in the upper left portion of the
-window, and select *Properties*, and then check the *Quick Edit Mode* check box
-within the *Edit Options* group. Copy the text, and then paste it by click the
-right mouse button.
+.. grid:: 1 2 3 3
+    :gutter: 2
 
+    .. grid-item::
+        :columns: 12 6 4 4
 
-Installing `pygmm`
-------------------
+        **Core Dependencies**
 
-After the dependencies have been installed, install or upgrade `pygmm` using pip::
+        - Python 3.10+
+        - NumPy
+        - SciPy
+        - Matplotlib
 
-  pip install --upgrade pygmm
+    .. grid-item::
+        :columns: 12 6 4 4
 
-This command can be re-run later to upgrade `pygmm` to the latest version.
+        **Optional Dependencies**
+
+        - pandas (for data analysis)
+        - Jupyter (for notebooks)
+
+    .. grid-item::
+        :columns: 12 12 4 4
+
+        **Development Dependencies**
+
+        - pytest (testing)
+        - sphinx (documentation)
+        - ruff (linting)
+
+Installation Methods
+====================
+
+.. tab-set::
+
+    .. tab-item:: pip (Recommended)
+
+        Install the latest stable release from PyPI:
+
+        .. code-block:: bash
+
+           pip install pygmm
+
+        To upgrade to the latest version:
+
+        .. code-block:: bash
+
+           pip install --upgrade pygmm
+
+    .. tab-item:: conda
+
+        Install from conda-forge:
+
+        .. code-block:: bash
+
+           conda install -c conda-forge pygmm
+
+        Or using mamba:
+
+        .. code-block:: bash
+
+           mamba install -c conda-forge pygmm
+
+    .. tab-item:: Development
+
+        For the latest development version:
+
+        .. code-block:: bash
+
+           pip install git+https://github.com/arkottke/pygmm.git
+
+        Or clone the repository:
+
+        .. code-block:: bash
+
+           git clone https://github.com/arkottke/pygmm.git
+           cd pygmm
+           pip install -e .[test,docs]
+
+Virtual Environments
+=====================
+
+We strongly recommend using virtual environments to avoid conflicts:
+
+.. tab-set::
+
+    .. tab-item:: venv
+
+        .. code-block:: bash
+
+           python -m venv pygmm-env
+           source pygmm-env/bin/activate  # On Windows: pygmm-env\Scripts\activate
+           pip install pygmm
+
+    .. tab-item:: conda
+
+        .. code-block:: bash
+
+           conda create -n pygmm-env python=3.11
+           conda activate pygmm-env
+           pip install pygmm
+
+    .. tab-item:: uv (Fast)
+
+        Using the modern `uv` package manager:
+
+        .. code-block:: bash
+
+           uv venv pygmm-env
+           source pygmm-env/bin/activate  # On Windows: pygmm-env\Scripts\activate
+           uv pip install pygmm
+
+Verification
+============
+
+Test your installation:
+
+.. code-block:: python
+
+   import pygmm
+   print(f"pyGMM version: {pygmm.__version__}")
+
+   # Quick test
+   scenario = pygmm.Scenario(mag=6.0, dist_rup=10, v_s30=760)
+   model = pygmm.CampbellBozorgnia2014()
+   result = model(scenario)
+   print("Installation successful!")
+
+Troubleshooting
+===============
+
+.. dropdown:: Common Issues
+   :class-title: sd-bg-info sd-text-white
+
+   **Import Error**
+
+   If you get import errors, ensure you've activated the correct environment:
+
+   .. code-block:: bash
+
+      which python  # Should point to your virtual environment
+      pip list      # Check if pygmm is installed
+
+   **Missing Dependencies**
+
+   Install missing dependencies:
+
+   .. code-block:: bash
+
+      pip install numpy scipy matplotlib
+
+   **Permission Errors**
+
+   Use ``--user`` flag or virtual environments:
+
+   .. code-block:: bash
+
+      pip install --user pygmm
+
+.. dropdown:: Platform-Specific Notes
+   :class-title: sd-bg-secondary sd-text-white
+
+   **Windows**
+
+   - Use Command Prompt or PowerShell
+   - Consider Windows Subsystem for Linux (WSL) for better compatibility
+
+   **macOS**
+
+   - Install Xcode command line tools: ``xcode-select --install``
+   - Consider using Homebrew for Python: ``brew install python``
+
+   **Linux**
+
+   - Most distributions include Python 3.10+
+   - Install development headers if building from source
+
+Getting Help
+============
+
+If you encounter issues:
+
+1. Check the :doc:`examples/index` for common usage patterns
+2. Search existing `GitHub Issues <https://github.com/arkottke/pygmm/issues>`_
+3. Create a new issue with detailed information about your problem

@@ -1,0 +1,80 @@
+/* Custom styles for pyGMM documentation */
+
+/* Improve grid card styling */
+.sd-card {
+    height: 100%;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.sd-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.sd-card-title {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.sd-card-text {
+    color: #5d6d7e;
+    line-height: 1.5;
+}
+
+/* Custom admonition colors */
+.admonition.important {
+    border-left: 4px solid #e74c3c;
+}
+
+.admonition.important .admonition-title {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Code block styling */
+.highlight {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+/* Tab styling improvements */
+.sd-tab-set > input:checked + label {
+    background: #3498db;
+    color: white;
+}
+
+/* Grid spacing improvements */
+.sd-grid-item {
+    margin-bottom: 1rem;
+}
+
+/* Center text utility */
+.text-center {
+    text-align: center;
+}
+
+/* Custom background colors for cards */
+.sd-bg-info {
+    background-color: #17a2b8 !important;
+}
+
+.sd-bg-secondary {
+    background-color: #6c757d !important;
+}
+
+.sd-text-white {
+    color: white !important;
+}
+
+/* Improve dropdown styling */
+.sd-summary-title {
+    font-weight: 600;
+}
+
+/* Better spacing for content */
+.sd-container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+}

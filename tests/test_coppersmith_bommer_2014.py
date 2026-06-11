@@ -22,4 +22,6 @@ def create_model(params):
 @pytest.mark.parametrize("key", ["spec_accels", "ln_stds"])
 def test_spec_accels(test, key):
     m = create_model(test["params"])
-    np.testing.assert_allclose(getattr(m, key), test["results"][key], rtol=RTOL, err_msg=key)
+    np.testing.assert_allclose(
+        getattr(m, key), test["results"][key], rtol=RTOL, err_msg=key
+    )
