@@ -28,6 +28,8 @@ from .idriss_2014 import Idriss2014
 from .kempton_stewart_2006 import KemptonStewart2006
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
+from .pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
+from .pinilla_ramos_et_al_2024 import PinillaRamosEtAl2024
 from .soil_curves import (
     AlemuEtAlSoilType,
     DarendeliSoilType,
@@ -60,6 +62,8 @@ __all__ = [
     "KemptonStewart2006",
     "Idriss2014",
     "PezeshkZandiehTavakoli2011",
+    "PinillaRamosEtAl2023",
+    "PinillaRamosEtAl2024",
     "TavakoliPezeshk05",
     "Stafford2017",
     "AlemuEtAlSoilType",
@@ -105,6 +109,8 @@ models = [
     KemptonStewart2006,
     Idriss2014,
     PezeshkZandiehTavakoli2011,
+    PinillaRamosEtAl2023,
+    PinillaRamosEtAl2024,
     TavakoliPezeshk05,
     Stafford2017,
 ]

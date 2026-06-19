@@ -203,9 +203,10 @@ Specialized Models
     .. grid-item-card:: Duration
         :class-title: text-center
 
-        **Coppersmith & Bommer (2014)**
+        **Coppersmith & Bommer (2014)**, **Afshari & Stewart (2016)**,
+        **Kempton & Stewart (2006)**, **Pinilla-Ramos et al. (2023, 2024)**
 
-        Significant duration models
+        Significant duration models (crustal and subduction)
 
 Detailed Model List
 -------------------
@@ -229,6 +230,8 @@ Detailed Model List
    hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
    idriss_2014.Idriss2014
    pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
+   pinilla_ramos_et_al_2023.PinillaRamosEtAl2023
+   pinilla_ramos_et_al_2024.PinillaRamosEtAl2024
    tavakoli_pezeshk_2005.TavakoliPezeshk05
 
 .. _model-selection-guide:

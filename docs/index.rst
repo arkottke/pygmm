@@ -6,19 +6,19 @@ pyGMM: Ground Motion Models in Python
     :gutter: 2
 
     .. grid-item-card:: 🚀 Quick Start
-        :link: installation
+        :link: getting-started/quickstart
         :link-type: doc
 
         Get up and running with pyGMM in minutes. Install the package and run your first ground motion calculation.
 
     .. grid-item-card:: 📚 User Guide
-        :link: usage
+        :link: user-guide/usage
         :link-type: doc
 
         Learn how to use pyGMM effectively with comprehensive examples and tutorials.
 
     .. grid-item-card:: 🔬 Ground Motion Models
-        :link: models
+        :link: user-guide/models
         :link-type: doc
 
         Explore the available ground motion prediction equations and their implementations.
@@ -90,10 +90,16 @@ Quick example:
 .. toctree::
    :maxdepth: 2
    :hidden:
+   :caption: Getting Started
+
+   getting-started/index
+
+.. toctree::
+   :maxdepth: 2
+   :hidden:
    :caption: User Guide
 
-   installation
-   usage
+   user-guide/index
    examples/index
 
 .. toctree::
@@ -101,7 +107,6 @@ Quick example:
    :hidden:
    :caption: Reference
 
-   models
    modules
    pygmm
 
@@ -109,8 +114,7 @@ Quick example:
    :maxdepth: 1
    :caption: Development
 
-   contributing
-   changelog
+   developer-guide/index
    authors
 
 .. toctree::
