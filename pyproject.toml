@@ -32,6 +32,7 @@ docs = [
     "ipython",
     "linkify-it-py",
     "lxml[html_clean]",
+    "pint",
 ]
 style = [
     "black[colorama,jupyter]",
