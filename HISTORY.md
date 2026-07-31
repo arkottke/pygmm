@@ -2,6 +2,22 @@
 title: History
 ---
 
+# 0.9.0 (unreleased)
+- Added: Macedo, Abrahamson, & Liu (2021) conditional and scenario-based CAV models for shallow crustal settings
+- Added: Abrahamson, Shi, & Yang (2016) Ground-Motion Prediction Equations for {A}rias Intensity Consistent with the NGA-West2 Ground-Motion Models
+- Added: `pygmm.contracts` dataclasses (`FourierSpectrum`, `ResponseSpectrum`,
+  `NonlinearSoilCurves`, `VelocityProfile`) so downstream packages can interoperate
+  without depending on pygmm at runtime
+- Added: `pygmm.fourier_spectrum` with the source-theory and Stafford et al. (2022)
+  FAS models, moved out of pyRVT
+- Added: `pygmm.soil_curves` with the empirical nonlinear soil-curve models
+  (Darendeli, Menq, Wang, Alemu et al., Rollins et al., Kishida), moved out of pyStrata
+- Added: `pygmm.velocity_profile` with `kea16_profile()`, moved out of pyStrata
+- Changed: models are organized into category subpackages (`correlation`, `cpt`,
+  `duration`, `fault_displacement`, `fourier_spectrum`, `response_spectrum`,
+  `soil_curves`, `velocity_profile`). The top-level names are unchanged.
+- Changed: documentation reorganized to the Scientific Python layout
+
 # 0.8.0 (2025-07-24)
 - Added: Pinilla-Ramos et al. (2023) model for duration of crustal earthquakes
 - Added: Pinilla-Ramos et al. (2024) model for duration of subduction earthquakes

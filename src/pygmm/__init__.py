@@ -10,6 +10,7 @@ except ImportError:
 
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
+from .abrahamson_shi_yang_2016 import AbrahamsonShiYang2016
 from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .afshari_stewart_2016 import AfshariStewart2016
@@ -26,6 +27,7 @@ from .derras_bard_cotton_2014 import DerrasBardCotton2014
 from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
 from .idriss_2014 import Idriss2014
 from .kempton_stewart_2006 import KemptonStewart2006
+from .macedo_abrahamson_liu_2021 import MacedoAbrahamsonLiu2021
 from .model import Scenario
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
@@ -45,6 +47,7 @@ from .velocity_profile import kea16_profile
 __all__ = [
     "Scenario",
     "AbrahamsonBhasin2020",
+    "AbrahamsonShiYang2016",
     "AbrahamsonSilvaKamai2014",
     "AbrahamsonGregorAddo2016",
     "AfshariStewart2016",
@@ -61,6 +64,7 @@ __all__ = [
     "GulerceAbrahamson2011",
     "KemptonStewart2006",
     "Idriss2014",
+    "MacedoAbrahamsonLiu2021",
     "PezeshkZandiehTavakoli2011",
     "PinillaRamosEtAl2023",
     "PinillaRamosEtAl2024",

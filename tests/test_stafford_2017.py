@@ -17,7 +17,9 @@ F_REF = 0.06
 # FIXME: ~25/106 cases fail due to numerical errors in the implementation.
 # The between_event, within_event, and between_site correlation formulas
 # need to be reconciled against the paper (Stafford 2017, BSSA).
-@pytest.mark.xfail(reason="Stafford 2017 implementation has known numerical errors (~25/106 cases)")
+@pytest.mark.xfail(
+    reason="Stafford 2017 implementation has known numerical errors (~25/106 cases)"
+)
 @pytest.mark.parametrize("freq,expected_cor", _test_cases)
 def test_correlation(freq, expected_cor):
     cor = Stafford2017.cor(np.array([F_REF, freq]), mag=4.5)

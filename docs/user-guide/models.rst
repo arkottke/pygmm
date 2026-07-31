@@ -179,6 +179,13 @@ Specialized Models
 .. grid:: 1 2 2 2
     :gutter: 2
 
+    .. grid-item-card:: Arias Intensity
+        :class-title: text-center
+
+        **Abrahamson, Shi & Yang (2016)**
+
+        Arias intensity consistent with NGA-West2
+
     .. grid-item-card:: Vertical Components
         :class-title: text-center
 
@@ -218,6 +225,7 @@ Detailed Model List
    :template: class.rst
 
    abrahamson_gregor_addo_2016.AbrahamsonGregorAddo2016
+   abrahamson_shi_yang_2016.AbrahamsonShiYang2016
    abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
    akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
    atkinson_boore_2006.AtkinsonBoore2006
@@ -229,6 +237,7 @@ Detailed Model List
    gulerce_abrahamson_2011.GulerceAbrahamson2011
    hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
    idriss_2014.Idriss2014
+   macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
    pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
    pinilla_ramos_et_al_2023.PinillaRamosEtAl2023
    pinilla_ramos_et_al_2024.PinillaRamosEtAl2024
@@ -364,6 +373,7 @@ following models have been implemented.
     :nosignatures:
 
     ~abrahamson_gregor_addo_2016.AbrahamsonGregorAddo2016
+    ~abrahamson_shi_yang_2016.AbrahamsonShiYang2016
     ~abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
     ~akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
     ~atkinson_boore_2006.AtkinsonBoore2006
@@ -374,6 +384,7 @@ following models have been implemented.
     ~derras_bard_cotton_2014.DerrasBardCotton2014
     ~hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
     ~idriss_2014.Idriss2014
+    ~macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
     ~pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
     ~tavakoli_pezeshk_2005.TavakoliPezeshk05
 
