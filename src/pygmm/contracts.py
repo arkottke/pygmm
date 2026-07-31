@@ -10,7 +10,6 @@ duplicate of the dataclasses it needs.
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Optional
 
 import numpy as np
 import numpy.typing as npt
@@ -35,7 +34,7 @@ class ResponseSpectrum:
     periods: npt.NDArray[np.floating]
     spec_accels: npt.NDArray[np.floating]
     damping: float
-    duration: Optional[float] = None
+    duration: float | None = None
 
 
 @dataclass(frozen=True)
@@ -74,9 +73,9 @@ class Duration:
     """
 
     duration: float
-    d_5_75: Optional[float] = None
-    d_5_95: Optional[float] = None
-    d_20_80: Optional[float] = None
+    d_5_75: float | None = None
+    d_5_95: float | None = None
+    d_20_80: float | None = None
 
 
 @dataclass(frozen=True)
@@ -103,8 +102,8 @@ class NonlinearSoilCurves:
     mod_reduc: npt.NDArray[np.floating]
     damping: npt.NDArray[np.floating]
     damping_min: float
-    unit_wt: Optional[float] = None
-    name: Optional[str] = None
+    unit_wt: float | None = None
+    name: str | None = None
 
 
 @dataclass(frozen=True)
@@ -128,8 +127,8 @@ class VelocityProfile:
     depth: npt.NDArray[np.floating]
     vs_median: npt.NDArray[np.floating]
     std_vs_ln: npt.NDArray[np.floating]
-    region: Optional[str] = None
-    site_class: Optional[str] = None
+    region: str | None = None
+    site_class: str | None = None
 
 
 @dataclass(frozen=True)
@@ -153,8 +152,8 @@ class FaultDisplacement:
     mag: float
     displacement_mean: float
     sigma_ln_disp: float
-    dist_from_rupture: Optional[float] = None
-    position_ratio: Optional[float] = None
+    dist_from_rupture: float | None = None
+    position_ratio: float | None = None
 
 
 @dataclass(frozen=True)
@@ -180,9 +179,9 @@ class CptSounding:
     depth: npt.NDArray[np.floating]
     q_c: npt.NDArray[np.floating]
     f_s: npt.NDArray[np.floating]
-    u_2: Optional[npt.NDArray[np.floating]] = None
-    water_table_depth: Optional[float] = None
-    unit_wts: Optional[npt.NDArray[np.floating]] = None
+    u_2: npt.NDArray[np.floating] | None = None
+    water_table_depth: float | None = None
+    unit_wts: npt.NDArray[np.floating] | None = None
 
 
 @dataclass(frozen=True)
@@ -204,7 +203,7 @@ class SoilBehaviorProfile:
     depth: npt.NDArray[np.floating]
     ic: npt.NDArray[np.floating]
     sbt_class: npt.NDArray[np.integer]
-    fines_content: Optional[npt.NDArray[np.floating]] = None
+    fines_content: npt.NDArray[np.floating] | None = None
 
 
 @dataclass(frozen=True)
@@ -229,7 +228,7 @@ class LiquefactionTriggering:
     csr: npt.NDArray[np.floating]
     crr: npt.NDArray[np.floating]
     factor_of_safety: npt.NDArray[np.floating]
-    prob_liquefaction: Optional[npt.NDArray[np.floating]] = None
+    prob_liquefaction: npt.NDArray[np.floating] | None = None
 
 
 __all__ = [

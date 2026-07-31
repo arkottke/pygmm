@@ -61,7 +61,7 @@ class RollinsEtAlSoilType(ModifiedHyperbolicBase):
                     coef_unif, stress_mean
                 )
             else:
-                name = "Rollins et al. (2020) - σ'₀={:.0f} kPa".format(stress_mean)
+                name = f"Rollins et al. (2020) - σ'₀={stress_mean:.0f} kPa"
 
         super().__init__(name, unit_wt, damping_min, strains)
 
