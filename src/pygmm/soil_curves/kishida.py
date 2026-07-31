@@ -77,7 +77,14 @@ class KishidaSoilType(SoilCurveModel):
         x_3_arr = x_3 * ones
 
         mod_reduc = self._calc_mod_reduc(
-            strains_pct, strain_ref_pct, x_1, x_1_mean, x_2_arr, x_2_mean, x_3_arr, x_3_mean
+            strains_pct,
+            strain_ref_pct,
+            x_1,
+            x_1_mean,
+            x_2_arr,
+            x_2_mean,
+            x_3_arr,
+            x_3_mean,
         )
         damping = self._calc_damping(mod_reduc, x_2_arr, x_2_mean, x_3_arr, x_3_mean)
 
@@ -102,7 +109,11 @@ class KishidaSoilType(SoilCurveModel):
         ones = np.ones_like(strains)
         x_4 = np.log(self._lab_consol_ratio) * ones
         x = np.c_[
-            ones, x_1, x_2, x_3, x_4,
+            ones,
+            x_1,
+            x_2,
+            x_3,
+            x_4,
             (x_1 - x_1_mean) * (x_2 - x_2_mean),
             (x_1 - x_1_mean) * (x_3 - x_3_mean),
             (x_2 - x_2_mean) * (x_3 - x_3_mean),
@@ -129,7 +140,10 @@ class KishidaSoilType(SoilCurveModel):
         x_1 = np.log(np.log(1 / mod_reduc) + 0.103)
         ones = np.ones_like(mod_reduc)
         x = np.c_[
-            ones, x_1, x_2, x_3,
+            ones,
+            x_1,
+            x_2,
+            x_3,
             (x_1 - x_1_mean) * (x_2 - x_2_mean),
             (x_2 - x_2_mean) * (x_3 - x_3_mean),
         ]

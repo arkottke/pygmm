@@ -217,7 +217,9 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
         return site_term
 
-    def _calc_ln_std(self, resp_ref: np.ndarray) -> (np.ndarray, np.ndarray, np.ndarray):
+    def _calc_ln_std(
+        self, resp_ref: np.ndarray
+    ) -> (np.ndarray, np.ndarray, np.ndarray):
         """Calculate the logarithmic standard deviation.
 
         Parameters

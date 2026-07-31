@@ -16,10 +16,10 @@ from pygmm.macedo_abrahamson_liu_2021 import (
     _t5_rjb,
 )
 
-
 # ------------------------------------------------------------------ #
 # Helper: vertical SS fault scenario for Figure 9 comparisons        #
 # ------------------------------------------------------------------ #
+
 
 def _cy14_scenario(mag, vs30, dist_rup):
     """Vertical SS fault, FW site, suitable for CY14 backbone."""
@@ -40,6 +40,7 @@ def _cy14_scenario(mag, vs30, dist_rup):
 # ------------------------------------------------------------------ #
 # Taper unit tests (Eqs. 13a–c)                                      #
 # ------------------------------------------------------------------ #
+
 
 class TestTapers:
     def test_t1_dip_vertical(self):
@@ -88,6 +89,7 @@ class TestTapers:
 # Sigma functions                                                     #
 # ------------------------------------------------------------------ #
 
+
 class TestSigma:
     def test_sigma_cond_value(self):
         # sqrt(0.17^2 + 0.26^2)
@@ -107,18 +109,23 @@ class TestSigma:
 # Conditional mode                                                    #
 # ------------------------------------------------------------------ #
 
+
 class TestConditionalMode:
     """Reference values from direct evaluation of Eq. (12)."""
 
     def test_basic_mw7_r10(self):
         """Mw=7.0, Rrup=10 km, Vs30=760 m/s, PGA=0.5 g."""
         s = Scenario(
-            mag=7.0, dist_rup=10.0, dist_jb=10.0,
-            v_s30=760.0, dip=90.0, on_hanging_wall=False,
+            mag=7.0,
+            dist_rup=10.0,
+            dist_jb=10.0,
+            v_s30=760.0,
+            dip=90.0,
+            on_hanging_wall=False,
         )
         m = MacedoAbrahamsonLiu2021(s, pga=0.5)
         assert_allclose(m.ln_cav, 2.19194500, rtol=1e-5)
-        assert_allclose(m.cav,    8.95260905, rtol=1e-5)
+        assert_allclose(m.cav, 8.95260905, rtol=1e-5)
         assert_allclose(m.ln_std, 0.31064449, rtol=1e-5)
         assert m.tau == pytest.approx(0.17)
         assert m.phi == pytest.approx(0.26)
@@ -126,18 +133,26 @@ class TestConditionalMode:
     def test_basic_mw5_r30(self):
         """Mw=5.0, Rrup=30 km, Vs30=760 m/s, PGA=0.05 g."""
         s = Scenario(
-            mag=5.0, dist_rup=30.0, dist_jb=30.0,
-            v_s30=760.0, dip=90.0, on_hanging_wall=False,
+            mag=5.0,
+            dist_rup=30.0,
+            dist_jb=30.0,
+            v_s30=760.0,
+            dip=90.0,
+            on_hanging_wall=False,
         )
         m = MacedoAbrahamsonLiu2021(s, pga=0.05)
         assert_allclose(m.ln_cav, -0.49364340, rtol=1e-5)
-        assert_allclose(m.cav,     0.61039841, rtol=1e-5)
+        assert_allclose(m.cav, 0.61039841, rtol=1e-5)
 
     def test_hanging_wall_on(self):
         """Hanging-wall term is active for dip=45, Mw=6.0, RJB=5 km."""
         s = Scenario(
-            mag=6.0, dist_rup=8.0, dist_jb=5.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=True,
+            mag=6.0,
+            dist_rup=8.0,
+            dist_jb=5.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=True,
         )
         m = MacedoAbrahamsonLiu2021(s, pga=0.2)
         assert_allclose(m.ln_cav, 1.08794372, rtol=1e-5)
@@ -145,12 +160,20 @@ class TestConditionalMode:
     def test_hanging_wall_off_equals_fw(self):
         """F_HW=0 (FW site) must zero the c6 term."""
         s_fw = Scenario(
-            mag=6.0, dist_rup=8.0, dist_jb=5.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=False,
+            mag=6.0,
+            dist_rup=8.0,
+            dist_jb=5.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=False,
         )
         s_hw = Scenario(
-            mag=6.0, dist_rup=8.0, dist_jb=5.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=True,
+            mag=6.0,
+            dist_rup=8.0,
+            dist_jb=5.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=True,
         )
         m_fw = MacedoAbrahamsonLiu2021(s_fw, pga=0.2)
         m_hw = MacedoAbrahamsonLiu2021(s_hw, pga=0.2)
@@ -159,33 +182,47 @@ class TestConditionalMode:
     def test_t2_zero_kills_hw_term(self):
         """For Mw ≤ 5.5, T2=0 ⇒ HW term=0 regardless of dip/RJB."""
         s_hw = Scenario(
-            mag=5.0, dist_rup=5.0, dist_jb=0.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=True,
+            mag=5.0,
+            dist_rup=5.0,
+            dist_jb=0.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=True,
         )
         s_fw = Scenario(
-            mag=5.0, dist_rup=5.0, dist_jb=0.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=False,
+            mag=5.0,
+            dist_rup=5.0,
+            dist_jb=0.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=False,
         )
         pga = 0.1
-        assert (
-            MacedoAbrahamsonLiu2021(s_hw, pga=pga).ln_cav
-            == pytest.approx(MacedoAbrahamsonLiu2021(s_fw, pga=pga).ln_cav)
+        assert MacedoAbrahamsonLiu2021(s_hw, pga=pga).ln_cav == pytest.approx(
+            MacedoAbrahamsonLiu2021(s_fw, pga=pga).ln_cav
         )
 
     def test_t5_zero_kills_hw_term(self):
         """For RJB ≥ 15 km, T5=0 ⇒ HW term=0."""
         s_hw = Scenario(
-            mag=7.0, dist_rup=20.0, dist_jb=15.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=True,
+            mag=7.0,
+            dist_rup=20.0,
+            dist_jb=15.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=True,
         )
         s_fw = Scenario(
-            mag=7.0, dist_rup=20.0, dist_jb=15.0,
-            v_s30=760.0, dip=45.0, on_hanging_wall=False,
+            mag=7.0,
+            dist_rup=20.0,
+            dist_jb=15.0,
+            v_s30=760.0,
+            dip=45.0,
+            on_hanging_wall=False,
         )
         pga = 0.3
-        assert (
-            MacedoAbrahamsonLiu2021(s_hw, pga=pga).ln_cav
-            == pytest.approx(MacedoAbrahamsonLiu2021(s_fw, pga=pga).ln_cav)
+        assert MacedoAbrahamsonLiu2021(s_hw, pga=pga).ln_cav == pytest.approx(
+            MacedoAbrahamsonLiu2021(s_fw, pga=pga).ln_cav
         )
 
     def test_pga_and_pga_model_both_none_raises(self):
@@ -200,11 +237,15 @@ class TestConditionalMode:
 
     def test_cav_plus_minus_sigma(self):
         s = Scenario(
-            mag=7.0, dist_rup=10.0, dist_jb=10.0,
-            v_s30=760.0, dip=90.0, on_hanging_wall=False,
+            mag=7.0,
+            dist_rup=10.0,
+            dist_jb=10.0,
+            v_s30=760.0,
+            dip=90.0,
+            on_hanging_wall=False,
         )
         m = MacedoAbrahamsonLiu2021(s, pga=0.5)
-        assert_allclose(m.cav_plus_sigma,  np.exp(m.ln_cav + m.ln_std))
+        assert_allclose(m.cav_plus_sigma, np.exp(m.ln_cav + m.ln_std))
         assert_allclose(m.cav_minus_sigma, np.exp(m.ln_cav - m.ln_std))
 
     def test_cav_increases_with_mag(self):
@@ -216,7 +257,7 @@ class TestConditionalMode:
     def test_cav_decreases_with_distance(self):
         common = dict(mag=6.5, v_s30=760.0)
         mn = MacedoAbrahamsonLiu2021(
-            Scenario(dist_rup=5.0,   dist_jb=5.0,   **common), pga=0.4
+            Scenario(dist_rup=5.0, dist_jb=5.0, **common), pga=0.4
         )
         mf = MacedoAbrahamsonLiu2021(
             Scenario(dist_rup=100.0, dist_jb=100.0, **common), pga=0.05
@@ -228,14 +269,12 @@ class TestConditionalMode:
 # Scenario mode — CY14 backbone, Figure 9 CSV functional-form check  #
 # ------------------------------------------------------------------ #
 
+
 def _load_cy14_distance_scaling_data():
     """Load digitized Figure 9 data (Mw=4.75, Vs30=760 m/s)."""
     data_file = Path(__file__).parent / "data" / "macedo_abrahamson_liu_2021.csv"
     with data_file.open(encoding="utf-8-sig", newline="") as f:
-        rows = [
-            {k.strip(): v for k, v in row.items()}
-            for row in csv.DictReader(f)
-        ]
+        rows = [{k.strip(): v for k, v in row.items()} for row in csv.DictReader(f)]
 
     rrup = np.array([float(row["Rrup"]) for row in rows])
     cav = np.array([float(row["CAV"]) for row in rows])
@@ -281,12 +320,20 @@ class TestScenarioModeGeneral:
 
     def test_cav_increases_with_mag_scenario(self):
         """Median CAV increases with magnitude in scenario mode."""
-        m_low = MacedoAbrahamsonLiu2021(_cy14_scenario(5.75, 760, 30.0), pga_model="CY14")
-        m_high = MacedoAbrahamsonLiu2021(_cy14_scenario(7.6,  760, 30.0), pga_model="CY14")
+        m_low = MacedoAbrahamsonLiu2021(
+            _cy14_scenario(5.75, 760, 30.0), pga_model="CY14"
+        )
+        m_high = MacedoAbrahamsonLiu2021(
+            _cy14_scenario(7.6, 760, 30.0), pga_model="CY14"
+        )
         assert m_high.cav > m_low.cav
 
     def test_cav_decreases_with_distance_scenario(self):
         """Median CAV decreases with rupture distance in scenario mode."""
-        m_near = MacedoAbrahamsonLiu2021(_cy14_scenario(7.0, 760, 10.0),  pga_model="CY14")
-        m_far  = MacedoAbrahamsonLiu2021(_cy14_scenario(7.0, 760, 100.0), pga_model="CY14")
+        m_near = MacedoAbrahamsonLiu2021(
+            _cy14_scenario(7.0, 760, 10.0), pga_model="CY14"
+        )
+        m_far = MacedoAbrahamsonLiu2021(
+            _cy14_scenario(7.0, 760, 100.0), pga_model="CY14"
+        )
         assert m_near.cav > m_far.cav

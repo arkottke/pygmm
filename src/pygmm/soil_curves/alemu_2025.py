@@ -87,7 +87,9 @@ class AlemuEtAlSoilType(SoilCurveModel):
         mod_reduc = 1.0 / (1.0 + (strains / gamma_mr) ** self._A) ** self._B
 
         # Minimum damping (Eq. 16)
-        d_min = (self._D1 * ocr * (plas_index + 1) + self._D2 * fines_cont) / stress_ratio
+        d_min = (
+            self._D1 * ocr * (plas_index + 1) + self._D2 * fines_cont
+        ) / stress_ratio
 
         # Strain-dependent damping (Eq. 17)
         gamma_d = (

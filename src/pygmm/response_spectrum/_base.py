@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-from ..model import GroundMotionModel
 from ..contracts import ResponseSpectrum
+from ..model import GroundMotionModel
 
 
 class ResponseSpectrumModel(GroundMotionModel):

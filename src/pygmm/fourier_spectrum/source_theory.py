@@ -125,11 +125,35 @@ class SourceTheoryModel:
             self.stress_drop = float(stress_drop) if stress_drop else 100.0
             self.site_amp = interp1d(
                 np.log(
-                    [0.01, 0.09, 0.16, 0.51, 0.84, 1.25, 2.26, 3.17, 6.05,
-                     16.60, 61.20, 100.00]
+                    [
+                        0.01,
+                        0.09,
+                        0.16,
+                        0.51,
+                        0.84,
+                        1.25,
+                        2.26,
+                        3.17,
+                        6.05,
+                        16.60,
+                        61.20,
+                        100.00,
+                    ]
                 ),
-                [1.00, 1.10, 1.18, 1.42, 1.58, 1.74, 2.06, 2.25, 2.58, 3.13,
-                 4.00, 4.40],
+                [
+                    1.00,
+                    1.10,
+                    1.18,
+                    1.42,
+                    1.58,
+                    1.74,
+                    2.06,
+                    2.25,
+                    2.58,
+                    3.13,
+                    4.00,
+                    4.40,
+                ],
                 bounds_error=False,
             )
         elif self.region == "cena":
@@ -144,11 +168,41 @@ class SourceTheoryModel:
             )
             self.site_amp = interp1d(
                 np.log(
-                    [0.01, 0.10, 0.20, 0.30, 0.50, 0.90, 1.25, 1.80, 3.00,
-                     5.30, 8.00, 14.00, 30.00, 60.00, 100.00]
+                    [
+                        0.01,
+                        0.10,
+                        0.20,
+                        0.30,
+                        0.50,
+                        0.90,
+                        1.25,
+                        1.80,
+                        3.00,
+                        5.30,
+                        8.00,
+                        14.00,
+                        30.00,
+                        60.00,
+                        100.00,
+                    ]
                 ),
-                [1.00, 1.02, 1.03, 1.05, 1.07, 1.09, 1.11, 1.12, 1.13, 1.14,
-                 1.15, 1.15, 1.15, 1.15, 1.15],
+                [
+                    1.00,
+                    1.02,
+                    1.03,
+                    1.05,
+                    1.07,
+                    1.09,
+                    1.11,
+                    1.12,
+                    1.13,
+                    1.14,
+                    1.15,
+                    1.15,
+                    1.15,
+                    1.15,
+                    1.15,
+                ],
                 bounds_error=False,
                 fill_value=(1.0, 1.15),
             )
@@ -173,8 +227,8 @@ class SourceTheoryModel:
         const = (0.55 * 2.0) / (
             np.sqrt(2.0) * 4.0 * np.pi * self.density * self.shear_velocity**3.0
         )
-        source_comp = const * self.seismic_moment / (
-            1.0 + (freqs / self.corner_freq) ** 2.0
+        source_comp = (
+            const * self.seismic_moment / (1.0 + (freqs / self.corner_freq) ** 2.0)
         )
 
         path_atten = self.path_atten_coeff * freqs**self.path_atten_power
@@ -197,6 +251,4 @@ class SourceTheoryModel:
 
         # Convert dyne-cm to g-sec.
         conv = 1.0e-20 / (100 * gravity)
-        return (
-            conv * (2.0 * np.pi * freqs) ** 2.0 * source_comp * path_comp * site_comp
-        )
+        return conv * (2.0 * np.pi * freqs) ** 2.0 * source_comp * path_comp * site_comp

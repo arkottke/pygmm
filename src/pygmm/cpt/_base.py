@@ -4,8 +4,8 @@ from __future__ import annotations
 
 from abc import abstractmethod
 
-from ..model import Model
 from ..contracts import CptSounding, SoilBehaviorProfile
+from ..model import Model
 
 
 class CptModel(Model):

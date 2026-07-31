@@ -54,7 +54,9 @@ class ChiouYoungs2014(model.GroundMotionModel):
         model.CategoricalParameter(
             "region", False, ["california", "china", "italy", "japan"], "california"
         ),
-        model.CategoricalParameter("vs_source", False, ["measured", "inferred"], "measured"),
+        model.CategoricalParameter(
+            "vs_source", False, ["measured", "inferred"], "measured"
+        ),
     ]
 
     def __init__(self, scenario: model.Scenario):
@@ -153,7 +155,9 @@ class ChiouYoungs2014(model.GroundMotionModel):
         """
         s = self._scenario
 
-        site_term = self.calc_site_term(np.exp(ln_resp_ref), s.v_s30, s.depth_1_0, s.region)
+        site_term = self.calc_site_term(
+            np.exp(ln_resp_ref), s.v_s30, s.depth_1_0, s.region
+        )
         return ln_resp_ref + site_term
 
     @classmethod
@@ -201,7 +205,10 @@ class ChiouYoungs2014(model.GroundMotionModel):
         # Nonlinear scaling
         site_term += (
             c.phi_2
-            * (np.exp(c.phi_3 * (min(v_s30, 1130.0) - 360.0)) - np.exp(c.phi_3 * (1130.0 - 360.0)))
+            * (
+                np.exp(c.phi_3 * (min(v_s30, 1130.0) - 360.0))
+                - np.exp(c.phi_3 * (1130.0 - 360.0))
+            )
             * np.log((np.exp(ln_resp_ref) + c.phi_4) / c.phi_4)
         )
         # Basin model
@@ -265,7 +272,8 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
         if not (_min <= s.mag <= _max):
             logging.warning(
-                "Magnitude (%g) exceeds recommended bounds (%g to %g)" " for a %s earthquake!",
+                "Magnitude (%g) exceeds recommended bounds (%g to %g)"
+                " for a %s earthquake!",
                 s.mag,
                 _min,
                 _max,
@@ -309,7 +317,10 @@ class ChiouYoungs2014(model.GroundMotionModel):
             slope = -7.15 / power
 
         return (
-            np.exp(slope * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power)))
+            np.exp(
+                slope
+                * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power))
+            )
             / 1000
         )
 

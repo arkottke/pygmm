@@ -8,7 +8,8 @@ __author__ = "Albert Kottke"
 
 
 class AbrahamsonShiYang2016(model.Model):
-    """Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity model.
+    """Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity
+    model.
 
     Conditional ground-motion model (CGMM) and scenario-based models for
     Arias intensity (Ia, m/s) for shallow crustal tectonic settings, consistent
@@ -61,13 +62,13 @@ class AbrahamsonShiYang2016(model.Model):
     C1 = 0.47
     C2 = -0.28
     C3 = 0.50
-    C4 = 1.52   # ln(PGA) scaling
-    C5 = 0.21   # ln(SA_T1) scaling
-    C8 = 0.09   # hanging-wall coefficient (Equation 3.4)
+    C4 = 1.52  # ln(PGA) scaling
+    C5 = 0.21  # ln(SA_T1) scaling
+    C8 = 0.09  # hanging-wall coefficient (Equation 3.4)
 
     # Aleatory variability — conditional model (Section 3.2)
-    TAU = 0.15   # between-event standard deviation
-    PHI = 0.35   # within-event standard deviation
+    TAU = 0.15  # between-event standard deviation
+    PHI = 0.35  # within-event standard deviation
     SIGMA_COND = float(np.sqrt(TAU**2 + PHI**2))
 
     # Error-propagation coefficients — Table 4.1 / Equation 4.4
@@ -94,7 +95,6 @@ class AbrahamsonShiYang2016(model.Model):
         """Initialize the model."""
         self._full_scenario = scenario
         super().__init__(scenario)
-        s = self._scenario
 
         if backbone is not None:
             if backbone not in self.SUPPORTED_BACKBONE_MODELS:
@@ -209,6 +209,7 @@ class AbrahamsonShiYang2016(model.Model):
 # Module-level taper functions (Equations 3.5–3.7)                   #
 # ------------------------------------------------------------------ #
 
+
 def _t1_dip(dip):
     """Dip taper T1 — Equation (3.5) of Abrahamson et al. (2016)."""
     if dip > 30:
@@ -253,7 +254,7 @@ def _calc_scenario_ln_std(sigma_pga, sigma_sa_t1):
     C4D = AbrahamsonShiYang2016.C4_DERIV
     C5D = AbrahamsonShiYang2016.C5_DERIV
     rho = AbrahamsonShiYang2016.RHO_PGA_SAT1
-    sigma_cond_sq = AbrahamsonShiYang2016.SIGMA_COND ** 2
+    sigma_cond_sq = AbrahamsonShiYang2016.SIGMA_COND**2
     return np.sqrt(
         C4D**2 * sigma_pga**2
         + C5D**2 * sigma_sa_t1**2

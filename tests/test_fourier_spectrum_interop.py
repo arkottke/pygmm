@@ -6,11 +6,10 @@ piping them through ``RvtMotion.from_fas`` yields finite, positive PGA/PGV.
 
 import numpy as np
 import pytest
-from numpy.testing import assert_allclose
-
-pyrvt = pytest.importorskip("pyrvt")
 
 from pygmm.fourier_spectrum import SourceTheoryModel, StaffordEtAl2022
+
+pyrvt = pytest.importorskip("pyrvt")
 
 
 @pytest.mark.parametrize("region", ["wna", "cena"])

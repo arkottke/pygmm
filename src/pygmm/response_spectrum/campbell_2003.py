@@ -57,7 +57,8 @@ class Campbell2003(model.GroundMotionModel):
         f_1 = c.c_2 * s.mag + c.c_3 * (8.5 - s.mag) ** 2
         # Distance scaling
         f_2 = (
-            c.c_4 * np.log(np.sqrt(s.dist_rup**2 + (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2))
+            c.c_4
+            * np.log(np.sqrt(s.dist_rup**2 + (c.c_7 * np.exp(c.c_8 * s.mag)) ** 2))
             + (c.c_5 + c.c_6 * s.mag) * s.dist_rup
         )
         # Geometric attenuation

@@ -101,7 +101,8 @@ class BaylessAbrahamson2019(model.Model):
         )
 
         f_P = (
-            c.c4 * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
+            c.c4
+            * np.log(s.dist_rup + c.c5 * np.cosh(c.c6 * np.maximum(s.mag - c.chm, 0)))
             + (-0.5 - c.c4) * np.log(np.sqrt(s.dist_rup**2 + 50**2))
             + c.c7 * s.dist_rup
         )
@@ -113,7 +114,9 @@ class BaylessAbrahamson2019(model.Model):
         c11 = np.select(
             [v_s30 <= 200, v_s30 <= 300, v_s30 <= 500], [c.c11a, c.c11b, c.c11c], c.c11d
         )
-        f_Z1 = c11 * np.log((min(depth_1_0, 2) + 0.01) / (self.calc_depth_1_0(v_s30) + 0.01))
+        f_Z1 = c11 * np.log(
+            (min(depth_1_0, 2) + 0.01) / (self.calc_depth_1_0(v_s30) + 0.01)
+        )
 
         ln_eas = f_M + f_P + f_Ztor + f_NM + f_Z1
 
@@ -125,7 +128,9 @@ class BaylessAbrahamson2019(model.Model):
             kappa = np.exp(-0.4 * np.log(v_s30 / 760) - 3.5)
             # Diminuition operator
             freq_max = self.FREQS[self.IDX_MAX]
-            dimin = np.exp(-np.pi * kappa * (self.FREQS[(self.IDX_MAX + 1) :] - freq_max))
+            dimin = np.exp(
+                -np.pi * kappa * (self.FREQS[(self.IDX_MAX + 1) :] - freq_max)
+            )
             ln_eas = np.r_[ln_eas, ln_eas[self.IDX_MAX] + np.log(dimin)]
 
         return ln_eas
@@ -140,7 +145,8 @@ class BaylessAbrahamson2019(model.Model):
         f_sl = c.c8 * np.log(min(v_s30, 1000) / 1000)
 
         f2 = c.f4 * (
-            np.exp(c.f5 * (min(v_s30, self.V_REF) - 360)) - np.exp(c.f5 * (self.V_REF - 360))
+            np.exp(c.f5 * (min(v_s30, self.V_REF) - 360))
+            - np.exp(c.f5 * (self.V_REF - 360))
         )
 
         f_nl = f2 * np.log((I_R + c.f3) / c.f3)
@@ -194,6 +200,9 @@ class BaylessAbrahamson2019(model.Model):
         v_ref = 610
         slope = -7.67 / power
         return (
-            np.exp(slope * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power)))
+            np.exp(
+                slope
+                * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power))
+            )
             / 1000
         )

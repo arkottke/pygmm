@@ -67,7 +67,9 @@ class ModifiedHyperbolicBase(SoilCurveModel):
         self._strains = strains
         self._mod_reduc = mod_reduc
         self._damping = damping
-        self._damping_min = damping_min if np.ndim(damping_min) == 0 else float(damping_min.flat[0])
+        self._damping_min = (
+            damping_min if np.ndim(damping_min) == 0 else float(damping_min.flat[0])
+        )
 
     @property
     @abstractmethod

@@ -108,7 +108,8 @@ class StaffordEtAl2022:
         if method == "continuous":
             geom_spread = np.exp(
                 -y_1 * np.log(dist_ps)
-                + (y_1 - y_f) / 2
+                + (y_1 - y_f)
+                / 2
                 * np.log((self.dist_rup**2 + r_t**2) / (1**2 + r_t**2))
             )
             n = n_a + n_b * np.tanh(self.mag - n_c)

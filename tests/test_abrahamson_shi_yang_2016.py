@@ -17,10 +17,10 @@ from pygmm.abrahamson_shi_yang_2016 import (
     _t5_rjb,
 )
 
-
 # ------------------------------------------------------------------ #
 # Helper: vertical SS fault scenario suitable for CY14 backbone      #
 # ------------------------------------------------------------------ #
+
 
 def _cy14_scenario(mag, vs30, dist_rup):
     """Vertical SS fault, FW site, suitable for CY14 backbone."""
@@ -41,6 +41,7 @@ def _cy14_scenario(mag, vs30, dist_rup):
 # ------------------------------------------------------------------ #
 # Taper unit tests (Equations 3.5–3.7)                               #
 # ------------------------------------------------------------------ #
+
 
 class TestTapers:
     def test_t1_dip_vertical(self):
@@ -88,6 +89,7 @@ class TestTapers:
 # Sigma unit tests                                                    #
 # ------------------------------------------------------------------ #
 
+
 class TestSigma:
     def test_sigma_cond_value(self):
         assert AbrahamsonShiYang2016.SIGMA_COND == pytest.approx(
@@ -114,6 +116,7 @@ class TestSigma:
 # Conditional mode                                                    #
 # ------------------------------------------------------------------ #
 
+
 class TestConditionalMode:
     """Reference values from direct evaluation of Equations (3.3) and (3.4)."""
 
@@ -129,10 +132,11 @@ class TestConditionalMode:
             on_hanging_wall=on_hw,
         )
 
-
     def test_hanging_wall_increases_ia(self):
         """HW site raises ln_ia compared to FW site."""
-        s_fw = self._scenario(6.5, 760, dist_rup=8.0, dip=45.0, dist_jb=3.0, on_hw=False)
+        s_fw = self._scenario(
+            6.5, 760, dist_rup=8.0, dip=45.0, dist_jb=3.0, on_hw=False
+        )
         s_hw = self._scenario(6.5, 760, dist_rup=8.0, dip=45.0, dist_jb=3.0, on_hw=True)
         m_fw = AbrahamsonShiYang2016(s_fw, pga=0.2, sa_t1=0.15)
         m_hw = AbrahamsonShiYang2016(s_hw, pga=0.2, sa_t1=0.15)
@@ -141,21 +145,25 @@ class TestConditionalMode:
     def test_t2_zero_kills_hw_term(self):
         """For Mw ≤ 5.5, T2=0 ⇒ HW term=0 regardless of dip/RJB."""
         s_hw = self._scenario(5.0, 760, dist_rup=5.0, dip=45.0, dist_jb=0.0, on_hw=True)
-        s_fw = self._scenario(5.0, 760, dist_rup=5.0, dip=45.0, dist_jb=0.0, on_hw=False)
+        s_fw = self._scenario(
+            5.0, 760, dist_rup=5.0, dip=45.0, dist_jb=0.0, on_hw=False
+        )
         pga, sa_t1 = 0.1, 0.05
-        assert (
-            AbrahamsonShiYang2016(s_hw, pga=pga, sa_t1=sa_t1).ln_ia
-            == pytest.approx(AbrahamsonShiYang2016(s_fw, pga=pga, sa_t1=sa_t1).ln_ia)
+        assert AbrahamsonShiYang2016(s_hw, pga=pga, sa_t1=sa_t1).ln_ia == pytest.approx(
+            AbrahamsonShiYang2016(s_fw, pga=pga, sa_t1=sa_t1).ln_ia
         )
 
     def test_t5_zero_kills_hw_term(self):
         """For RJB ≥ 15 km, T5=0 ⇒ HW term=0."""
-        s_hw = self._scenario(7.0, 760, dist_rup=20.0, dip=45.0, dist_jb=15.0, on_hw=True)
-        s_fw = self._scenario(7.0, 760, dist_rup=20.0, dip=45.0, dist_jb=15.0, on_hw=False)
+        s_hw = self._scenario(
+            7.0, 760, dist_rup=20.0, dip=45.0, dist_jb=15.0, on_hw=True
+        )
+        s_fw = self._scenario(
+            7.0, 760, dist_rup=20.0, dip=45.0, dist_jb=15.0, on_hw=False
+        )
         pga, sa_t1 = 0.3, 0.2
-        assert (
-            AbrahamsonShiYang2016(s_hw, pga=pga, sa_t1=sa_t1).ln_ia
-            == pytest.approx(AbrahamsonShiYang2016(s_fw, pga=pga, sa_t1=sa_t1).ln_ia)
+        assert AbrahamsonShiYang2016(s_hw, pga=pga, sa_t1=sa_t1).ln_ia == pytest.approx(
+            AbrahamsonShiYang2016(s_fw, pga=pga, sa_t1=sa_t1).ln_ia
         )
 
     def test_missing_inputs_raises(self):
@@ -176,7 +184,7 @@ class TestConditionalMode:
     def test_ia_plus_minus_sigma(self):
         s = self._scenario(7.0, 760)
         m = AbrahamsonShiYang2016(s, pga=0.5, sa_t1=0.3)
-        assert_allclose(m.ia_plus_sigma,  np.exp(m.ln_ia + m.ln_std))
+        assert_allclose(m.ia_plus_sigma, np.exp(m.ln_ia + m.ln_std))
         assert_allclose(m.ia_minus_sigma, np.exp(m.ln_ia - m.ln_std))
 
     def test_ia_increases_with_pga(self):
@@ -220,7 +228,10 @@ def test_cy14_backbone_magnitude_scaling_absolute_units():
             for mag in mags
         ]
     )
-    assert_allclose(ia_model, ia_csv, rtol=0.30) # Large tolerance due to mismatch. It's possible the implementation of CY14 backbone in pygmm differs from the one used to generate the original figure.
+    assert_allclose(ia_model, ia_csv, rtol=0.30)
+    # Large tolerance due to mismatch. It is possible the implementation of the
+    # CY14 backbone in pygmm differs from the one used to generate the original
+    # figure.
 
 
 class TestScenarioModeGeneral:
@@ -238,8 +249,8 @@ class TestScenarioModeGeneral:
         assert m_scen.ln_std > m_cond.ln_std
 
     def test_ia_decreases_with_distance_scenario(self):
-        m_near = AbrahamsonShiYang2016(_cy14_scenario(7.0, 760, 10.0),  backbone="CY14")
-        m_far  = AbrahamsonShiYang2016(_cy14_scenario(7.0, 760, 100.0), backbone="CY14")
+        m_near = AbrahamsonShiYang2016(_cy14_scenario(7.0, 760, 10.0), backbone="CY14")
+        m_far = AbrahamsonShiYang2016(_cy14_scenario(7.0, 760, 100.0), backbone="CY14")
         assert m_near.ia > m_far.ia
 
     @pytest.mark.parametrize("backbone", ["ASK14", "BSSA14", "CB14", "CY14", "I14"])

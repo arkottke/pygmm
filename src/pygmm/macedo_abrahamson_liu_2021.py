@@ -65,10 +65,10 @@ class MacedoAbrahamsonLiu2021(model.Model):
     C6 = 0.17
 
     # Aleatory variability (Table 1).
-    # Note: sqrt(0.17² + 0.26²) ≈ 0.31. 
-    TAU = 0.17   # between-event
-    PHI = 0.26   # within-event
-    SIGMA_COND = float(np.sqrt(TAU**2 + PHI**2))  
+    # Note: sqrt(0.17² + 0.26²) ≈ 0.31.
+    TAU = 0.17  # between-event
+    PHI = 0.26  # within-event
+    SIGMA_COND = float(np.sqrt(TAU**2 + PHI**2))
 
     SUPPORTED_PGA_MODELS = ("ASK14", "BSSA14", "CB14", "CY14", "I14")
 
@@ -194,6 +194,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
 # ------------------------------------------------------------------ #
 # Module-level taper functions (Eqs. 13a–c)                          #
 # ------------------------------------------------------------------ #
+
 
 def _t1_dip(dip):
     """Dip taper T1 — Eq. (13a) of Macedo et al. (2021)."""

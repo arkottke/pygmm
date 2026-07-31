@@ -55,7 +55,9 @@ class AfshariStewart2016(model.Model):
         # stress drop indices for duration measures
 
         stress_drop = np.exp(
-            b_1 + b_2 * (np.minimum(s.mag, mag_2) - mag_star) + b_3 * np.maximum((s.mag - mag_2), 0)
+            b_1
+            + b_2 * (np.minimum(s.mag, mag_2) - mag_star)
+            + b_3 * np.maximum((s.mag - mag_2), 0)
         )
         # corner frequency
         f_0 = self._corner_freq(stress_drop)
@@ -97,12 +99,12 @@ class AfshariStewart2016(model.Model):
         phi_1 = np.array([0.54, 0.43, 0.56])
         phi_2 = np.array([0.41, 0.35, 0.45])
         # aleatory variability
-        tau = tau_1 + (tau_2 - tau_1) * (np.minimum(np.maximum(s.mag, 6.5), 7.0) - 6.5) / (
-            7.0 - 6.5
-        )
-        phi = phi_1 + (phi_2 - phi_1) * (np.minimum(np.maximum(s.mag, 5.5), 5.75) - 5.5) / (
-            5.75 - 5.50
-        )
+        tau = tau_1 + (tau_2 - tau_1) * (
+            np.minimum(np.maximum(s.mag, 6.5), 7.0) - 6.5
+        ) / (7.0 - 6.5)
+        phi = phi_1 + (phi_2 - phi_1) * (
+            np.minimum(np.maximum(s.mag, 5.5), 5.75) - 5.5
+        ) / (5.75 - 5.50)
 
         # total druation
         self._ln_dur = np.log(F_E + F_P) + F_S
@@ -124,7 +126,10 @@ class AfshariStewart2016(model.Model):
             slope = -7.15 / power
 
         return (
-            np.exp(slope * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power)))
+            np.exp(
+                slope
+                * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power))
+            )
             / 1000
         )
 
