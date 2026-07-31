@@ -3,7 +3,6 @@
 import collections
 import os
 import warnings
-from typing import List, Optional
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -141,7 +140,7 @@ class Scenario(collections.UserDict):
     def _check_keys(self, keys):
         for k in keys:
             if k not in self.KNOWN_KEYS:
-                raise Warning("%s is not a recognized scenario key!" % k)
+                raise Warning(f"{k} is not a recognized scenario key!")
 
 
 class Model:
@@ -205,7 +204,7 @@ class GroundMotionModel(Model):
         self._ln_std = None
 
     def interp_ln_spec_accels(
-        self, periods: ArrayLike, kind: Optional[str] = "linear"
+        self, periods: ArrayLike, kind: str | None = "linear"
     ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
@@ -237,7 +236,7 @@ class GroundMotionModel(Model):
         )(np.log(periods))
 
     def interp_spec_accels(
-        self, periods: ArrayLike, kind: Optional[None] = "linear"
+        self, periods: ArrayLike, kind: str = "linear"
     ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
@@ -261,9 +260,7 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(
-        self, periods: ArrayLike, kind: Optional[None] = "linear"
-    ) -> np.ndarray:
+    def interp_ln_stds(self, periods: ArrayLike, kind: str = "linear") -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -431,9 +428,9 @@ class NumericParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        min_: Optional[float] = None,
-        max_: Optional[float] = None,
-        default: Optional[float] = None,
+        min_: float | None = None,
+        max_: float | None = None,
+        default: float | None = None,
     ):
         """Initialize parameter."""
         super().__init__(name, required, default)
@@ -492,15 +489,15 @@ class CategoricalParameter(Parameter):
         self,
         name: str,
         required: bool = False,
-        options: Optional[List[str]] = None,
-        default: Optional[str] = None,
+        options: list[str] | None = None,
+        default: str | None = None,
     ):
         """Initialize parameter."""
         super().__init__(name, required, default)
         self._options = options or []
 
     @property
-    def options(self) -> List[str]:
+    def options(self) -> list[str]:
         """Possible options."""
         return self._options
 

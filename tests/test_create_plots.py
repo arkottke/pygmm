@@ -57,7 +57,7 @@ def plot_model_with_param(model, key, values, label):
             for k in key:
                 props[k] = v
         m = model(**props)
-        ax.plot(m.periods, m.spec_accels, label="%g" % v)
+        ax.plot(m.periods, m.spec_accels, label=f"{v:g}")
 
     ax.set_xlabel("Period (s)")
     try:

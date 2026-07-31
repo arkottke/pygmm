@@ -50,7 +50,7 @@ def get_results(wb):
     d = {}
     # Collect PGA and PGV
     for key, row in zip(["pga", "pgv"], [13, 10]):
-        d[key] = xw.Range("ANN(PGA)", "O%d" % row, wkb=wb).value
+        d[key] = xw.Range("ANN(PGA)", f"O{row}", wkb=wb).value
 
     # Collect response spectrum
     for key, rc in zip(["periods", "spec_accels"], "NO"):

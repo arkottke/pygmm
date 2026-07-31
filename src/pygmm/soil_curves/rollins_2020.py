@@ -57,8 +57,9 @@ class RollinsEtAlSoilType(ModifiedHyperbolicBase):
 
         if not name:
             if coef_unif is not None:
-                name = "Rollins et al. (2020) - Cu={:.1f}, σ'₀={:.0f} kPa".format(
-                    coef_unif, stress_mean
+                name = (
+                    f"Rollins et al. (2020) - Cu={coef_unif:.1f}, "
+                    f"σ'₀={stress_mean:.0f} kPa"
                 )
             else:
                 name = f"Rollins et al. (2020) - σ'₀={stress_mean:.0f} kPa"

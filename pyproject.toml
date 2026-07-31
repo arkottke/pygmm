@@ -35,7 +35,6 @@ docs = [
     "pint",
 ]
 style = [
-    "black[colorama,jupyter]",
     "ruff",
 ]
 
@@ -60,7 +59,7 @@ extend-include = ["*.ipynb"]
 quote-style = "double"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "Q", "I"]
+select = ["E", "F", "W", "Q", "I", "UP"]
 ignore = ["E203"]
 
 [tool.pytest.ini_options]

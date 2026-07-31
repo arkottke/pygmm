@@ -86,15 +86,13 @@ def get_results(wb, abbrev):
     # Collect response spectrum
     d = {}
     for key, rc in zip(["periods", "spec_accels", "ln_stds"], result_columns):
-        d[key] = xw.Range(sheetname, "{col}6:{col}26".format(col=rc), wkb=wb).value
+        d[key] = xw.Range(sheetname, f"{rc}6:{rc}26", wkb=wb).value
 
     # Collect the PGA and PGV
     for key, row in zip(["pga", "pgv"], [28, 29]):
         values = xw.Range(
             sheetname,
-            "{col0:}{row:d}:{col1:}{row:d}".format(
-                col0=result_columns[1], col1=result_columns[2], row=row
-            ),
+            f"{result_columns[1]}{row:d}:{result_columns[2]}{row:d}",
             wkb=wb,
         ).value
         for subkey, v in zip(["", "_ln_std"], values):

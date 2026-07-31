@@ -1,7 +1,6 @@
 """Chiou and Youngs (2014, :cite:`chiou14`) model."""
 
 import logging
-from typing import Optional
 
 import numpy as np
 
@@ -162,7 +161,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
     @classmethod
     def calc_site_term(
-        cls, resp_ref: ArrayLike, v_s30: float, depth_1_0: float, region: Optional[str]
+        cls, resp_ref: ArrayLike, v_s30: float, depth_1_0: float, region: str | None
     ) -> ArrayLike:
         """Calculate the site term, which includes site and basin effects.
 

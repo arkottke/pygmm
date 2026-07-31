@@ -1,7 +1,6 @@
 """Model for the Campbell and Bozorgnia (2014) ground motion model."""
 
 import logging
-from typing import Optional
 
 import numpy as np
 
@@ -332,7 +331,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_2_5(
-        v_s30: float, region: str = "global", depth_1_0: Optional[float] = None
+        v_s30: float, region: str = "global", depth_1_0: float | None = None
     ) -> float:
         """Calculate the depth to a shear-wave velocity of 2.5 km/sec
         (:math:`Z_{2.5}`).

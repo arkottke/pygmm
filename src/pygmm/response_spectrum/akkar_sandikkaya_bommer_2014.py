@@ -41,7 +41,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
 
     # Load the coefficients for the model
     COEFF = collections.OrderedDict(
-        (k, model.load_data_file("akkar-sandikkaya-bommer-2014-%s.csv" % k, 2))
+        (k, model.load_data_file(f"akkar-sandikkaya-bommer-2014-{k}.csv", 2))
         for k in ["dist_jb", "dist_hyp", "dist_epi"]
     )
     PERIODS = np.array(COEFF["dist_jb"].period)

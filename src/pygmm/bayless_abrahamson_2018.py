@@ -1,7 +1,5 @@
 """Bayless and Abrahamson (2018, :cite:`bayless19`) correlation."""
 
-from typing import Optional
-
 import numpy as np
 import numpy.typing as npt
 
@@ -62,8 +60,8 @@ class BaylessAbrahamson2018:
         cls,
         freqs,
         *,
-        std: Optional[npt.ArrayLike] = None,
-        component: Optional[str] = None,
+        std: npt.ArrayLike | None = None,
+        component: str | None = None,
     ) -> np.ndarray:
         """
         Parameters

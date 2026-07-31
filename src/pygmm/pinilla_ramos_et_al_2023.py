@@ -1,7 +1,5 @@
 """Pinilla-Ramos et al. (2023, :cite:`pinilla-ramos23`) duration model."""
 
-from typing import Tuple
-
 import numpy as np
 
 from . import model
@@ -42,7 +40,7 @@ class PinillaRamosEtAl2023(model.Model):
             self._calc_duration(0.75)
         )
 
-    def _calc_duration(self, energy: float = 0.75) -> Tuple[float, float, float]:
+    def _calc_duration(self, energy: float = 0.75) -> tuple[float, float, float]:
         """Calculate duration for specified energy threshold.
 
         Parameters
@@ -353,7 +351,7 @@ class PinillaRamosEtAl2023(model.Model):
         """Duration minus one standard deviation in seconds."""
         return self._duration_minus_sigma
 
-    def duration_for_energy(self, energy: float) -> Tuple[float, float, float]:
+    def duration_for_energy(self, energy: float) -> tuple[float, float, float]:
         """Calculate duration for specified energy threshold.
 
         Parameters

@@ -1,7 +1,5 @@
 """Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model."""
 
-from typing import Tuple
-
 import numpy as np
 
 from . import model
@@ -276,7 +274,7 @@ class PinillaRamosEtAl2024(model.Model):
             + np.log(vs30) * c1
         )
 
-    def _get_energy_coefficients(self, energy: float) -> Tuple[float, ...]:
+    def _get_energy_coefficients(self, energy: float) -> tuple[float, ...]:
         """Get the model coefficients for a specific energy threshold.
 
         Parameters
@@ -624,7 +622,7 @@ class PinillaRamosEtAl2024(model.Model):
 
         return c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2
 
-    def _calc_duration(self, energy: float = 0.75) -> Tuple[float, float, float]:
+    def _calc_duration(self, energy: float = 0.75) -> tuple[float, float, float]:
         """Calculate duration for specified energy threshold.
 
         Parameters
@@ -709,7 +707,7 @@ class PinillaRamosEtAl2024(model.Model):
         """D5-75 duration minus one standard deviation in seconds."""
         return self._duration_minus_sigma
 
-    def duration_for_energy(self, energy: float) -> Tuple[float, float, float]:
+    def duration_for_energy(self, energy: float) -> tuple[float, float, float]:
         """Calculate duration for specified energy threshold.
 
         Parameters
@@ -763,7 +761,7 @@ def duration_model(
     region: str,
     eq_type: str,
     energy: float,
-) -> Tuple[ArrayLike, ArrayLike, ArrayLike]:
+) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
     """Legacy duration model function for backward compatibility.
 
     Parameters

@@ -1,7 +1,6 @@
 """Boore, Stewart, Seyhan, and Atkinson (2014) ground motion model."""
 
 import logging
-from typing import Optional
 
 import numpy as np
 
@@ -216,7 +215,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         cls,
         pga_ref: float,
         v_s30: float,
-        depth_1_0: Optional[float],
+        depth_1_0: float | None,
         region: str = "california",
     ) -> ArrayLike:
         """Calculate the site term, which includes site and basin effects.

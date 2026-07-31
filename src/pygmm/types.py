@@ -1,7 +1,5 @@
 """Common types used across the project."""
 
-import typing
-
 import numpy as np
 
-ArrayLike = typing.Union[typing.List[float], np.ndarray]
+ArrayLike = list[float] | np.ndarray

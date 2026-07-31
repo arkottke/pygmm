@@ -89,6 +89,7 @@ class MenqSoilType(ModifiedHyperbolicBase):
         return 0.86 + 0.1 * np.log10(self._stress_mean * _KPA_TO_ATM)
 
     def _create_name(self) -> str:
-        return "Menq (Cᵤ={:.1f}, D₅₀={:.1f} mm, σₘ'={:.1f} kN/m²)".format(
-            self._coef_unif, self._diam_mean, self._stress_mean
+        return (
+            f"Menq (Cᵤ={self._coef_unif:.1f}, D₅₀={self._diam_mean:.1f} mm, "
+            f"σₘ'={self._stress_mean:.1f} kN/m²)"
         )

@@ -53,7 +53,7 @@ def get_results(wb):
         d = {}
         # Collect PGA and PGV
         for key, row in zip(["pga", "pgv"], [3, 4]):
-            d[key] = xw.Range("Input-Output", "%s%d" % (col, row), wkb=wb).value
+            d[key] = xw.Range("Input-Output", f"{col}{row}", wkb=wb).value
 
         # Collect response spectrum
         for key, c in zip(["periods", "spec_accels"], ["F", col]):

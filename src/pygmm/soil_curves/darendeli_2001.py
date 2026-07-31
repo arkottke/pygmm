@@ -92,6 +92,7 @@ class DarendeliSoilType(ModifiedHyperbolicBase):
         return 0.9190
 
     def _create_name(self) -> str:
-        return "Darendeli (PI={:.0f}, OCR={:.1f}, σₘ'={:.1f} kN/m²)".format(
-            self._plas_index, self._ocr, self._stress_mean
+        return (
+            f"Darendeli (PI={self._plas_index:.0f}, OCR={self._ocr:.1f}, "
+            f"σₘ'={self._stress_mean:.1f} kN/m²)"
         )

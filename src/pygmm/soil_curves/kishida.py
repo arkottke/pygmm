@@ -89,8 +89,9 @@ class KishidaSoilType(SoilCurveModel):
         damping = self._calc_damping(mod_reduc, x_2_arr, x_2_mean, x_3_arr, x_3_mean)
 
         if not name:
-            name = "Kishida (σᵥ'={:.1f} kN/m², OC={:.0f} %)".format(
-                self._stress_vert, self._organic_content
+            name = (
+                f"Kishida (σᵥ'={self._stress_vert:.1f} kN/m², "
+                f"OC={self._organic_content:.0f} %)"
             )
         self.name = name
 

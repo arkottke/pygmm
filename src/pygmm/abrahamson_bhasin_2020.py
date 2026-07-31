@@ -1,7 +1,5 @@
 """Abrahamson and Bhasin (2020, :cite:`abrahamson20`) model."""
 
-from typing import Optional
-
 import numpy as np
 
 from . import model
@@ -85,9 +83,9 @@ class AbrahamsonBhasin2020(model.Model):
     def __init__(
         self,
         scenario: model.Scenario,
-        psa=Optional[float],
-        pga=Optional[float],
-        psa_1s=Optional[float],
+        psa: float | None = None,
+        pga: float | None = None,
+        psa_1s: float | None = None,
     ):
         super().__init__(scenario)
 
@@ -119,7 +117,7 @@ class AbrahamsonBhasin2020(model.Model):
             + C.a_4 * (s.mag - 6)
             + C.a_5 * (8.5 - s.mag) ** 2
             + C.a_6 * np.log(s.dist_rup + 5 * np.exp(0.4 * (s.mag - 6)))
-            + (C.a_7 + C.a_8 * (s.mag - 5)) * np.log(C.v_s30 / self.V_REF)
+            + (C.a_7 + C.a_8 * (s.mag - 5)) * np.log(s.v_s30 / self.V_REF)
         )
 
         if method == "psa(T=Tpgv)":
@@ -127,14 +125,12 @@ class AbrahamsonBhasin2020(model.Model):
         else:
 
             def interp(var_1, var_2):
-                if s.mag < C.mag_1:
+                if s.mag < C.M_1:
                     val = var_1
-                elif s.mag > C.mag_2:
+                elif s.mag > C.M_2:
                     val = var_2
                 else:
-                    val = var_1 + (var_2 - var_1) * (s.mag - C.mag_1) / (
-                        C.mag_2 - C.mag_1
-                    )
+                    val = var_1 + (var_2 - var_1) * (s.mag - C.M_1) / (C.M_2 - C.M_1)
                 return val
 
             phi = interp(C.phi_1, C.phi_2)
