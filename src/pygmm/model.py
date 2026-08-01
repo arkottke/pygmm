@@ -7,6 +7,7 @@ import warnings
 import numpy as np
 from scipy.interpolate import interp1d
 
+from .contracts import ResponseSpectrum
 from .types import ArrayLike
 
 
@@ -302,6 +303,32 @@ class GroundMotionModel(Model):
     def spec_accels(self) -> np.ndarray:
         """Pseudo-spectral accelerations computed by the model (g)."""
         return self._resp(self.INDICES_PSA)
+
+    def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum:
+        """Return the computed PSA as a response spectrum.
+
+        The result is duck-typed for cross-package interop, matching
+        :class:`~pygmm.contracts.ResponseSpectrum`, so it can be handed to
+        consumers such as ``pyrvt.motions.CompatibleRvtMotion`` without those
+        packages depending on pygmm.
+
+        Parameters
+        ----------
+        damping : float, optional
+            Fractional damping of the oscillator. Ground motion models are
+            published for 5% damping, which is the default.
+
+        Returns
+        -------
+        response_spectrum : :class:`~pygmm.contracts.ResponseSpectrum`
+            Periods, spectral accelerations, and damping.
+
+        """
+        return ResponseSpectrum(
+            periods=self.periods,
+            spec_accels=self.spec_accels,
+            damping=damping,
+        )
 
     @property
     def ln_stds(self) -> np.ndarray:
