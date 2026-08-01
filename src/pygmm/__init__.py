@@ -8,6 +8,23 @@ except ImportError:
     # For development installs
     __version__ = "unknown"
 
+# Expose the category subpackages as attributes, so that `import pygmm`
+# followed by `pygmm.fourier_spectrum.SourceTheoryModel` works. Without this
+# they are reachable only via an explicit `import pygmm.fourier_spectrum`, and
+# which ones happened to be bound depended on whether some name was imported
+# from them below.
+from . import (
+    contracts,
+    correlation,
+    cpt,
+    duration,
+    fault_displacement,
+    fourier_spectrum,
+    response_spectrum,
+    soil_curves,
+    tools,
+    velocity_profile,
+)
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
 from .abrahamson_shi_yang_2016 import AbrahamsonShiYang2016
@@ -45,6 +62,18 @@ from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 from .velocity_profile import kea16_profile
 
 __all__ = [
+    # Category subpackages
+    "contracts",
+    "correlation",
+    "cpt",
+    "duration",
+    "fault_displacement",
+    "fourier_spectrum",
+    "response_spectrum",
+    "soil_curves",
+    "tools",
+    "velocity_profile",
+    # Models and helpers
     "Scenario",
     "AbrahamsonBhasin2020",
     "AbrahamsonShiYang2016",
