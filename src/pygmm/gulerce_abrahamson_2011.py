@@ -3,7 +3,7 @@
 import numpy as np
 
 from . import model
-from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014 as ASK14
+from .response_spectrum import AbrahamsonSilvaKamai2014 as ASK14
 from .types import ArrayLike
 
 __author__ = "Albert Kottke"

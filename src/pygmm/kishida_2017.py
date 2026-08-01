@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from .baker_jayaram_2008 import calc_correls
+from .correlation import calc_correls
 from .types import ArrayLike
 
 
@@ -16,7 +16,7 @@ def calc_cond_mean_spectrum_vector(
     multiple periods, rather than the single conditioning period by Cornell and
     Baker (2008). If this approach is used for a single period, then the
     resulting spectrum is the same as computed by Cornell and Baker (2008) --
-    implemented by :func:`~pygmm.baker_jayaram_2008.calc_cond_mean_spectrum`.
+    implemented by :func:`~pygmm.correlation.calc_cond_mean_spectrum`.
 
     Parameters
     ----------

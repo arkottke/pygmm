@@ -2,8 +2,8 @@
 
 import numpy as np
 
-from . import model
-from .types import ArrayLike
+from .. import model
+from ..types import ArrayLike
 
 __author__ = "Albert Kottke"
 

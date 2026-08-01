@@ -187,20 +187,22 @@ class AbrahamsonShiYang2016(model.Model):
 
     def _build_backbone(self, backbone):
         """Lazily import and instantiate the chosen backbone NGA-West2 GMM."""
+        # Imported from the package namespace rather than by module path, so
+        # this does not need updating when a model moves between subpackages.
         from . import (
-            abrahamson_silva_kamai_2014,
-            boore_stewart_seyhan_atkinson_2014,
-            campbell_bozorgnia_2014,
-            chiou_youngs_2014,
-            idriss_2014,
+            AbrahamsonSilvaKamai2014,
+            BooreStewartSeyhanAtkinson2014,
+            CampbellBozorgnia2014,
+            ChiouYoungs2014,
+            Idriss2014,
         )
 
         gmm_map = {
-            "ASK14": abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014,
-            "BSSA14": boore_stewart_seyhan_atkinson_2014.BooreStewartSeyhanAtkinson2014,
-            "CB14": campbell_bozorgnia_2014.CampbellBozorgnia2014,
-            "CY14": chiou_youngs_2014.ChiouYoungs2014,
-            "I14": idriss_2014.Idriss2014,
+            "ASK14": AbrahamsonSilvaKamai2014,
+            "BSSA14": BooreStewartSeyhanAtkinson2014,
+            "CB14": CampbellBozorgnia2014,
+            "CY14": ChiouYoungs2014,
+            "I14": Idriss2014,
         }
         return gmm_map[backbone](self._full_scenario)
 

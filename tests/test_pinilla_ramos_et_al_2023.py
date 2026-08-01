@@ -9,7 +9,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 import pygmm
-from pygmm.pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
+from pygmm.duration import PinillaRamosEtAl2023
 
 # Load test data
 fpath = os.path.join(
