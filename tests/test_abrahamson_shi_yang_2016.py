@@ -9,7 +9,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 from pygmm import Scenario
-from pygmm.abrahamson_shi_yang_2016 import (
+from pygmm.gm_intensity.abrahamson_shi_yang_2016 import (
     AbrahamsonShiYang2016,
     _calc_scenario_ln_std,
     _t1_dip,

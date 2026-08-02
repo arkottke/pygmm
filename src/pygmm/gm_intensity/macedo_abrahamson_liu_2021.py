@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from . import model
+from .. import model
 
 __author__ = "Mahdi Bahrampouri"
 
@@ -175,7 +175,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
         """Lazily import and instantiate the chosen backbone PGA GMM."""
         # Imported from the package namespace rather than by module path, so
         # this does not need updating when a model moves between subpackages.
-        from . import (
+        from .. import (
             AbrahamsonSilvaKamai2014,
             BooreStewartSeyhanAtkinson2014,
             CampbellBozorgnia2014,

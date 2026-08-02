@@ -20,17 +20,16 @@ from . import (
     duration,
     fault_displacement,
     fourier_spectrum,
+    gm_intensity,
     response_spectrum,
     soil_curves,
     tools,
     velocity_profile,
 )
-from .abrahamson_shi_yang_2016 import AbrahamsonShiYang2016
 from .bayless_abrahamson_2018 import BaylessAbrahamson2018
 from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
 from .campbell_bozorgnia_2014 import CampbellBozorgnia2014
 from .chiou_youngs_2014 import ChiouYoungs2014
-from .correlation import AbrahamsonBhasin2020
 from .derras_bard_cotton_2014 import DerrasBardCotton2014
 from .duration import (
     AbrahamsonSilva1996,
@@ -40,8 +39,12 @@ from .duration import (
     PinillaRamosEtAl2024,
 )
 from .fourier_spectrum import BaylessAbrahamson2019
+from .gm_intensity import (
+    AbrahamsonBhasin2020,
+    AbrahamsonShiYang2016,
+    MacedoAbrahamsonLiu2021,
+)
 from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
-from .macedo_abrahamson_liu_2021 import MacedoAbrahamsonLiu2021
 from .model import Scenario
 from .response_spectrum import (
     AbrahamsonGregorAddo2016,
@@ -73,6 +76,7 @@ __all__ = [
     "duration",
     "fault_displacement",
     "fourier_spectrum",
+    "gm_intensity",
     "response_spectrum",
     "soil_curves",
     "tools",
