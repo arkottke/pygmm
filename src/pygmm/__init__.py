@@ -40,7 +40,14 @@ from .soil_curves import (
 )
 from .stafford_2017 import Stafford2017
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
-from .velocity_profile import kea16_profile
+from .velocity_profile import (
+    bj97gr760_profile,
+    bj97gr_profile,
+    bj97gvhr_profile,
+    btc11_profile,
+    kea16_profile,
+    sa18_profile,
+)
 
 __all__ = [
     "Scenario",
@@ -73,6 +80,11 @@ __all__ = [
     "RollinsEtAlSoilType",
     "WangSoilType",
     "kea16_profile",
+    "sa18_profile",
+    "bj97gr760_profile",
+    "bj97gr_profile",
+    "bj97gvhr_profile",
+    "btc11_profile",
 ]
 
 __author__ = "Albert Kottke"
