@@ -10,7 +10,7 @@ description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
 requires-python = ">=3.10"
-dependencies = ["matplotlib", "numpy", "pandas", "scipy"]
+dependencies = ["matplotlib", "numpy", "pandas", "pint", "scipy"]
 
 [project.optional-dependencies]
 test = [
@@ -32,7 +32,6 @@ docs = [
     "ipython",
     "linkify-it-py",
     "lxml[html_clean]",
-    "pint",
 ]
 style = [
     "black[colorama,jupyter]",
