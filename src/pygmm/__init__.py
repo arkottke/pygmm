@@ -16,10 +16,11 @@ except ImportError:
 # ones happened to be bound depended on whether some name was imported from
 # them below.
 #
-# There are exactly three, and the independent variable decides which: shear
-# strain -> soil_curves, frequency -> fourier_spectrum, period (or a scalar
-# conditioned on a Scenario) -> ground_motion. Anything else stays at the top
-# level until a second producer of the same quantity earns it a package.
+# There are three governed by the independent variable: shear strain ->
+# soil_curves, frequency -> fourier_spectrum, period (or a scalar conditioned
+# on a Scenario) -> ground_motion. Anything else stays at the top level until
+# a second producer of the same quantity earns it a package -- velocity_profile
+# is that case: multiple producers of contracts.VelocityProfile.
 #
 # `soil_curves` is the exception: it is imported lazily (see `__getattr__`
 # below) because it is the only package pulling a heavy third-party
@@ -30,6 +31,7 @@ from . import (
     fourier_spectrum,
     ground_motion,
     registry,
+    velocity_profile,
 )
 from .fourier_spectrum import (
     BaylessAbrahamson2018,
@@ -60,9 +62,16 @@ from .ground_motion import (
     PinillaRamosEtAl2024,
     TavakoliPezeshk05,
 )
-from .kamai_2016 import kea16_profile
 from .model import Scenario
 from .registry import ModelInfo, get_model, register
+from .velocity_profile import (
+    bj97gr760_profile,
+    bj97gr_profile,
+    bj97gvhr_profile,
+    btc11_profile,
+    kea16_profile,
+    sa18_profile,
+)
 
 __all__ = [
     # Model subpackages
@@ -70,6 +79,7 @@ __all__ = [
     "fourier_spectrum",
     "ground_motion",
     "soil_curves",
+    "velocity_profile",
     # Registry
     "ModelInfo",
     "find_models",
@@ -109,6 +119,11 @@ __all__ = [
     "RollinsEtAlSoilType",
     "WangSoilType",
     "kea16_profile",
+    "sa18_profile",
+    "bj97gr760_profile",
+    "bj97gr_profile",
+    "bj97gvhr_profile",
+    "btc11_profile",
 ]
 
 __author__ = "Albert Kottke"

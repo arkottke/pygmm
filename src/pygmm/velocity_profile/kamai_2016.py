@@ -7,7 +7,7 @@ import warnings
 import numpy as np
 import numpy.typing as npt
 
-from .contracts import VelocityProfile
+from ..contracts import VelocityProfile
 
 
 def kea16_profile(depth: npt.ArrayLike, vs30: float, region: str) -> VelocityProfile:
