@@ -8,7 +8,7 @@ import numpy as np
 import numpy.typing as npt
 
 from ..contracts import NonlinearSoilCurves
-from ._base import SoilCurveModel
+from ..registry import register
 from ._units import convert_kwds_units, convert_units
 
 _KPA_TO_ATM = 1.0 / 101.325
@@ -32,7 +32,8 @@ def _to_decimal(*keys):
     return decorator
 
 
-class WangSoilType(SoilCurveModel):
+@register(provides=("soil_curves",), input="kwargs")
+class WangSoilType:
     """Wang and Stokoe (2022) empirical nonlinear model for soils.
 
     Parameters
@@ -214,6 +215,93 @@ class WangSoilType(SoilCurveModel):
             else:
                 break
         return lvl
+
+    @classmethod
+    @_to_decimal("fines_cont", "plas_index", "water_cont")
+    def calc_shear_mod(cls, soil_group: str, **kwds) -> float:
+        """Small-strain shear modulus, Gmax [MPa]."""
+        level = cls.get_level("gmax_model", soil_group, **kwds)
+        if soil_group == "clean_sand_and_gravel":
+            if level == 0:
+                return 108.4 * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.51
+            elif level == 1:
+                return (
+                    67.5
+                    * kwds["void_ratio"] ** -0.86
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.5
+                )
+            elif level == 2:
+                return (
+                    66.5
+                    * kwds["void_ratio"] ** (-0.75 - (0.009 * kwds["diam_50"]) ** 1.58)
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.51
+                )
+            elif level == 3:
+                return (
+                    64.3
+                    * kwds["coef_unif"] ** -0.21
+                    * kwds["void_ratio"] ** (-1.08 - (0.09 * kwds["diam_50"]) ** 0.51)
+                    * (kwds["stress_mean"] * _KPA_TO_ATM)
+                    ** (0.47 * kwds["coef_unif"] ** 0.06)
+                )
+            else:
+                return (
+                    63.9
+                    * kwds["coef_unif"] ** -0.21
+                    * kwds["void_ratio"] ** (-1.12 - (0.09 * kwds["diam_50"]) ** 0.54)
+                    * (kwds["stress_mean"] * _KPA_TO_ATM)
+                    ** (0.48 * kwds["coef_unif"] ** 0.08 - 1.03 * kwds["fines_cont"])
+                )
+        elif soil_group == "nonplastic_silty_sand":
+            if level == 0:
+                return 89.1 * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.51
+            elif level == 1:
+                return (
+                    59.2
+                    * kwds["void_ratio"] ** -0.74
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.51
+                )
+            else:
+                return (
+                    84.8
+                    * kwds["void_ratio"] ** -0.53
+                    * (1 - 1.32 * kwds["water_cont"])
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.52
+                )
+        elif soil_group == "clayey_soil":
+            if level == 0:
+                return 77.2 * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.48
+            elif level == 1:
+                return (
+                    52.3
+                    * kwds["void_ratio"] ** -1.08
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.4
+                )
+            elif level == 2:
+                return (
+                    18.9
+                    * kwds["void_ratio"] ** -0.97
+                    * (4.5 + kwds["ocr"]) ** 0.54
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.48
+                )
+            elif level == 3:
+                return (
+                    34
+                    * kwds["void_ratio"] ** -0.8
+                    * (3.13 + kwds["ocr"]) ** 0.53
+                    * (1 - 0.46 * kwds["fines_cont"])
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.51
+                )
+            else:
+                return (
+                    232.9
+                    * (1 + 0.96 * kwds["void_ratio"]) ** -2.42
+                    * (1.92 + kwds["ocr"]) ** (0.27 + 0.46 * kwds["plas_index"])
+                    * (1 - 0.44 * kwds["fines_cont"])
+                    * (kwds["stress_mean"] * _KPA_TO_ATM) ** 0.49
+                )
+        else:
+            raise ValueError("Invalid soil group")
 
     @classmethod
     @_to_decimal("fines_cont", "plas_index", "water_cont")

@@ -44,7 +44,7 @@ Perform the analysis:
 
 .. code-block:: python
 
-   model = pygmm.CampbellBozorgnia2014()
+   model = pygmm.CampbellBozorgnia2014(scenario)
 
    # Store results
    pga_results = []
@@ -60,7 +60,7 @@ Perform the analysis:
        )
 
        # Calculate ground motion
-       ln_sa, ln_std = model(scenario)
+       ln_sa, ln_std = np.log(model.spec_accels), model.ln_stds
        sa = np.exp(ln_sa)
 
        # Add aleatory uncertainty

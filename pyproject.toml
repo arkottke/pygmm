@@ -9,8 +9,16 @@ authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.10"
-dependencies = ["matplotlib", "numpy", "pandas", "scipy"]
+requires-python = ">=3.12"
+# Lower bounds follow SPEC 0: the oldest minor released within the last
+# 24 months. See the SPEC 0 note below for the review schedule.
+dependencies = [
+    "matplotlib>=3.10",
+    "numpy>=2.1",
+    "pandas>=2.3",
+    "pint>=0.25",
+    "scipy>=1.15",
+]
 
 [project.optional-dependencies]
 test = [
@@ -32,11 +40,44 @@ docs = [
     "ipython",
     "linkify-it-py",
     "lxml[html_clean]",
-    "pint",
 ]
 style = [
     "ruff",
 ]
+typing = [
+    "mypy",
+    "pandas-stubs",
+    "scipy-stubs",
+]
+
+# Synced automatically by `uv sync` / `uv run`, so `uv run pytest` and
+# `uv run mypy` work in the project .venv without a separate install step.
+[dependency-groups]
+dev = [
+    "coverage[toml]",
+    "mypy",
+    "pandas-stubs",
+    "scipy-stubs",
+    "pytest",
+    "pytest-cov",
+    "ruff",
+]
+
+# ---------------------------------------------------------------------------
+# SPEC 0 -- Minimum Supported Dependencies
+# https://scientific-python.org/specs/spec-0000/
+#
+# Python:       support minors released in the last 36 months.
+# Core packages: support minors released in the last 24 months.
+#
+# Reviewed 2026-08-03. Next scheduled changes:
+#   2026-08-18  numpy >=2.2       (2.1 released 2024-08-18)
+#   2026-10-01  drop Python 3.12  -> requires-python >=3.13
+#   2026-12-14  matplotlib >=3.11 (3.10 released 2024-12-14)
+#   2027-01-03  scipy >=1.16      (1.15 released 2025-01-03)
+#   2027-06-05  pandas >=3.0      (2.3 released 2025-06-05)
+#   2027-08-15  pint >=0.26       (0.25 released 2025-08-15)
+# ---------------------------------------------------------------------------
 
 [project.urls]
 Homepage = "https://github.com/arkottke/pygmm"
@@ -52,7 +93,7 @@ write_to = "src/pygmm/_version.py"
 exclude = ["docs"]
 line-length = 88
 indent-width = 4
-target-version = "py310"
+target-version = "py312"
 extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
@@ -66,7 +107,11 @@ ignore = ["E203"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+# Coverage is opt-in (`--cov=pygmm`) rather than forced through addopts: the
+# old pytest.ini hard-coded it, so pytest failed outright in any environment
+# without pytest-cov.
 addopts = ["--strict-markers", "--strict-config"]
+markers = ["slow: deselect with '-m \"not slow\"'"]
 
 [tool.coverage.run]
 source = ["src/pygmm"]
@@ -84,3 +129,48 @@ exclude_lines = [
 inherit = false
 convention = "numpy"
 match = "(?!test_).*\\.py"
+
+[tool.mypy]
+python_version = "3.12"
+files = ["src/pygmm"]
+# The scientific stack is only partially typed; stubs are pulled in for pandas
+# and scipy, and the rest is allowed through untyped.
+ignore_missing_imports = true
+follow_imports = "normal"
+# The point of type-checking here is that the `contracts.Supports*` protocols
+# are satisfied structurally, and that public signatures are coherent. The
+# model bodies are dense numerical code that was never annotated, so full
+# strictness is not the goal.
+check_untyped_defs = false
+warn_unused_ignores = true
+warn_redundant_casts = true
+no_implicit_optional = true
+
+[[tool.mypy.overrides]]
+module = ["pygmm.contracts", "pygmm.registry"]
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+
+# Staged rollout. These 13 modules are dense, never-annotated numerical code
+# whose errors are almost entirely numpy/ArrayLike friction (recarray field
+# access mypy cannot see, `npt.ArrayLike` being a broad union). The framework
+# -- model, contracts, registry, kamai_2016 -- and every other model module
+# type-check clean, so `mypy` is a green gate today. Remove entries from this
+# list as the modules are annotated; do not add to it.
+[[tool.mypy.overrides]]
+module = [
+    "pygmm.fourier_spectrum.bayless_abrahamson_2018",
+    "pygmm.fourier_spectrum.bayless_abrahamson_2019",
+    "pygmm.fourier_spectrum.source_theory",
+    "pygmm.fourier_spectrum.stafford_2022",
+    "pygmm.ground_motion.abrahamson_shi_yang_2016",
+    "pygmm.ground_motion.abrahamson_silva_kamai_2014",
+    "pygmm.ground_motion.boore_stewart_seyhan_atkinson_2014",
+    "pygmm.ground_motion.campbell_bozorgnia_2014",
+    "pygmm.ground_motion.chiou_youngs_2014",
+    "pygmm.ground_motion.derras_bard_cotton_2014",
+    "pygmm.ground_motion.kishida_2017",
+    "pygmm.ground_motion.macedo_abrahamson_liu_2021",
+    "pygmm.soil_curves._hyperbolic",
+]
+ignore_errors = true

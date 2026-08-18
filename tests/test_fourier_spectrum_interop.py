@@ -7,9 +7,26 @@ piping them through ``RvtMotion.from_fas`` yields finite, positive PGA/PGV.
 import numpy as np
 import pytest
 
-from pygmm.fourier_spectrum import SourceTheoryModel, StaffordEtAl2022
+from pygmm import AfshariStewart2016, Scenario
+from pygmm.fourier_spectrum import (
+    BaylessAbrahamson2019,
+    SourceTheoryModel,
+    StaffordEtAl2022,
+)
 
 pyrvt = pytest.importorskip("pyrvt")
+
+
+@pytest.fixture
+def ba19_scenario():
+    return Scenario(
+        mag=6.5,
+        dist_rup=20.0,
+        dist_jb=20.0,
+        v_s30=760.0,
+        depth_tor=5.0,
+        mechanism="SS",
+    )
 
 
 @pytest.mark.parametrize("region", ["wna", "cena"])
@@ -52,6 +69,43 @@ def test_from_fas_stub():
     motion = pyrvt.motions.RvtMotion.from_fas(stub)
     assert np.all(np.isfinite(motion.fourier_amps))
     assert motion.duration == pytest.approx(5.0)
+
+
+class TestBaylessAbrahamson2019Interop:
+    """BA19 publishes an *effective amplitude spectrum* under the name ``eas``.
+
+    Consumers duck-type on ``fourier_amps``, so BA19 was unusable with pyRVT
+    until ``fourier_amps`` was added as the canonical alias.
+    """
+
+    def test_exposes_fourier_amps(self, ba19_scenario):
+        m = BaylessAbrahamson2019(ba19_scenario)
+        assert np.allclose(m.fourier_amps, m.eas)
+        assert np.all(np.isfinite(m.fourier_amps)) and np.all(m.fourier_amps > 0)
+
+    def test_has_no_intrinsic_duration(self, ba19_scenario):
+        """BA19 predicts EAS only; duration must come from a separate model.
+
+        This pins the reason ``from_fas`` cannot be used with BA19 directly.
+        """
+        m = BaylessAbrahamson2019(ba19_scenario)
+        assert not hasattr(m, "duration")
+        with pytest.raises(AttributeError):
+            pyrvt.motions.RvtMotion.from_fas(m)
+
+    def test_paired_with_duration_model(self, ba19_scenario):
+        """BA19 FAS + a duration model drives an RvtMotion to finite PGA/PGV."""
+        fas = BaylessAbrahamson2019(ba19_scenario)
+        duration = float(AfshariStewart2016(ba19_scenario).duration["D_5t75"])
+
+        motion = pyrvt.motions.RvtMotion(
+            freqs=fas.freqs, fourier_amps=fas.fourier_amps, duration=duration
+        )
+        pga = motion.calc_pga()
+        pgv = motion.calc_pgv()
+        # Loose physical bounds for a California M6.5 @ 20 km, Vs30 760 m/s
+        assert 0.01 < pga < 1.0
+        assert 1.0 < pgv < 100.0
 
 
 def test_from_fas_with_stafford_pgm():

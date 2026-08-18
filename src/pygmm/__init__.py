@@ -1,6 +1,8 @@
 """pyGMM: Ground motion models implemented in Python."""
 
+import importlib
 import logging
+import warnings
 
 try:
     from ._version import __version__
@@ -8,83 +10,76 @@ except ImportError:
     # For development installs
     __version__ = "unknown"
 
-# Expose the category subpackages as attributes, so that `import pygmm`
-# followed by `pygmm.fourier_spectrum.SourceTheoryModel` works. Without this
-# they are reachable only via an explicit `import pygmm.fourier_spectrum`, and
-# which ones happened to be bound depended on whether some name was imported
-# from them below.
+# Expose the model subpackages as attributes, so that `import pygmm` followed
+# by `pygmm.fourier_spectrum.SourceTheoryModel` works. Without this they are
+# reachable only via an explicit `import pygmm.fourier_spectrum`, and which
+# ones happened to be bound depended on whether some name was imported from
+# them below.
+#
+# There are exactly three, and the independent variable decides which: shear
+# strain -> soil_curves, frequency -> fourier_spectrum, period (or a scalar
+# conditioned on a Scenario) -> ground_motion. Anything else stays at the top
+# level until a second producer of the same quantity earns it a package.
+#
+# `soil_curves` is the exception: it is imported lazily (see `__getattr__`
+# below) because it is the only package pulling a heavy third-party
+# dependency, `pint`. Importing it eagerly is how `import pygmm` came to fail
+# outright on any install without pint.
 from . import (
     contracts,
-    correlation,
-    cpt,
-    duration,
-    fault_displacement,
     fourier_spectrum,
-    gm_intensity,
-    response_spectrum,
-    soil_curves,
-    tools,
-    velocity_profile,
+    ground_motion,
+    registry,
 )
-from .bayless_abrahamson_2018 import BaylessAbrahamson2018
-from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
-from .campbell_bozorgnia_2014 import CampbellBozorgnia2014
-from .chiou_youngs_2014 import ChiouYoungs2014
-from .derras_bard_cotton_2014 import DerrasBardCotton2014
-from .duration import (
-    AbrahamsonSilva1996,
-    AfshariStewart2016,
-    KemptonStewart2006,
-    PinillaRamosEtAl2023,
-    PinillaRamosEtAl2024,
+from .fourier_spectrum import (
+    BaylessAbrahamson2018,
+    BaylessAbrahamson2019,
+    Stafford2017,
 )
-from .fourier_spectrum import BaylessAbrahamson2019
-from .gm_intensity import (
+from .ground_motion import (
     AbrahamsonBhasin2020,
-    AbrahamsonShiYang2016,
-    MacedoAbrahamsonLiu2021,
-)
-from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
-from .model import Scenario
-from .response_spectrum import (
     AbrahamsonGregorAddo2016,
+    AbrahamsonShiYang2016,
+    AbrahamsonSilva1996,
     AbrahamsonSilvaKamai2014,
+    AfshariStewart2016,
     AkkarSandikkayaBommer2014,
     AtkinsonBoore2006,
+    BooreStewartSeyhanAtkinson2014,
     Campbell2003,
+    CampbellBozorgnia2014,
+    ChiouYoungs2014,
     CoppersmithBommer2014,
+    DerrasBardCotton2014,
+    GulerceAbrahamson2011,
     Idriss2014,
+    KemptonStewart2006,
+    MacedoAbrahamsonLiu2021,
     PezeshkZandiehTavakoli2011,
+    PinillaRamosEtAl2023,
+    PinillaRamosEtAl2024,
     TavakoliPezeshk05,
 )
-from .soil_curves import (
-    AlemuEtAlSoilType,
-    DarendeliSoilType,
-    KishidaSoilType,
-    MenqSoilType,
-    RollinsEtAlSoilType,
-    WangSoilType,
-)
-from .stafford_2017 import Stafford2017
-from .velocity_profile import kea16_profile
+from .kamai_2016 import kea16_profile
+from .model import Scenario
+from .registry import ModelInfo, get_model, register
 
 __all__ = [
-    # Category subpackages
+    # Model subpackages
     "contracts",
-    "correlation",
-    "cpt",
-    "duration",
-    "fault_displacement",
     "fourier_spectrum",
-    "gm_intensity",
-    "response_spectrum",
+    "ground_motion",
     "soil_curves",
-    "tools",
-    "velocity_profile",
+    # Registry
+    "ModelInfo",
+    "find_models",
+    "get_model",
+    "register",
     # Models and helpers
     "Scenario",
     "AbrahamsonBhasin2020",
     "AbrahamsonShiYang2016",
+    "AbrahamsonSilva1996",
     "AbrahamsonSilvaKamai2014",
     "AbrahamsonGregorAddo2016",
     "AfshariStewart2016",
@@ -122,36 +117,59 @@ __license__ = "MIT"
 __title__ = "pyGMM"
 
 # Set default logging handler to avoid "No handler found" warnings.
-try:  # Python 2.7+
-    from logging import NullHandler
-except ImportError:
-
-    class NullHandler(logging.Handler):
-        def emit(self, record):
-            pass
+logging.getLogger(__name__).addHandler(logging.NullHandler())
 
 
-logging.getLogger(__name__).addHandler(NullHandler())
+#: Names served from `soil_curves`, which is imported on first use rather than
+#: at `import pygmm` -- see the note on `pint` above.
+_LAZY_SOIL_CURVES = frozenset(
+    {
+        "AlemuEtAlSoilType",
+        "DarendeliSoilType",
+        "KishidaSoilType",
+        "MenqSoilType",
+        "RollinsEtAlSoilType",
+        "WangSoilType",
+    }
+)
 
-models = [
-    AbrahamsonSilva1996,
-    AbrahamsonSilvaKamai2014,
-    AfshariStewart2016,
-    AkkarSandikkayaBommer2014,
-    AtkinsonBoore2006,
-    BaylessAbrahamson2019,
-    BooreStewartSeyhanAtkinson2014,
-    Campbell2003,
-    CampbellBozorgnia2014,
-    ChiouYoungs2014,
-    CoppersmithBommer2014,
-    DerrasBardCotton2014,
-    GulerceAbrahamson2011,
-    KemptonStewart2006,
-    Idriss2014,
-    PezeshkZandiehTavakoli2011,
-    PinillaRamosEtAl2023,
-    PinillaRamosEtAl2024,
-    TavakoliPezeshk05,
-    Stafford2017,
-]
+
+def _load_soil_curves():
+    # `from . import soil_curves` would re-enter `__getattr__` below and
+    # recurse; `import_module` binds the submodule without an attribute
+    # lookup on this package.
+    return importlib.import_module(".soil_curves", __name__)
+
+
+def find_models(**kwds):
+    """Return registered models matching the filters.
+
+    Wraps :func:`pygmm.registry.find_models`, importing the lazily-loaded
+    ``soil_curves`` package first so the registry is always complete no matter
+    what the caller has imported.
+
+    See :func:`pygmm.registry.find_models` for the accepted filters.
+    """
+    _load_soil_curves()
+    return registry.find_models(**kwds)
+
+
+def __getattr__(name):
+    if name in _LAZY_SOIL_CURVES:
+        return getattr(_load_soil_curves(), name)
+
+    if name == "soil_curves":
+        return _load_soil_curves()
+
+    if name == "models":
+        warnings.warn(
+            "pygmm.models is deprecated; use pygmm.find_models(provides='psa') "
+            "or another capability filter. The list mixed response-spectrum, "
+            "duration, FAS and correlation models with no way to tell them "
+            "apart -- 7 of its 20 entries had no .spec_accels.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
+        return [info.cls for info in find_models()]
+
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

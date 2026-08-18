@@ -25,16 +25,16 @@ pyGMM makes it easy to compare different ground motion prediction equations:
 
    # Initialize multiple models
    models = {
-       'CB14': pygmm.CampbellBozorgnia2014(),
-       'ASK14': pygmm.AbrahamsonSilvaKamai2014(),
-       'BSSA14': pygmm.BooreStewartSeyhanAtkinson2014(),
-       'CY14': pygmm.ChiouYoungs2014(),
+       'CB14': pygmm.CampbellBozorgnia2014(scenario),
+       'ASK14': pygmm.AbrahamsonSilvaKamai2014(scenario),
+       'BSSA14': pygmm.BooreStewartSeyhanAtkinson2014(scenario),
+       'CY14': pygmm.ChiouYoungs2014(scenario),
    }
 
    # Calculate predictions for each model
    results = {}
    for name, model in models.items():
-       ln_sa, ln_std = model(scenario)
+       ln_sa, ln_std = np.log(model.spec_accels), model.ln_stds
        results[name] = {
            'sa': np.exp(ln_sa),
            'periods': model.periods

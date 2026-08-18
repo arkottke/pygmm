@@ -6,13 +6,14 @@ import numpy as np
 import numpy.typing as npt
 
 from ..contracts import NonlinearSoilCurves
-from ._base import SoilCurveModel
+from ..registry import register
 from ._units import convert_units
 
 _KPA_TO_ATM = 1.0 / 101.325
 
 
-class AlemuEtAlSoilType(SoilCurveModel):
+@register(provides=("soil_curves",), input="kwargs")
+class AlemuEtAlSoilType:
     """Alemu et al. (2025) model for transitional silts.
 
     Based on: Alemu et al. (2025), J. Geotech. Geoenviron. Eng., 151(9): 04025091.

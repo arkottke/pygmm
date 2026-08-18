@@ -29,10 +29,10 @@ Next, select and initialize a ground motion prediction equation:
 .. code-block:: python
 
    # Initialize the Campbell & Bozorgnia (2014) model
-   gmpe = pygmm.CampbellBozorgnia2014()
+   gmpe = pygmm.CampbellBozorgnia2014(scenario)
 
    # Calculate ground motion predictions
-   ln_sa, ln_std = gmpe(scenario)
+   ln_sa, ln_std = np.log(gmpe.spec_accels), gmpe.ln_stds
 
    # Convert to linear units (g)
    import numpy as np

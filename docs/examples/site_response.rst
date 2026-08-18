@@ -40,12 +40,12 @@ Calculate and compare site amplification:
    import matplotlib.pyplot as plt
 
    # Use Campbell & Bozorgnia (2014) model
-   model = pygmm.CampbellBozorgnia2014()
+   model = pygmm.CampbellBozorgnia2014(scenario)
 
    # Calculate for each site class
    results = {}
    for site_name, scenario in scenarios.items():
-       ln_sa, ln_std = model(scenario)
+       ln_sa, ln_std = np.log(model.spec_accels), model.ln_stds
        results[site_name] = {
            'sa': np.exp(ln_sa),
            'periods': model.periods
@@ -112,8 +112,8 @@ Some models support additional site parameters:
    )
 
    # Models that support basin effects
-   ask14 = pygmm.AbrahamsonSilvaKamai2014()
-   ln_sa, ln_std = ask14(scenario_with_basin)
+   ask14 = pygmm.AbrahamsonSilvaKamai2014(scenario)
+   ln_sa, ln_std = np.log(ask14.spec_accels), ask14.ln_stds
 
    print(f"With basin effects included")
    print(f"PGA: {np.exp(ln_sa[ask14.INDEX_PGA]):.3f} g")

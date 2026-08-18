@@ -13,6 +13,8 @@ import numpy.typing as npt
 from scipy.constants import g as gravity
 from scipy.interpolate import interp1d
 
+from ..contracts import FourierSpectrum
+from ..registry import register
 from ._source_helpers import (
     calc_geometric_spreading,
     calc_stress_drop,
@@ -36,6 +38,7 @@ def _normalize_region(region: str) -> str:
         raise ValueError(f"Unknown region: {region!r}") from exc
 
 
+@register(provides=("fas",), input="kwargs")
 class SourceTheoryModel:
     """Single-corner Brune source-spectrum model.
 
@@ -252,3 +255,14 @@ class SourceTheoryModel:
         # Convert dyne-cm to g-sec.
         conv = 1.0e-20 / (100 * gravity)
         return conv * (2.0 * np.pi * freqs) ** 2.0 * source_comp * path_comp * site_comp
+
+    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum:
+        """Return the :class:`~pygmm.contracts.FourierSpectrum` contract.
+
+        Falls back to the model's own duration when none is supplied.
+        """
+        return FourierSpectrum(
+            freqs=self.freqs,
+            fourier_amps=self.fourier_amps,
+            duration=float(self.duration if duration is None else duration),
+        )

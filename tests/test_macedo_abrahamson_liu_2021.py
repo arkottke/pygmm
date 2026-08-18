@@ -8,7 +8,7 @@ import pytest
 from numpy.testing import assert_allclose
 
 from pygmm import Scenario
-from pygmm.gm_intensity.macedo_abrahamson_liu_2021 import (
+from pygmm.ground_motion.macedo_abrahamson_liu_2021 import (
     MacedoAbrahamsonLiu2021,
     _calc_scenario_ln_std,
     _t1_dip,

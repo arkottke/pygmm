@@ -46,13 +46,19 @@ clean-test:
 	rm -fr htmlcov/
 
 lint:
-	flake8 pygmm tests
+	ruff check src/ tests/
+	ruff format --check src/ tests/
 
+typecheck:
+	mypy
+
+# `--cov=pygmm`, not `--cov=pkg`: there is no `pkg` package, so this target
+# only ever measured coverage because the old pytest.ini added `--cov=pygmm`
+# through addopts.
 test:
-	pytest --cov-config=pyproject.toml --cov=pkg --cov=tests
+	pytest --cov-config=pyproject.toml --cov=pygmm --cov=tests
 
 coverage:
-	coverage run --source pygmm setup.py test
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html

@@ -8,10 +8,9 @@ import numpy as np
 import numpy.typing as npt
 
 from ..contracts import NonlinearSoilCurves
-from ._base import SoilCurveModel
 
 
-class ModifiedHyperbolicBase(SoilCurveModel):
+class ModifiedHyperbolicBase:
     """Compute mod-reduc and damping using the modified-hyperbolic + Masing approach.
 
     Subclasses must supply ``strain_ref``, ``curvature``, and ``masing_scaling``

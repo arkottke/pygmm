@@ -156,8 +156,8 @@ Test your installation:
 
    # Quick test
    scenario = pygmm.Scenario(mag=6.0, dist_rup=10, v_s30=760)
-   model = pygmm.CampbellBozorgnia2014()
-   result = model(scenario)
+   model = pygmm.CampbellBozorgnia2014(scenario)
+   result = model.spec_accels
    print("Installation successful!")
 
 Troubleshooting

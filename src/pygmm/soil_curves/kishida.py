@@ -6,14 +6,15 @@ import numpy as np
 import numpy.typing as npt
 
 from ..contracts import NonlinearSoilCurves
-from ._base import SoilCurveModel
+from ..registry import register
 from ._units import convert_units
 
 # Standard gravity [m/s²] — used to convert density to unit weight
 _GRAVITY = 9.80665
 
 
-class KishidaSoilType(SoilCurveModel):
+@register(provides=("soil_curves",), input="kwargs")
+class KishidaSoilType:
     """Kishida (2017) empirical nonlinear model for highly organic soils.
 
     Parameters

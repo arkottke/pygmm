@@ -15,11 +15,14 @@ import numpy.typing as npt
 from scipy.constants import g as gravity
 from scipy.interpolate import interp1d
 
+from ..contracts import FourierSpectrum
+from ..registry import register
 from ._source_helpers import calc_geometric_spreading
 
 _DATA_PATH = pathlib.Path(__file__).parent.parent / "data" / "sea22-site_amp.csv.gz"
 
 
+@register(provides=("fas",), input="kwargs")
 class StaffordEtAl2022:
     """Stafford et al. (2022) point-source FAS model for Vs30 = 760 m/s.
 
@@ -192,3 +195,14 @@ class StaffordEtAl2022:
         else:
             d_p = D_P[-1] + 0.156 * (dist_ps - DISTS[-1])
         return d_s + d_p
+
+    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum:
+        """Return the :class:`~pygmm.contracts.FourierSpectrum` contract.
+
+        Falls back to the model's own duration when none is supplied.
+        """
+        return FourierSpectrum(
+            freqs=self.freqs,
+            fourier_amps=self.fourier_amps,
+            duration=float(self.duration if duration is None else duration),
+        )

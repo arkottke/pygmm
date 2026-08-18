@@ -5,11 +5,21 @@ used by pygmm models, so concrete models satisfy the contracts natively with
 no adapter code. Consumers (pyrvt, pystrata) duck-type against these shapes;
 they do not depend on this module at runtime — each maintains a private
 duplicate of the dataclasses it needs.
+
+Because that mechanism is structural, the producer side is expressed with
+:class:`typing.Protocol` rather than abstract base classes. A model satisfies
+as many protocols as it structurally matches, with no inheritance edge and no
+MRO involvement — which is what makes a single
+:class:`~pygmm.model.GroundMotionModel` able to satisfy both
+:class:`SupportsResponseSpectrum` and the peak-parameter accessors at once.
+An ABC could enforce nothing across the package boundary anyway, which is why
+six of the seven former ``_base.py`` classes never acquired a subclass.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
+from typing import Protocol, runtime_checkable
 
 import numpy as np
 import numpy.typing as npt
@@ -60,22 +70,36 @@ class FourierSpectrum:
 class Duration:
     """Ground-motion duration with optional named-pair variants.
 
+    Two mutually exclusive ways of expressing uncertainty are carried, because
+    the published models genuinely disagree. Abrahamson & Silva (1996),
+    Afshari & Stewart (2016) and Kempton & Stewart (2006) report a lognormal
+    standard error, so ``ln_std`` applies. Pinilla-Ramos et al. (2023, 2024)
+    apply sigma in a transformed power space --
+    ``(median**n ± sigma)**(1/n)`` -- which is not symmetric in log space, so
+    they report ``plus_sigma``/``minus_sigma`` directly and leave ``ln_std``
+    unset. Collapsing these into one field would misstate one of them.
+
     Attributes
     ----------
     duration : float
-        Primary duration [s] (e.g. 5–95% significant duration).
-    d_5_75 : float, optional
-        5–75% significant duration [s].
-    d_5_95 : float, optional
-        5–95% significant duration [s].
-    d_20_80 : float, optional
-        20–80% significant duration [s].
+        Primary duration [s].
+    d_5_75, d_5_95, d_20_80 : float, optional
+        Significant duration [s] over the named energy interval.
+    ln_std : float, optional
+        Natural-log standard deviation of ``duration``, for models whose
+        uncertainty is lognormal.
+    plus_sigma, minus_sigma : float, optional
+        84th- and 16th-percentile duration [s], for models whose uncertainty
+        is not lognormal.
     """
 
     duration: float
     d_5_75: float | None = None
     d_5_95: float | None = None
     d_20_80: float | None = None
+    ln_std: float | None = None
+    plus_sigma: float | None = None
+    minus_sigma: float | None = None
 
 
 @dataclass(frozen=True)
@@ -131,114 +155,58 @@ class VelocityProfile:
     site_class: str | None = None
 
 
-@dataclass(frozen=True)
-class FaultDisplacement:
-    """Surface fault-displacement prediction.
+# ---------------------------------------------------------------------------
+# Producer protocols
+#
+# Structural, not nominal: a model satisfies these by having the right
+# methods, without importing or inheriting anything from this module. That is
+# how pystrata and pyrvt already consume pygmm, and it lets one class satisfy
+# several protocols at once.
+# ---------------------------------------------------------------------------
 
-    Attributes
-    ----------
-    mag : float
-        Moment magnitude.
-    displacement_mean : float
-        Mean displacement [m] (in natural-log space if `sigma_ln_disp` given).
-    sigma_ln_disp : float
-        Natural-log standard deviation of displacement.
-    dist_from_rupture : float, optional
-        Along-strike distance from the rupture endpoint [km].
-    position_ratio : float, optional
-        Normalized along-strike position (0 = endpoint, 0.5 = center).
+
+@runtime_checkable
+class SupportsResponseSpectrum(Protocol):
+    """A model that can emit a :class:`ResponseSpectrum`."""
+
+    def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum: ...
+
+
+@runtime_checkable
+class SupportsFourierSpectrum(Protocol):
+    """A model that can emit a :class:`FourierSpectrum`.
+
+    ``duration`` is a parameter rather than a required attribute because
+    ``BaylessAbrahamson2019`` predicts EAS only and has no intrinsic duration.
+    Making it a parameter states that requirement in the signature instead of
+    letting a ``None`` surface deep inside a consumer's RVT integration.
     """
 
-    mag: float
-    displacement_mean: float
-    sigma_ln_disp: float
-    dist_from_rupture: float | None = None
-    position_ratio: float | None = None
+    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum: ...
 
 
-@dataclass(frozen=True)
-class CptSounding:
-    """Cone-penetration-test sounding (input contract).
+@runtime_checkable
+class SupportsDuration(Protocol):
+    """A model that can emit a :class:`Duration`."""
 
-    Attributes
-    ----------
-    depth : np.ndarray
-        Measurement depths [m].
-    q_c : np.ndarray
-        Cone tip resistance [MPa].
-    f_s : np.ndarray
-        Sleeve friction [kPa].
-    u_2 : np.ndarray, optional
-        Pore-pressure measurement behind the tip [kPa].
-    water_table_depth : float, optional
-        Depth to ground-water table [m].
-    unit_wts : np.ndarray, optional
-        Per-depth unit weights [kN/m^3].
-    """
-
-    depth: npt.NDArray[np.floating]
-    q_c: npt.NDArray[np.floating]
-    f_s: npt.NDArray[np.floating]
-    u_2: npt.NDArray[np.floating] | None = None
-    water_table_depth: float | None = None
-    unit_wts: npt.NDArray[np.floating] | None = None
+    def duration_model(self) -> Duration: ...
 
 
-@dataclass(frozen=True)
-class SoilBehaviorProfile:
-    """CPT-derived soil-behavior-type profile.
+@runtime_checkable
+class SupportsSoilCurves(Protocol):
+    """A model that can emit :class:`NonlinearSoilCurves`."""
 
-    Attributes
-    ----------
-    depth : np.ndarray
-        Depths [m].
-    ic : np.ndarray
-        Soil-behavior-type index Ic.
-    sbt_class : np.ndarray
-        Soil-behavior-type classification (integer codes).
-    fines_content : np.ndarray, optional
-        Estimated fines content (decimal).
-    """
-
-    depth: npt.NDArray[np.floating]
-    ic: npt.NDArray[np.floating]
-    sbt_class: npt.NDArray[np.integer]
-    fines_content: npt.NDArray[np.floating] | None = None
-
-
-@dataclass(frozen=True)
-class LiquefactionTriggering:
-    """CPT-based liquefaction-triggering evaluation (future use).
-
-    Attributes
-    ----------
-    depth : np.ndarray
-        Depths [m].
-    csr : np.ndarray
-        Cyclic stress ratio.
-    crr : np.ndarray
-        Cyclic resistance ratio.
-    factor_of_safety : np.ndarray
-        FS_liq = crr / csr.
-    prob_liquefaction : np.ndarray, optional
-        Probability of liquefaction (decimal).
-    """
-
-    depth: npt.NDArray[np.floating]
-    csr: npt.NDArray[np.floating]
-    crr: npt.NDArray[np.floating]
-    factor_of_safety: npt.NDArray[np.floating]
-    prob_liquefaction: npt.NDArray[np.floating] | None = None
+    def curves(self) -> NonlinearSoilCurves: ...
 
 
 __all__ = [
-    "ResponseSpectrum",
-    "FourierSpectrum",
     "Duration",
+    "FourierSpectrum",
     "NonlinearSoilCurves",
+    "ResponseSpectrum",
+    "SupportsDuration",
+    "SupportsFourierSpectrum",
+    "SupportsResponseSpectrum",
+    "SupportsSoilCurves",
     "VelocityProfile",
-    "FaultDisplacement",
-    "CptSounding",
-    "SoilBehaviorProfile",
-    "LiquefactionTriggering",
 ]

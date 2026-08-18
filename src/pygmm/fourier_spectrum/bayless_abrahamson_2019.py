@@ -3,11 +3,14 @@
 import numpy as np
 
 from .. import model
+from ..contracts import FourierSpectrum
+from ..registry import register
 
 # Based on code from Artie Rodgers
 __author__ = "Albert Kottke"
 
 
+@register(provides=("fas",), tectonic="active_crustal")
 class BaylessAbrahamson2019(model.Model):
     """Bayless and Abrahamson (2019, :cite:`bayless19`) model.
 
@@ -63,6 +66,17 @@ class BaylessAbrahamson2019(model.Model):
     @property
     def eas(self):
         return np.exp(self._ln_eas)
+
+    @property
+    def fourier_amps(self):
+        """Fourier amplitudes (g-sec).
+
+        Canonical name for :attr:`eas`. Consumers such as pyRVT's
+        ``RvtMotion.from_fas`` duck-type on ``freqs``/``fourier_amps``/
+        ``duration``; ``eas`` is retained because *effective amplitude
+        spectrum* is the term used in the publication.
+        """
+        return self.eas
 
     @property
     def ln_std(self):
@@ -203,4 +217,22 @@ class BaylessAbrahamson2019(model.Model):
                 * np.log((v_s30**power + v_ref**power) / (1360.0**power + v_ref**power))
             )
             / 1000
+        )
+
+    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum:
+        """Return the :class:`~pygmm.contracts.FourierSpectrum` contract.
+
+        BA19 predicts the effective amplitude spectrum only and has no
+        intrinsic duration, so one must be supplied. Requiring it here states
+        the dependency in the signature rather than letting a ``None`` reach
+        a consumer's RVT integration.
+        """
+        if duration is None:
+            raise ValueError(
+                "BaylessAbrahamson2019 predicts EAS only and has no duration. "
+                "Supply one from a duration model, e.g. "
+                "AfshariStewart2016(scenario).duration_model().duration."
+            )
+        return FourierSpectrum(
+            freqs=self.freqs, fourier_amps=self.fourier_amps, duration=float(duration)
         )

@@ -2,7 +2,9 @@
 import numpy as np
 import pytest
 
-from pygmm.hermkes_kuehn_riggelsen_2014 import HermkesKuehnRiggelsen2014 as HKR13
+from pygmm.ground_motion.hermkes_kuehn_riggelsen_2014 import (
+    HermkesKuehnRiggelsen2014 as HKR13,
+)
 from pygmm.model import Scenario
 
 # Relative tolerance for all tests

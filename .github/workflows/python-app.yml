@@ -7,7 +7,7 @@ jobs:
         runs-on: ubuntu-latest
         strategy:
             matrix:
-                python-version: ["3.10", "3.11", "3.12", "3.13"]
+                python-version: ["3.12", "3.13", "3.14"]
 
         steps:
             - uses: actions/checkout@v4.2.2
@@ -29,3 +29,18 @@ jobs:
               with:
                   project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}
                   coverage-reports: coverage.xml
+
+    typecheck:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4.2.2
+            - name: Install uv
+              uses: astral-sh/setup-uv@v4
+              with:
+                  enable-cache: true
+                  cache-dependency-glob: "uv.lock"
+            - name: Install dependencies
+              run: uv sync --all-extras
+            # Config and the staged per-module allowlist live in pyproject.toml.
+            - name: Type check with mypy
+              run: uv run mypy

@@ -7,8 +7,8 @@ import warnings
 import numpy as np
 from scipy.interpolate import interp1d
 
+from ._types import ArrayLike, InterpKind
 from .contracts import ResponseSpectrum
-from .types import ArrayLike
 
 
 class Scenario(collections.UserDict):
@@ -150,9 +150,9 @@ class Model:
     #: Short name of the model
     ABBREV = ""
     #: Limits of model applicability
-    LIMITS = dict()
+    LIMITS: dict = dict()
     #: Model parameters
-    PARAMS = []
+    PARAMS: list = []
 
     def __init__(self, *args, **kwargs):
         """Initialize the model."""
@@ -183,15 +183,15 @@ class GroundMotionModel(Model):
     """Abstract class for ground motion prediction models."""
 
     #: Indices for the spectral accelerations
-    INDICES_PSA = np.array([])
+    INDICES_PSA: np.ndarray = np.array([])
     #: Indices of the periods
-    PERIODS = np.array([])
+    PERIODS: np.ndarray = np.array([])
     #: Index of the peak ground acceleration
-    INDEX_PGA = None
+    INDEX_PGA: int | None = None
     #: Index of the peak ground velocity
-    INDEX_PGV = None
+    INDEX_PGV: int | None = None
     #: Index of the peak ground displacement
-    INDEX_PGD = None
+    INDEX_PGD: int | None = None
     #: Scale factor to apply to get PGV in cm/sec
     PGV_SCALE = 1.0
     #: Scale factor to apply to get PGD in cm
@@ -201,11 +201,11 @@ class GroundMotionModel(Model):
         """Initialize the model."""
         super().__init__(scenario)
 
-        self._ln_resp = None
-        self._ln_std = None
+        self._ln_resp: np.ndarray | None = None
+        self._ln_std: np.ndarray | None = None
 
     def interp_ln_spec_accels(
-        self, periods: ArrayLike, kind: str | None = "linear"
+        self, periods: ArrayLike, kind: InterpKind = "linear"
     ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
@@ -229,7 +229,7 @@ class GroundMotionModel(Model):
         """
         return interp1d(
             np.log(self.periods),
-            self._ln_resp[self.INDICES_PSA],
+            self._resp_vector[self.INDICES_PSA],
             kind=kind,
             copy=False,
             bounds_error=False,
@@ -237,7 +237,7 @@ class GroundMotionModel(Model):
         )(np.log(periods))
 
     def interp_spec_accels(
-        self, periods: ArrayLike, kind: str = "linear"
+        self, periods: ArrayLike, kind: InterpKind = "linear"
     ) -> np.ndarray:
         """Interpolate the spectral acceleration.
 
@@ -261,7 +261,9 @@ class GroundMotionModel(Model):
         """
         return np.exp(self.interp_ln_spec_accels(periods, kind))
 
-    def interp_ln_stds(self, periods: ArrayLike, kind: str = "linear") -> np.ndarray:
+    def interp_ln_stds(
+        self, periods: ArrayLike, kind: InterpKind = "linear"
+    ) -> np.ndarray:
         r"""Interpolate the logarithmic standard deviation.
 
         Interpolate the logarithmic standard deviation (:math:`\sigma_{\ln}`)
@@ -287,7 +289,7 @@ class GroundMotionModel(Model):
         else:
             return interp1d(
                 np.log(self.periods),
-                self._ln_std[self.INDICES_PSA],
+                self._std_vector[self.INDICES_PSA],
                 kind=kind,
                 copy=False,
                 bounds_error=False,
@@ -336,7 +338,7 @@ class GroundMotionModel(Model):
         if self._ln_std is None:
             raise NotImplementedError
         else:
-            return self._ln_std[self.INDICES_PSA]
+            return self._std_vector[self.INDICES_PSA]
 
     @property
     def pga(self) -> float:
@@ -352,7 +354,7 @@ class GroundMotionModel(Model):
         if self.INDEX_PGA is None:
             raise NotImplementedError
         else:
-            return self._ln_std[self.INDEX_PGA]
+            return self._std_vector[self.INDEX_PGA]
 
     @property
     def pgv(self) -> float:
@@ -368,7 +370,7 @@ class GroundMotionModel(Model):
         if self.INDEX_PGV is None:
             raise NotImplementedError
         else:
-            return self._ln_std[self.INDEX_PGV]
+            return self._std_vector[self.INDEX_PGV]
 
     @property
     def pgd(self) -> float:
@@ -384,11 +386,30 @@ class GroundMotionModel(Model):
         if self.INDEX_PGD is None:
             raise NotImplementedError
         else:
-            return self._ln_std[self.INDEX_PGD]
+            return self._std_vector[self.INDEX_PGD]
 
-    def _resp(self, index) -> np.ndarray:
-        if index is not None:
-            return np.exp(self._ln_resp[index])
+    @property
+    def _resp_vector(self) -> np.ndarray:
+        """The computed response vector, or a clear error if there isn't one."""
+        if self._ln_resp is None:
+            raise RuntimeError(
+                f"{type(self).__name__} has not computed a response vector; "
+                "its __init__ must assign self._ln_resp."
+            )
+        return self._ln_resp
+
+    @property
+    def _std_vector(self) -> np.ndarray:
+        """The computed standard deviations, or a clear error if absent."""
+        if self._ln_std is None:
+            raise RuntimeError(
+                f"{type(self).__name__} has not computed standard deviations; "
+                "its __init__ must assign self._ln_std."
+            )
+        return self._ln_std
+
+    def _resp(self, index):
+        return np.exp(self._resp_vector[index])
 
 
 class Parameter:
@@ -465,13 +486,13 @@ class NumericParameter(Parameter):
         self._max = max_
 
     @property
-    def min(self) -> float:
-        """Minimum value."""
+    def min(self) -> float | None:
+        """Minimum value, or None if unbounded below."""
         return self._min
 
     @property
-    def max(self) -> float:
-        """Maximum value."""
+    def max(self) -> float | None:
+        """Maximum value, or None if unbounded above."""
         return self._max
 
     def check(self, value) -> float:
@@ -481,14 +502,14 @@ class NumericParameter(Parameter):
             if self.min is not None and value < self.min:
                 warnings.warn(
                     f"{self.name} ({value}) "
-                    "is less than the recommended limit ({self.min}).",
+                    f"is less than the recommended limit ({self.min}).",
                     UserWarning,
                     stacklevel=2,
                 )
             elif self.max is not None and self.max < value:
                 warnings.warn(
                     f"{self.name} ({value}) "
-                    "is greater than the recommended limit ({self.max}).",
+                    f"is greater than the recommended limit ({self.max}).",
                     UserWarning,
                     stacklevel=2,
                 )

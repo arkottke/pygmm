@@ -82,7 +82,7 @@ Quick example:
    scenario = pygmm.Scenario(mag=6.5, dist_rup=20, v_s30=760)
 
    # Initialize a ground motion model
-   gmpe = pygmm.CampbellBozorgnia2014()
+   gmpe = pygmm.CampbellBozorgnia2014(scenario)
 
    # Calculate ground motion
    mean, std = gmpe(scenario)

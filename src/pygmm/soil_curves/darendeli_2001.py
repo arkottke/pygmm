@@ -5,6 +5,7 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from ..registry import register
 from ._hyperbolic import ModifiedHyperbolicBase
 from ._units import convert_units
 
@@ -12,6 +13,7 @@ from ._units import convert_units
 _KPA_TO_ATM = 1.0 / 101.325
 
 
+@register(provides=("soil_curves",), input="kwargs")
 class DarendeliSoilType(ModifiedHyperbolicBase):
     """Darendeli (2001) model for fine-grained soils.
 

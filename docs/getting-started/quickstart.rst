@@ -23,13 +23,14 @@ and site parameters.  Only parameters relevant to a given model need to be provi
 Running a Model
 ---------------
 
-Instantiate a model and call it with the scenario.  The return values are **log-mean** and
-**log-standard deviation** arrays over the model's spectral periods:
+Construct a model with the scenario, then read the results off its attributes.
+``spec_accels`` is the **median** spectral acceleration in g and ``ln_stds`` the
+**log-standard deviation**, both over the model's spectral periods:
 
 .. code-block:: python
 
-    model = pygmm.CampbellBozorgnia2014()
-    ln_sa, ln_std = model(scenario)
+    model = pygmm.CampbellBozorgnia2014(scenario)
+    ln_sa, ln_std = np.log(model.spec_accels), model.ln_stds
 
     import numpy as np
     sa = np.exp(ln_sa)   # median spectral acceleration (g)
@@ -46,9 +47,9 @@ Because all models share the same interface, comparing predictions is straightfo
     import matplotlib.pyplot as plt
 
     models = [
-        pygmm.CampbellBozorgnia2014(),
-        pygmm.BooreStewartSeyhanAtkinson2014(),
-        pygmm.AbrahamsonSilvaKamai2014(),
+        pygmm.CampbellBozorgnia2014(scenario),
+        pygmm.BooreStewartSeyhanAtkinson2014(scenario),
+        pygmm.AbrahamsonSilvaKamai2014(scenario),
     ]
 
     fig, ax = plt.subplots()
@@ -68,7 +69,7 @@ Duration models (e.g. significant duration D5-75) follow the same pattern:
 
 .. code-block:: python
 
-    dur_model = pygmm.AfshariStewart2016()
+    dur_model = pygmm.AfshariStewart2016(scenario)
     ln_dur, ln_std = dur_model(scenario)
     d575_median = np.exp(ln_dur)   # seconds
 

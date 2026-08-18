@@ -8,7 +8,7 @@ import pandas as pd
 import pytest
 
 from pygmm import Scenario
-from pygmm.duration import PinillaRamosEtAl2024
+from pygmm.ground_motion import PinillaRamosEtAl2024
 
 
 class TestPinillaRamosEtAl2024:
