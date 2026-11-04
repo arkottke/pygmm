@@ -55,11 +55,15 @@ napoleon_use_param = True
 napoleon_use_rtype = True
 
 # Intersphinx configuration
-intersphinx_mappings = {
+intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "numpy": ("https://numpy.org/doc/stable/", None),
     "scipy": ("https://docs.scipy.org/doc/scipy/", None),
     "matplotlib": ("https://matplotlib.org/stable/", None),
+    "pandas": ("https://pandas.pydata.org/docs/", None),
+    "pyrvt": ("https://pyrvt.readthedocs.io/en/latest/", None),
+    "pyrotd": ("https://pyrotd.readthedocs.io/en/latest/", None),
+    "pystrata": ("https://pystrata.readthedocs.io/en/latest/", None),
 }
 
 # MyST configuration
@@ -104,6 +108,8 @@ html_theme_options = {
 
 # Show typehints as content of the function or method
 autodoc_typehints = "description"
+# Show the __init__ docstring (where parameters are often documented) with the class
+autoclass_content = "both"
 autodoc_member_order = "bysource"
 autodoc_default_options = {
     "members": True,
