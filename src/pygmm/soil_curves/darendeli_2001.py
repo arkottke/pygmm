@@ -80,10 +80,12 @@ class DarendeliSoilType(ModifiedHyperbolicBase):
 
     @property
     def masing_scaling(self) -> float:
+        """Scaling of the damping from Masing behavior."""
         return 0.6329 - 0.00566 * np.log(self._num_cycles)
 
     @property
     def strain_ref(self) -> float:
+        """Reference shear strain of the hyperbolic model [decimal]."""
         return (
             (0.0352 + 0.0010 * self._plas_index * self._ocr**0.3246)
             * (self._stress_mean * KPA_TO_ATM) ** 0.3483
@@ -91,6 +93,7 @@ class DarendeliSoilType(ModifiedHyperbolicBase):
 
     @property
     def curvature(self) -> float:
+        """Curvature coefficient of the hyperbolic model."""
         return 0.9190
 
     def _create_name(self) -> str:

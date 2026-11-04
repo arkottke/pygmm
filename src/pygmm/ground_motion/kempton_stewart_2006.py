@@ -65,10 +65,12 @@ class KemptonStewart2006(model.Model):
 
     @property
     def duration(self):
+        """Median durations [s] as a `np.recarray`, accessed by the interval."""
         return KemptonStewart2006._as_recarray(np.exp(self._ln_dur))
 
     @property
     def std_err(self):
+        """Standard errors of the natural log durations as a `np.recarray`."""
         return KemptonStewart2006._as_recarray(self._std_err)
 
     @staticmethod

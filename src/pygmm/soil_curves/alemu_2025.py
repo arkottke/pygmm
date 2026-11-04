@@ -104,6 +104,7 @@ class AlemuEtAlSoilType:
         self._damping_min = float(d_min)
 
     def curves(self) -> NonlinearSoilCurves:
+        """Return the modulus reduction and damping curves."""
         return NonlinearSoilCurves(
             strains=self._strains,
             mod_reduc=self._mod_reduc,

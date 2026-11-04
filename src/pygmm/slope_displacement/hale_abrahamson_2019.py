@@ -90,14 +90,17 @@ class HaleAbrahamson19:
 
     @property
     def freq_nat(self) -> float:
+        """Natural frequency of the dam [Hz]."""
         return self._freq_nat
 
     @property
     def height(self) -> float:
+        """Height of the dam [ft]."""
         return self._height
 
     @property
     def shear_vel(self) -> float:
+        """Shear-wave velocity of the dam [ft/s]."""
         return self._shear_vel
 
     def __call__(

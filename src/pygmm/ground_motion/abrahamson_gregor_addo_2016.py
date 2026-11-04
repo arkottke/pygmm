@@ -90,14 +90,17 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
 
     @property
     def adjust_c1(self):
+        """Adjustment of the coefficient ``c1`` at each period."""
         return self._adjust_c1
 
     @property
     def adjust_c4(self):
+        """Adjustment of the coefficient ``c4``."""
         return self._adjust_c4
 
     @property
     def scale_atten(self):
+        """Scale factor applied to the attenuation."""
         return self._scale_atten
 
     def _calc_ln_resp(self, pga_ref):

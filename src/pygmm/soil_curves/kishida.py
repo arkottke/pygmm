@@ -159,6 +159,7 @@ class KishidaSoilType:
         return np.exp(d @ x) * _GRAVITY
 
     def curves(self) -> NonlinearSoilCurves:
+        """Return the modulus reduction and damping curves."""
         return NonlinearSoilCurves(
             strains=self._strains,
             mod_reduc=self._mod_reduc,

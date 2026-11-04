@@ -72,3 +72,20 @@ def test_calc_period_rea05_directivity_vanishes_beyond_20_km():
         assert_allclose(with_dir, without)
     near = calc_period_rea05(dist_rup=5.0, directivity=True, **kwds)
     assert near != calc_period_rea05(dist_rup=5.0, directivity=False, **kwds)
+
+
+def test_abrahamson_silva_1996_does_not_modify_the_input():
+    """Out-of-range intensities give NaN in the result, not in the caller's array."""
+    from pygmm import AbrahamsonSilva1996, Scenario
+
+    nias = np.array([0.05, 0.5, 0.99])
+    expected = nias.copy()
+
+    model = AbrahamsonSilva1996(Scenario(mag=6.5, dist_rup=20, site_cond="rock"))
+    durations = model.interp(nias)
+    increments = AbrahamsonSilva1996.calc_ln_dur_incr(nias)
+
+    assert_allclose(nias, expected)
+    assert np.isnan(durations[0]) and np.isnan(durations[-1])
+    assert np.isfinite(durations[1])
+    assert np.isnan(increments[0]) and np.isfinite(increments[1])

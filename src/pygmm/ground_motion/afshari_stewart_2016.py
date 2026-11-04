@@ -117,6 +117,15 @@ class AfshariStewart2016(model.Model):
 
     @staticmethod
     def calc_depth_1_0(v_s30: float, region: str = "california") -> float:
+        """Estimate the depth to the 1 km/sec horizon (:math:`Z_{1.0}`) [km].
+
+        Parameters
+        ----------
+        v_s30 : float
+            Time-averaged shear-wave velocity of the upper 30 m [m/s].
+        region : str, default="california"
+            ``"japan"`` for the Japan model; any other region uses the global model.
+        """
         if region in ["japan"]:
             # Japan
             power = 2

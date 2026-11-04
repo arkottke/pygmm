@@ -57,14 +57,17 @@ class BaylessAbrahamson2019(model.Model):
 
     @property
     def freqs(self):
+        """Frequencies [Hz] of the spectrum."""
         return self.FREQS
 
     @property
     def ln_eas(self):
+        """Natural log of the effective amplitude spectrum [g-s]."""
         return self._ln_eas
 
     @property
     def eas(self):
+        """Effective amplitude spectrum [g-s]."""
         return np.exp(self._ln_eas)
 
     @property
@@ -80,6 +83,7 @@ class BaylessAbrahamson2019(model.Model):
 
     @property
     def ln_std(self):
+        """Natural log standard deviation of the effective amplitude spectrum."""
         return self._ln_std
 
     def _check_inputs(self) -> None:

@@ -62,10 +62,12 @@ class GulerceAbrahamson2011(model.Model):
 
     @property
     def ratio(self):
+        """Median ratio of the vertical to the horizontal spectral acceleration."""
         return np.exp(self._ln_ratio)
 
     @property
     def ln_std(self):
+        """Natural log standard deviation of the ratio."""
         return self._ln_std
 
     def interp_ratio(self, periods: ArrayLike) -> np.ndarray:

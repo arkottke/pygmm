@@ -157,6 +157,23 @@ class StaffordEtAl2022:
 
     @classmethod
     def site_amp(cls, freqs, site_atten):
+        r"""Compute the site amplification with attenuation.
+
+        The tabulated amplification is interpolated in log space and reduced by
+        :math:`\exp(-\pi \kappa f)`.
+
+        Parameters
+        ----------
+        freqs : array_like
+            Frequencies [Hz].
+        site_atten : float
+            Site attenuation, :math:`\kappa` [s].
+
+        Returns
+        -------
+        np.ndarray
+            Amplification at the frequencies.
+        """
         if cls._ln_site_amp_interpolator is None:
             data = np.genfromtxt(
                 gzip.open(_DATA_PATH),

@@ -133,6 +133,13 @@ class Scenario(collections.UserDict):
         return "<Scenario(mag={mag}, dist_jb={dist_jb})>".format(**self.data)
 
     def copy_with(self, **kwds):
+        """Return a copy of the scenario with parameters replaced.
+
+        Parameters
+        ----------
+        **kwds
+            New values of the parameters.
+        """
         self._check_keys(kwds.keys())
         other = self.copy()
         other.update(**kwds)
@@ -183,6 +190,7 @@ class Model:
 
     @property
     def scenario(self):
+        """Scenario of the model, limited to the parameters that the model uses."""
         return self._scenario
 
 

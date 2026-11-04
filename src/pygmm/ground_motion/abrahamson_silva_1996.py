@@ -47,16 +47,34 @@ class AbrahamsonSilva1996(model.Model):
 
     @property
     def duration(self):
+        """Median 5-75% significant duration [s]."""
         return np.exp(self._ln_dur)
 
     @property
     def std_err(self):
+        """Standard error of the natural log of the duration."""
         return self._std_err
 
     @staticmethod
     def calc_ln_dur_incr(nias):
+        """Compute the increment of the natural log duration.
+
+        The increment is for the normalized Arias intensity at which the duration
+        ends, which is 0.75 for the 5-75% duration of the model.
+
+        Parameters
+        ----------
+        nias : array_like
+            Normalized Arias intensity, from 0.10 to 0.95. Values outside of this
+            range give NaN.
+
+        Returns
+        -------
+        np.ndarray
+            Increment of the natural log duration.
+        """
         # Mask out inappropriate values
-        nias = np.asarray(nias)
+        nias = np.array(nias, dtype=float)
         mask = (nias < 0.10) | (0.95 < nias)
         nias[mask] = np.nan
 
@@ -68,8 +86,24 @@ class AbrahamsonSilva1996(model.Model):
         return ln_dur_incr
 
     def interp(self, nias, stds=None):
+        """Compute the duration between 5% and a normalized Arias intensity.
+
+        Parameters
+        ----------
+        nias : array_like
+            Normalized Arias intensity at which the duration ends, from 0.10 to
+            0.95. Values outside of this range give NaN.
+        stds : array_like, optional
+            Number of standard errors from the median. If provided, the result has a
+            row for each.
+
+        Returns
+        -------
+        np.ndarray
+            Duration [s].
+        """
         # Mask out inappropriate values
-        nias = np.asarray(nias)
+        nias = np.array(nias, dtype=float)
         mask = (nias < 0.10) | (0.95 < nias)
         nias[mask] = np.nan
 

@@ -176,6 +176,23 @@ class WangSoilType:
 
     @classmethod
     def params(cls, soil_group: str, specified_dmin: bool) -> list[str]:
+        """Names of the index properties that define the curves of a soil group.
+
+        The minimum damping model is only needed if the minimum damping is not
+        specified.
+
+        Parameters
+        ----------
+        soil_group : str
+            Soil group.
+        specified_dmin : bool
+            If the minimum damping is specified rather than computed.
+
+        Returns
+        -------
+        list of str
+            Names of the index properties.
+        """
         models = ["ggmax_model", "damping_model"]
         if not specified_dmin:
             models += ["dmin_model"]
@@ -197,14 +214,35 @@ class WangSoilType:
 
     @property
     def soil_group(self) -> str:
+        """Soil group of the model."""
         return self._soil_group
 
     @property
     def index_params(self) -> dict:
+        """Index properties that define the curves, by name."""
         return self._index_params
 
     @classmethod
     def get_level(cls, model: str, soil_group: str, **kwds) -> int:
+        """Determine the level of a model for the index properties provided.
+
+        The level is the number of required properties that are provided, in
+        order, less one.
+
+        Parameters
+        ----------
+        model : str
+            Name of the model, e.g., ``"ggmax_model"``.
+        soil_group : str
+            Soil group.
+        **kwds
+            Index properties that are provided.
+
+        Returns
+        -------
+        int
+            Level, or -1 if the first required property is not provided.
+        """
         required = cls.LEVELS[soil_group][model]
         provided = list(kwds.keys())
         lvl = -1
@@ -307,6 +345,25 @@ class WangSoilType:
     def calc_mod_reduc(
         cls, strains: npt.ArrayLike, soil_group: str, **kwds
     ) -> np.ndarray:
+        """Compute the modulus reduction, :math:`G / G_{max}`.
+
+        The model level is selected by the index properties provided. The fines
+        content, plasticity index and water content are in percent.
+
+        Parameters
+        ----------
+        strains : array_like
+            Shear strains [decimal].
+        soil_group : str
+            Soil group.
+        **kwds
+            Index properties, e.g., ``stress_mean`` [kPa].
+
+        Returns
+        -------
+        np.ndarray
+            Modulus reduction at the strains.
+        """
         level = cls.get_level("ggmax_model", soil_group, **kwds)
         if soil_group == "clean_sand_and_gravel":
             if level == 0:
@@ -381,6 +438,18 @@ class WangSoilType:
     @classmethod
     @_to_decimal("fines_cont", "plas_index", "water_cont")
     def calc_damping_min(cls, soil_group: str, **kwds) -> float:
+        """Compute the small-strain damping [decimal].
+
+        The model level is selected by the index properties provided. The fines
+        content, plasticity index and water content are in percent.
+
+        Parameters
+        ----------
+        soil_group : str
+            Soil group.
+        **kwds
+            Index properties, e.g., ``stress_mean`` [kPa].
+        """
         level = cls.get_level("dmin_model", soil_group, **kwds)
         if soil_group == "clean_sand_and_gravel":
             if level == 0:
@@ -463,6 +532,27 @@ class WangSoilType:
     @classmethod
     @_to_decimal("fines_cont", "plas_index", "water_cont")
     def calc_damping(cls, strains, soil_group, damping_min=None, **kwds) -> np.ndarray:
+        """Compute the damping [decimal].
+
+        The model level is selected by the index properties provided. The fines
+        content, plasticity index and water content are in percent.
+
+        Parameters
+        ----------
+        strains : array_like
+            Shear strains [decimal].
+        soil_group : str
+            Soil group.
+        damping_min : float, optional
+            Small-strain damping [decimal]. Computed if not provided.
+        **kwds
+            Index properties, e.g., ``stress_mean`` [kPa].
+
+        Returns
+        -------
+        np.ndarray
+            Damping at the strains.
+        """
         level = cls.get_level("damping_model", soil_group, **kwds)
         if soil_group == "clean_sand_and_gravel":
             if level == 0:
@@ -545,6 +635,7 @@ class WangSoilType:
         return (d * gamma_ratio + 100 * damping_min) / (gamma_ratio + 1) / 100
 
     def curves(self) -> NonlinearSoilCurves:
+        """Return the modulus reduction and damping curves."""
         return NonlinearSoilCurves(
             strains=self._strains,
             mod_reduc=self._mod_reduc,

@@ -31,14 +31,17 @@ class TimeSeries:
 
     @property
     def info(self) -> str:
+        """Description of the record."""
         return self._info
 
     @property
     def time_step(self) -> float:
+        """Time step [s]."""
         return self._time_step
 
     @property
     def accels(self) -> npt.NDArray[np.floating]:
+        """Acceleration time series [g]."""
         return self._accels
 
     @classmethod

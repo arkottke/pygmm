@@ -19,6 +19,7 @@ try:
 except ImportError:  # pragma: no cover - exercised only without numba
 
     def njit(func):  # type: ignore[no-redef]
+        """Return the function unchanged, as numba is not installed."""
         return func
 
 
