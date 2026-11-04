@@ -5,4 +5,4 @@ Developer Guide
    :maxdepth: 2
 
    contributing
-   history
+   changelog
