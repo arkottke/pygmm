@@ -63,7 +63,7 @@ class Scenario(collections.UserDict):
         moment magnitude of the event (:math:`M_w`)
     mechanism : str
         fault mechanism. Valid options: "SS", "NS", "RS", and "U". See
-        :ref:`Mechanism` for more information.
+        the mechanism reference in the user guide for more information.
     on_hanging_wall : bool
         If the site is located on the hanging wall of the fault. If *None*,
         then *False* is assumed.

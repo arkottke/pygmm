@@ -49,11 +49,7 @@ class AbrahamsonShiYang2016(model.Model):
 
     References
     ----------
-    .. [1] Abrahamson, C., Shi, H.-J. M., and Yang, B. (2016). "Ground-Motion
-           Prediction Equations for Arias Intensity Consistent with the
-           NGA-West2 Ground-Motion Models." PEER Report No. 2016/05, Pacific
-           Earthquake Engineering Research Center, University of California,
-           Berkeley.
+    :cite:t:`abrahamson16arias`
 
     """
 

@@ -40,8 +40,8 @@ class PinillaRamosEtAl2024(model.Model):
 
     References
     ----------
-    .. [1] Pinilla-Ramos et al. (2024). "Subduction Zone Significant Duration
-           Model for Interface and Intraslab Earthquakes."
+    :cite:t:`pinilla-ramos24`
+
     """
 
     NAME = "Pinilla-Ramos et al. (2024)"

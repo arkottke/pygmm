@@ -214,6 +214,6 @@ Getting Help
 
 If you encounter issues:
 
-1. Check the :doc:`examples/index` for common usage patterns
+1. Check the :doc:`../examples/index` for common usage patterns
 2. Search existing `GitHub Issues <https://github.com/arkottke/pygmm/issues>`_
 3. Create a new issue with detailed information about your problem

@@ -45,10 +45,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     References
     ----------
-    .. [1] Macedo, J., Abrahamson, N., and Liu, C. (2021). "New Scenario-Based
-           Cumulative Absolute Velocity Models for Shallow Crustal Tectonic
-           Settings." Bulletin of the Seismological Society of America,
-           111(1), 157–172. doi: 10.1785/0120190321.
+    :cite:t:`macedo21`
 
     """
 

@@ -409,12 +409,12 @@ For robust analyses, consider using multiple models:
 See Also
 ========
 
-- :doc:`examples/model_comparison` - Detailed comparison examples
-- :doc:`examples/basic_usage` - Getting started with models
-- :doc:`modules` - Complete API reference
+- :doc:`../examples/model_comparison` - Detailed comparison examples
+- :doc:`../examples/basic_usage` - Getting started with models
+- :doc:`../modules` - Complete API reference
 
 Mechanism Reference
-==================
+===================
 
 The following abbreviations are used for fault mechanism. Refer to each model
 for the specific definition of the mechanism.
@@ -460,7 +460,7 @@ following models have been implemented.
     ~ground_motion.tavakoli_pezeshk_2005.TavakoliPezeshk05
 
 If you are interested in contributing another model to the collection please see
-:doc:`contributing`.
+:doc:`../developer-guide/contributing`.
 
 Conditional Spectrum Models
 ---------------------------

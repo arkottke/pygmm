@@ -41,14 +41,3 @@ Gallery
    model_comparison
    site_response
    probabilistic
-
-Jupyter Notebooks
-=================
-
-Interactive examples are also available as Jupyter notebooks:
-
-.. toctree::
-   :maxdepth: 1
-   :glob:
-
-   ../examples/*.ipynb
