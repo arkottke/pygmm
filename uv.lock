@@ -1,5 +1,5 @@
 version = 1
-revision = 3
+revision = 5
 requires-python = ">=3.12"
 resolution-markers = [
     "python_full_version >= '3.15' and sys_platform == 'win32'",
@@ -2030,7 +2030,7 @@ requires-dist = [
     { name = "mypy", marker = "extra == 'typing'" },
     { name = "myst-parser", marker = "extra == 'docs'" },
     { name = "nbsphinx", marker = "extra == 'docs'" },
-    { name = "numba", marker = "extra == 'slope'" },
+    { name = "numba", marker = "extra == 'slope'", specifier = ">=0.61" },
     { name = "numpy", specifier = ">=2.1" },
     { name = "pandas", specifier = ">=2.3" },
     { name = "pandas", marker = "extra == 'test'" },

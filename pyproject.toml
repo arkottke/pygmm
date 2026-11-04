@@ -24,7 +24,7 @@ dependencies = [
 # Slope displacement: numba compiles the rigid-block integration (a pure-Python
 # fallback is used without it) and pyrotd is required by HaleAbrahamson19.
 slope = [
-    "numba",
+    "numba>=0.61",
     "pyrotd>=0.6.1",
 ]
 test = [

@@ -230,8 +230,9 @@ class BaylessAbrahamson2019(model.Model):
         if duration is None:
             raise ValueError(
                 "BaylessAbrahamson2019 predicts EAS only and has no duration. "
-                "Supply one from a duration model, e.g. "
-                "AfshariStewart2016(scenario).duration_model().duration."
+                "Supply the RVT duration, the 5-75% normalized Arias duration, "
+                "from a duration model, e.g. "
+                "AfshariStewart2016(scenario).duration_model().d_5_75."
             )
         return FourierSpectrum(
             freqs=self.freqs, fourier_amps=self.fourier_amps, duration=float(duration)

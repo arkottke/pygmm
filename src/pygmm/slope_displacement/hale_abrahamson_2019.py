@@ -20,7 +20,9 @@ class HaleAbrahamson19:
     before a rigid sliding-block analysis is performed.
 
     Provide exactly one of `shear_vel` and `freq_nat`; the other is computed
-    from :math:`f_n = V_S / (3 H)`.
+    from :math:`f_n = V_S / (3 H)`. This is the empirical relation of the
+    model; it differs from the :math:`V_S / (2.61 H)` of a homogeneous shear
+    wedge on a rigid base, see ``pystrata.dam.analytical.wedge_natural_freqs``.
 
     Parameters
     ----------

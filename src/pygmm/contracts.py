@@ -38,7 +38,10 @@ class ResponseSpectrum:
     damping : float
         Oscillator damping ratio (decimal, e.g. 0.05).
     duration : float, optional
-        Ground-motion duration [s] (e.g. for RVT consumers).
+        Ground-motion duration [s] for RVT consumers. pyRVT's peak
+        calculators expect the duration of the stationary portion of the
+        motion, typically the 5-75% normalized Arias intensity duration
+        (``Duration.d_5_75``), not the 5-95% significant duration.
     """
 
     periods: npt.NDArray[np.floating]
@@ -58,7 +61,10 @@ class FourierSpectrum:
     fourier_amps : np.ndarray
         Fourier amplitudes of acceleration [g-s].
     duration : float
-        Ground-motion duration [s] used by RVT.
+        Ground-motion duration [s] used by RVT. pyRVT's peak calculators expect
+        the duration of the stationary portion of the motion, typically the
+        5-75% normalized Arias intensity duration (``Duration.d_5_75``), not
+        the 5-95% significant duration.
     """
 
     freqs: npt.NDArray[np.floating]
