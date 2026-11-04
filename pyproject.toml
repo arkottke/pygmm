@@ -32,6 +32,10 @@ test = [
     "pytest",
     "pytest-cov",
     "pandas",
+    "matplotlib",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
 ]
 docs = [
     "sphinx",
@@ -43,6 +47,7 @@ docs = [
     "sphinx-autobuild",
     "myst-parser",
     "nbsphinx",
+    "nbsphinx-link",
     "ipython",
     "linkify-it-py",
     "lxml[html_clean]",
@@ -69,6 +74,10 @@ dev = [
     "pytest",
     "pytest-cov",
     "ruff",
+    "matplotlib",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
 ]
 
 # ---------------------------------------------------------------------------

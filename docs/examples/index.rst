@@ -1,43 +1,53 @@
-========
 Examples
 ========
 
-This section provides practical examples of how to use pyGMM for various ground motion modeling tasks.
+The examples are notebooks in the ``examples`` directory of the repository, and
+are executed by the test suite. They are grouped by the part of the library that
+they use; :doc:`../user-guide/index` describes how the parts fit together.
 
-.. grid:: 1 2 2 2
-    :gutter: 2
+Ground-motion models
+--------------------
 
-    .. grid-item-card:: Basic Usage
-        :link: basic_usage
-        :link-type: doc
+**NGA-West2 models for a scenario** (:doc:`example-01`)
+    The response spectra and standard deviations of the five NGA-West2 models for
+    one scenario, and their scaling with magnitude, distance and :math:`V_{s30}`.
 
-        Learn the fundamentals of using pyGMM with simple examples.
+**Spread between ground-motion models** (:doc:`example-02`)
+    The spread of the medians of the models, as a function of period and distance,
+    compared with the standard deviation of each model.
 
-    .. grid-item-card:: Model Comparison
-        :link: model_comparison
-        :link-type: doc
+**Duration** (:doc:`example-06`)
+    The duration model of Abrahamson and Silva (1996) as a function of the
+    normalized Arias intensity.
 
-        Compare predictions from different ground motion models.
+Fourier amplitude spectra
+-------------------------
 
-    .. grid-item-card:: Site Response
-        :link: site_response
-        :link-type: doc
+**Fourier spectra and** :math:`\kappa` (:doc:`example-03`)
+    Three Fourier amplitude spectrum models, the site attenuation relationships and
+    the response spectrum of a source-theory motion computed with pyRVT.
 
-        Examples of site-specific ground motion calculations.
+Site models
+-----------
 
-    .. grid-item-card:: Probabilistic Analysis
-        :link: probabilistic
-        :link-type: doc
+**Soil curves and velocity profiles** (:doc:`example-04`)
+    The modulus reduction and damping curves of the soil-type models, their
+    dependence on confining stress, and two shear-wave velocity profile models.
 
-        Perform probabilistic seismic hazard analysis with pyGMM.
+Slope displacement
+------------------
 
-Gallery
-=======
+**Slope displacement models** (:doc:`example-05`)
+    Five slope-displacement models, with the ground-motion parameters from a
+    ground-motion model, for a range of yield coefficients, magnitudes and distances.
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
-   basic_usage
-   model_comparison
-   site_response
-   probabilistic
+   example-01
+   example-02
+   example-03
+   example-04
+   example-05
+   example-06
