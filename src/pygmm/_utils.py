@@ -26,19 +26,24 @@ def check_bounds(
     value: Any, lower: float | None, upper: float | None, name: str, format: str = "f"
 ) -> None:
     """Raise :class:`ValueError` if any of `value` is outside [`lower`, `upper`]."""
-    if lower is not None and np.any(value < lower):
+    if lower is not None and np.any(np.asarray(value) < lower):
+        found = np.min(value)
         raise ValueError(
-            f'"{name}" value of {value:{format}} below lower limit of {lower:{format}}'
+            f'"{name}" value of {found:{format}} below lower limit of {lower:{format}}'
         )
 
-    if upper is not None and np.any(value > upper):
+    if upper is not None and np.any(np.asarray(value) > upper):
+        found = np.max(value)
         raise ValueError(
-            f'"{name}" value of {value:{format}} above upper limit of {upper:{format}}'
+            f'"{name}" value of {found:{format}} above upper limit of {upper:{format}}'
         )
 
 
 def check_options(value: Any, options: Iterable[Any], name: str) -> None:
     """Raise :class:`ValueError` if `value` is not one of `options`."""
+    if isinstance(options, str):
+        # Each character is an option; "bc" must not match "bcd"
+        options = tuple(options)
     if value not in options:
         raise ValueError(f'"{name}" not in options: {options}')
 

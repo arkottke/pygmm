@@ -15,6 +15,9 @@ from ._utils import PRESS_ATM, UNIT_WT_WATER
 
 __author__ = "Albert Kottke"
 
+#: Maximum number of iterations for the overburden correction
+_MAX_ITER = 100
+
 
 def calc_stresses(
     depth_wt: float, depth: npt.ArrayLike, unit_wt: npt.ArrayLike
@@ -43,10 +46,8 @@ def calc_stresses(
     press_pore = np.maximum(depth - depth_wt, 0) * UNIT_WT_WATER / PRESS_ATM
 
     stress_v = np.zeros_like(depth)
-    stress_v[0] = depth[0] * unit_wt[0]
-
-    if depth_wt < 0:
-        stress_v += -depth_wt * unit_wt
+    # Standing water above the ground surface loads every depth below it
+    stress_v[0] = depth[0] * unit_wt[0] + max(-depth_wt, 0) * UNIT_WT_WATER
 
     # Compute the average unit weight assuming that each depth increment
     # includes half of the unit weight of the material in the two increment.
@@ -123,6 +124,13 @@ def calc_n_1_60cs(
     fc = np.asarray(fc, dtype=float)
     depth = np.asarray(depth, dtype=float)
 
+    if not (
+        np.all(np.isfinite(n_60))
+        and np.all(np.isfinite(stress_v_eff))
+        and np.all(np.isfinite(fc))
+    ):
+        raise ValueError("n_60, stress_v_eff and fc must be finite.")
+
     # Initial estimate
     n_1_60cs = n_60
     c_r = np.interp(
@@ -135,7 +143,7 @@ def calc_n_1_60cs(
     # Fines content correction - Equation 2.23
     d_fc = np.exp(1.63 + 9.7 / (fc + 0.01) - (15.7 / (fc + 0.01)) ** 2)
 
-    while True:
+    for _ in range(_MAX_ITER):
         # Overburden correction - Equation 2.15
         m = 0.784 - 0.0768 * np.sqrt(np.minimum(n_1_60cs, 46))
         c_n = np.minimum(stress_v_eff**-m, 1.7)
@@ -144,6 +152,11 @@ def calc_n_1_60cs(
         n_1_60cs = (c_r * c_n * n_60) + d_fc
         if np.allclose(prev, n_1_60cs):
             break
+    else:
+        raise RuntimeError(
+            f"(N1)60cs did not converge in {_MAX_ITER} iterations; check for "
+            "non-finite or out-of-range inputs."
+        )
     return n_1_60cs
 
 
@@ -176,7 +189,8 @@ def calc_crr(
     n_1_60cs = np.asarray(n_1_60cs, dtype=float)
     msf = calc_msf(mag, n_1_60cs)
 
-    c_sigma = np.minimum(1 / (18.9 - 2.55 * np.sqrt(n_1_60cs)), 0.3)
+    # (N1)60cs is limited to 37 here, beyond which the denominator changes sign
+    c_sigma = np.minimum(1 / (18.9 - 2.55 * np.sqrt(np.minimum(n_1_60cs, 37))), 0.3)
     k_sigma = np.minimum(1 - c_sigma * np.log(stress_v_eff), 1.1)
 
     crr_75 = np.exp(

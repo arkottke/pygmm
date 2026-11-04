@@ -81,7 +81,7 @@ def calc_period_rea05(
         + C.c3 * dist_rup
         + C.c4 * s_c
         + C.c5 * s_d
-        + C.c6 * (1 - dist_rup / 20) * f_d
+        + C.c6 * np.maximum(1 - dist_rup / 20, 0) * f_d
     )
 
     ln_std = np.sqrt(_INTRA[site_class] ** 2 + _INTER[kind] ** 2)

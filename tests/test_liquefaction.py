@@ -68,3 +68,24 @@ def test_crr_csr(spt_data):
         rtol=0.02,
         atol=0.005,
     )
+
+
+def test_stresses_standing_water_above_ground():
+    from pygmm.liquefaction import calc_stresses
+
+    depth = np.array([0.0, 1.0, 2.0])
+    stress_v, stress_v_eff = calc_stresses(-2.0, depth, np.full(3, 18.0))
+    # Total stress at the mudline is the weight of the water column and the
+    # pore pressure there is the same, so the effective stress is zero
+    assert stress_v_eff[0] == pytest.approx(0.0, abs=1e-12)
+    assert stress_v[0] == pytest.approx(2.0 * UNIT_WT_WATER / SC.atm * SC.kilo)
+    # Below the surface the effective stress grows with the submerged weight
+    expected = np.array([0.0, 1.0, 2.0]) * (18.0 - UNIT_WT_WATER) / (SC.atm / SC.kilo)
+    assert stress_v_eff == pytest.approx(expected)
+
+
+def test_n_1_60cs_rejects_nonfinite_input():
+    from pygmm.liquefaction import calc_n_1_60cs
+
+    with pytest.raises(ValueError, match="finite"):
+        calc_n_1_60cs([5.0], [1.0], [np.nan], [5.0])

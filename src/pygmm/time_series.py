@@ -48,7 +48,12 @@ class TimeSeries:
             next(fp)
             info = next(fp).strip()
             next(fp)
-            parts = [p for p in re.split("[ ,]", next(fp)) if p]
-            time_step = float(parts[3])
+            header = next(fp)
+            # NGA-West2: "NPTS= 6000, DT= .0100 SEC"; NGA-West1: "6000 0.0100 NPTS, DT"
+            match = re.search(r"DT\s*=\s*([0-9.eE+-]+)", header, re.IGNORECASE)
+            if match:
+                time_step = float(match.group(1))
+            else:
+                time_step = float(header.replace(",", " ").split()[1])
             accels = np.array([p for line in fp for p in line.split()]).astype(float)
         return cls(time_step, accels, info)

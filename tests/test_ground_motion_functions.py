@@ -60,3 +60,15 @@ def test_calc_pulse_proportion_hea12():
     assert np.all((0 < prop) & (prop < 1))
     # Proportion decreases with distance
     assert np.all(np.diff(prop) < 0)
+
+
+def test_calc_period_rea05_directivity_vanishes_beyond_20_km():
+    kwds = dict(kind="period_mean", mag=7, site_class="b")
+    # The directivity term is a near-fault effect: it must not change the
+    # period at 20 km and it must never reduce it further away
+    for dist_rup in [20.0, 50.0, 80.0]:
+        with_dir = calc_period_rea05(dist_rup=dist_rup, directivity=True, **kwds)
+        without = calc_period_rea05(dist_rup=dist_rup, directivity=False, **kwds)
+        assert_allclose(with_dir, without)
+    near = calc_period_rea05(dist_rup=5.0, directivity=True, **kwds)
+    assert near != calc_period_rea05(dist_rup=5.0, directivity=False, **kwds)
