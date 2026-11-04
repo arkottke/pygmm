@@ -132,6 +132,14 @@ pygmm.ground\_motion.gulerce\_abrahamson\_2011 module
    :show-inheritance:
    :undoc-members:
 
+pygmm.ground\_motion.hayden\_et\_al\_2012 module
+------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.hayden_et_al_2012
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pygmm.ground\_motion.hermkes\_kuehn\_riggelsen\_2014 module
 -----------------------------------------------------------
 
@@ -192,6 +200,22 @@ pygmm.ground\_motion.pinilla\_ramos\_et\_al\_2024 module
 --------------------------------------------------------
 
 .. automodule:: pygmm.ground_motion.pinilla_ramos_et_al_2024
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.rathje\_et\_al\_2005 module
+------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.rathje_et_al_2005
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.rezaeian\_et\_al\_2014 module
+--------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.rezaeian_et_al_2014
    :members:
    :show-inheritance:
    :undoc-members:

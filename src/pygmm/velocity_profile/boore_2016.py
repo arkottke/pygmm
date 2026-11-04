@@ -196,3 +196,57 @@ def _tabulated_profile(
     return VelocityProfile(
         depth=depth, vs_median=vs_median, std_vs_ln=std_vs_ln, site_class=site_class
     )
+
+
+def calc_vel_comp_bea16(vel_shear: npt.ArrayLike) -> npt.NDArray[np.floating]:
+    """Compression-wave velocity from shear-wave velocity (Boore, 2016).
+
+    Parameters
+    ----------
+    vel_shear : array_like
+        Shear-wave velocity [m/s].
+
+    Returns
+    -------
+    np.ndarray
+        Compression-wave velocity [m/s].
+    """
+    vs_kps = np.asarray(vel_shear, dtype=float) / 1000
+    return 1000 * (
+        0.9409
+        + 2.0947 * vs_kps
+        - 0.8206 * vs_kps**2
+        + 0.2683 * vs_kps**3
+        - 0.0251 * vs_kps**4
+    )
+
+
+def calc_density_bea16(vel_shear: npt.ArrayLike) -> npt.NDArray[np.floating]:
+    """Mass density from shear-wave velocity (Boore, 2016).
+
+    Parameters
+    ----------
+    vel_shear : array_like
+        Shear-wave velocity [m/s].
+
+    Returns
+    -------
+    np.ndarray
+        Mass density [g/cm^3].
+    """
+    # Both velocities in km/s
+    vp_kps = calc_vel_comp_bea16(vel_shear) / 1000
+    vs_kps = np.asarray(vel_shear, dtype=float) / 1000
+
+    return np.select(
+        [vs_kps < 0.30, (0.30 <= vs_kps) & (vs_kps < 3.55), 3.55 <= vs_kps],
+        [
+            1 + 1.53 * vs_kps**0.85 / (0.35 + 1.889 * vs_kps**1.7),
+            1.74 * vp_kps**0.25,
+            1.6612 * vp_kps
+            - 0.4721 * vp_kps**2
+            + 0.0671 * vp_kps**3
+            - 0.0043 * vp_kps**4
+            + 0.000106 * vp_kps**5,
+        ],
+    )

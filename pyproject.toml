@@ -21,6 +21,12 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
+# Slope displacement: numba compiles the rigid-block integration (a pure-Python
+# fallback is used without it) and pyrotd is required by HaleAbrahamson19.
+slope = [
+    "numba",
+    "pyrotd>=0.6.1",
+]
 test = [
     "coverage[toml]",
     "pytest",
@@ -56,8 +62,10 @@ typing = [
 dev = [
     "coverage[toml]",
     "mypy",
+    "numba",
     "pandas-stubs",
     "scipy-stubs",
+    "pyrotd>=0.6.1",
     "pytest",
     "pytest-cov",
     "ruff",

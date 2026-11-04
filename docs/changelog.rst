@@ -12,6 +12,21 @@ Unreleased
 
 Added
 -----
+- Incorporated all of pyGEEMs, which is no longer maintained:
+
+  - ``pygmm.slope_displacement``: Rathje & Saygili (2008), Rathje & Antonakos
+    (2011), Watson-Lamprey & Abrahamson (2006), Bray & Travasarou (2007),
+    Bray et al. (2017), Cho & Rathje (2020, 2021, 2022), Park & Kishida
+    (2019) dam period, Hale & Abrahamson (2019), and rigid-block (Newmark)
+    analysis. The optional ``slope`` extra installs numba and pyrotd.
+  - ``pygmm.kappa``: Van Houtte et al. (2011) and Xu & Rathje (2021).
+  - ``pygmm.ground_motion``: Rezaeian et al. (2014) damping scaling, Rathje
+    et al. (2005) periods, and Hayden et al. (2012) pulse proportion.
+  - ``pygmm.velocity_profile``: Boore (2016) density and Vp from Vs, and
+    Wair, DeJong & Shantz (2012) Vs from SPT blow count.
+  - ``pygmm.liquefaction`` (SPT triggering), ``pygmm.elastic`` (elastic
+    constants), and ``pygmm.time_series`` (AT2 reader).
+
 - Modern documentation structure with sphinx-design
 - Comprehensive examples gallery
 - Improved API documentation

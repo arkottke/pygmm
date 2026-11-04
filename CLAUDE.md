@@ -41,7 +41,7 @@ uv run ruff format src/ tests/
 uv run mypy
 
 # Build docs
-uv run --group docs make -C docs html
+uv run --extra docs make -C docs html
 ```
 
 ## Architecture
@@ -70,7 +70,7 @@ several intensity measures at once.
 - `src/pygmm/model.py` — `Model`, `GroundMotionModel`, `Scenario`, `Parameter`, `Coefficients`.
 - `src/pygmm/registry.py` — `@register`, `ModelInfo`, `find_models()`, `get_model()`. Capability-based discovery; replaces the deprecated `pygmm.models` list.
 - `src/pygmm/contracts.py` — Output dataclasses (`ResponseSpectrum`, `FourierSpectrum`, `Duration`, `NonlinearSoilCurves`, `VelocityProfile`) plus the `Supports*` **Protocols** producers satisfy structurally. pystrata and pyrvt duck-type against these and take no runtime dependency on pygmm.
-- `src/pygmm/kamai_2016.py` — `kea16_profile`; sole producer of `VelocityProfile`, so it has no package of its own.
+- `src/pygmm/_utils.py` — `dist_lognorm`, `check_bounds`, `check_options`, and unit constants for the function-style relationships.
 - `src/pygmm/__init__.py` — Public API.
 
 ### The three model packages
@@ -90,6 +90,20 @@ and `Stafford2017`.
 
 Anything else stays at the top level until a second producer of the same
 quantity earns it a package.
+
+Three more packages exist because each has several producers of one quantity:
+`velocity_profile/` (Vs profiles), `kappa/` (site κ0 from Vs30), and
+`slope_displacement/` (sliding displacement). Single-producer modules sit at
+the top level: `elastic.py`, `liquefaction.py`, `time_series.py`.
+
+### Function-style relationships
+
+`Model`/`Scenario` is for ground-motion models. Everything folded in from the
+former pyGEEMs (slope displacement, κ0, liquefaction, REA15, REA05, ...) is a
+plain `calc_*` function, not registered. Lognormal ones are wrapped by
+`_utils.dist_lognorm`: they return the median, or `(ln_mean, ln_std)` with
+`stats=True`. `numba` and `pyrotd` are the optional `slope` extra;
+`slope_displacement.rigid_block` falls back to pure Python without numba.
 
 A model's **capabilities are registry metadata, not its location** — a
 directory can express only one classification, and `AtkinsonBoore2006` emits

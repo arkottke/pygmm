@@ -7,7 +7,13 @@ import pytest
 from numpy.testing import assert_allclose
 
 from pygmm.contracts import VelocityProfile
-from pygmm.velocity_profile import kea16_profile, sa18_profile
+from pygmm.velocity_profile import (
+    calc_density_bea16,
+    calc_vel_comp_bea16,
+    calc_vel_shear_spt_wds12,
+    kea16_profile,
+    sa18_profile,
+)
 from pygmm.velocity_profile.boore_2016 import (
     bj97gr760_density,
     bj97gr760_profile,
@@ -210,3 +216,50 @@ def test_btc11_profile_regression():
 def test_btc11_profile_raises_outside_depth_range(depth):
     with pytest.raises(ValueError, match="must be between"):
         btc11_profile([depth], vs30=400.0)
+
+
+def test_bj97gr_profile_matches_analytic():
+    # Boore & Joyner (1997) define BJ97gr by piecewise power laws (valid to
+    # 8 km); the reconstruction should agree over its 750 m range.
+    depth = np.array([0.5, 5, 20, 30, 50, 100, 190, 300, 500, 750.0])
+    z = depth / 1000
+    expected = 1000 * np.piecewise(
+        z,
+        [z <= 0.001, (0.001 < z) & (z <= 0.030), (0.030 < z) & (z <= 0.190), 0.190 < z],
+        [
+            0.245,
+            lambda z: 2.206 * z**0.272,
+            lambda z: 3.542 * z**0.407,
+            lambda z: 2.505 * z**0.199,
+        ],
+    )
+    assert_allclose(bj97gr_profile(depth).vs_median, expected, rtol=0.005)
+
+
+def test_calc_vel_comp_bea16_regression():
+    assert_allclose(calc_vel_comp_bea16([200.0, 760.0]), [1329.1, 2168.3], atol=0.1)
+
+
+def test_calc_density_bea16_regression():
+    # One value from each of the three velocity ranges.
+    assert_allclose(
+        calc_density_bea16([200.0, 760.0, 4000.0]), [1.8245, 2.1114, 2.9496], atol=1e-4
+    )
+
+
+@pytest.mark.parametrize(
+    "soil_type,age,expected",
+    [
+        ("all", None, 203.4),
+        ("sand", "holocene", 155.6),
+        ("gravel", "pleistocene", 466.6),
+    ],
+)
+def test_calc_vel_shear_spt_wds12(soil_type, age, expected):
+    vs = calc_vel_shear_spt_wds12(20, 1.0, soil_type=soil_type, age=age)
+    assert_allclose(vs, expected, atol=0.1)
+
+
+def test_calc_vel_shear_spt_wds12_invalid_soil_type():
+    with pytest.raises(ValueError, match="soil_type"):
+        calc_vel_shear_spt_wds12(20, 1.0, soil_type="rock")

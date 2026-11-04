@@ -20,7 +20,9 @@ except ImportError:
 # soil_curves, frequency -> fourier_spectrum, period (or a scalar conditioned
 # on a Scenario) -> ground_motion. Anything else stays at the top level until
 # a second producer of the same quantity earns it a package -- velocity_profile
-# is that case: multiple producers of contracts.VelocityProfile.
+# is that case: multiple producers of contracts.VelocityProfile, as are kappa
+# and slope_displacement. elastic, liquefaction and time_series are the
+# single-producer modules (from the former pyGEEMs) left at the top level.
 #
 # `soil_curves` is the exception: it is imported lazily (see `__getattr__`
 # below) because it is the only package pulling a heavy third-party
@@ -28,9 +30,14 @@ except ImportError:
 # outright on any install without pint.
 from . import (
     contracts,
+    elastic,
     fourier_spectrum,
     ground_motion,
+    kappa,
+    liquefaction,
     registry,
+    slope_displacement,
+    time_series,
     velocity_profile,
 )
 from .fourier_spectrum import (
@@ -78,8 +85,14 @@ __all__ = [
     "contracts",
     "fourier_spectrum",
     "ground_motion",
+    "kappa",
+    "slope_displacement",
     "soil_curves",
     "velocity_profile",
+    # Single-producer modules
+    "elastic",
+    "liquefaction",
+    "time_series",
     # Registry
     "ModelInfo",
     "find_models",

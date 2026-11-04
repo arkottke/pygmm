@@ -5,6 +5,11 @@ is a **scalar** conditioned on a :class:`~pygmm.model.Scenario`: response
 spectra, peak parameters, significant duration, Arias intensity, CAV,
 vertical-to-horizontal ratios, and inter-period correlations.
 
+Alongside the registered models are function-style relationships (from the
+former pyGEEMs): damping scaling (:func:`calc_damping_scaling_rea15`),
+frequency-content periods (:func:`calc_period_rea05`), and the proportion of
+pulse-like records (:func:`calc_pulse_proportion_hea12`).
+
 Which intensity measures a given model provides is registry metadata, not a
 directory: a single :class:`~pygmm.model.GroundMotionModel` commonly emits
 PSA, PGA, PGV and PGD from one underlying response vector.
@@ -34,6 +39,7 @@ from .chiou_youngs_2014 import ChiouYoungs2014
 from .coppersmith_bommer_2014 import CoppersmithBommer2014
 from .derras_bard_cotton_2014 import DerrasBardCotton2014
 from .gulerce_abrahamson_2011 import GulerceAbrahamson2011
+from .hayden_et_al_2012 import calc_pulse_proportion_hea12
 from .idriss_2014 import Idriss2014
 from .kempton_stewart_2006 import KemptonStewart2006
 from .kishida_2017 import calc_cond_mean_spectrum_vector
@@ -41,6 +47,8 @@ from .macedo_abrahamson_liu_2021 import MacedoAbrahamsonLiu2021
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
 from .pinilla_ramos_et_al_2024 import PinillaRamosEtAl2024
+from .rathje_et_al_2005 import calc_period_rea05
+from .rezaeian_et_al_2014 import calc_damping_scaling_rea15
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
 
 __all__ = [
@@ -69,4 +77,7 @@ __all__ = [
     "calc_cond_mean_spectrum",
     "calc_cond_mean_spectrum_vector",
     "calc_correls",
+    "calc_damping_scaling_rea15",
+    "calc_period_rea05",
+    "calc_pulse_proportion_hea12",
 ]

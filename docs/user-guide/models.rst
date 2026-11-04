@@ -443,21 +443,21 @@ following models have been implemented.
     :toctree: _autosummary
     :nosignatures:
 
-    ~abrahamson_gregor_addo_2016.AbrahamsonGregorAddo2016
-    ~abrahamson_shi_yang_2016.AbrahamsonShiYang2016
-    ~abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
-    ~akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
-    ~atkinson_boore_2006.AtkinsonBoore2006
-    ~boore_stewart_seyhan_atkinson_2014.BooreStewartSeyhanAtkinson2014
-    ~campbell_2003.Campbell2003
-    ~campbell_bozorgnia_2014.CampbellBozorgnia2014
-    ~chiou_youngs_2014.ChiouYoungs2014
-    ~derras_bard_cotton_2014.DerrasBardCotton2014
-    ~hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
-    ~idriss_2014.Idriss2014
-    ~macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
-    ~pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
-    ~tavakoli_pezeshk_2005.TavakoliPezeshk05
+    ~ground_motion.abrahamson_gregor_addo_2016.AbrahamsonGregorAddo2016
+    ~ground_motion.abrahamson_shi_yang_2016.AbrahamsonShiYang2016
+    ~ground_motion.abrahamson_silva_kamai_2014.AbrahamsonSilvaKamai2014
+    ~ground_motion.akkar_sandikkaya_bommer_2014.AkkarSandikkayaBommer2014
+    ~ground_motion.atkinson_boore_2006.AtkinsonBoore2006
+    ~ground_motion.boore_stewart_seyhan_atkinson_2014.BooreStewartSeyhanAtkinson2014
+    ~ground_motion.campbell_2003.Campbell2003
+    ~ground_motion.campbell_bozorgnia_2014.CampbellBozorgnia2014
+    ~ground_motion.chiou_youngs_2014.ChiouYoungs2014
+    ~ground_motion.derras_bard_cotton_2014.DerrasBardCotton2014
+    ~ground_motion.hermkes_kuehn_riggelsen_2014.HermkesKuehnRiggelsen2014
+    ~ground_motion.idriss_2014.Idriss2014
+    ~ground_motion.macedo_abrahamson_liu_2021.MacedoAbrahamsonLiu2021
+    ~ground_motion.pezeshk_zandieh_tavakoli_2011.PezeshkZandiehTavakoli2011
+    ~ground_motion.tavakoli_pezeshk_2005.TavakoliPezeshk05
 
 If you are interested in contributing another model to the collection please see
 :doc:`contributing`.
@@ -467,9 +467,9 @@ Conditional Spectrum Models
 
 Conditional spectra models are used to create an acceleration response
 spectrum conditioned on the response at one or multiple spectral periods. The
-The :func:`~pygmm.baker_jayaram_2008.calc_cond_mean_spectrum`
+The :func:`~pygmm.ground_motion.baker_jayaram_2008.calc_cond_mean_spectrum`
 provides functions for developing conditional spectra based on one conditioning
-period, while the :func:`~pygmm.kishida_2017.calc_cond_mean_spectrum_vector`
+period, while the :func:`~pygmm.ground_motion.kishida_2017.calc_cond_mean_spectrum_vector`
 uses the same correlation structure and permits conditioning on multiple
 periods.
 
@@ -478,9 +478,9 @@ periods.
     :toctree: _autosummary
     :nosignatures:
 
-    ~baker_jayaram_2008.calc_correls
-    ~baker_jayaram_2008.calc_cond_mean_spectrum
-    ~kishida_2017.calc_cond_mean_spectrum_vector
+    ~ground_motion.baker_jayaram_2008.calc_correls
+    ~ground_motion.baker_jayaram_2008.calc_cond_mean_spectrum
+    ~ground_motion.kishida_2017.calc_cond_mean_spectrum_vector
 
 Vertical-to-Horizontal (V/H) Models
 -----------------------------------
@@ -493,4 +493,46 @@ response spectrum from a horizontal response spectrum.
     :toctree: _autosummary
     :nosignatures:
 
-    ~gulerce_abrahamson_2011.GulerceAbrahamson2011
+    ~ground_motion.gulerce_abrahamson_2011.GulerceAbrahamson2011
+
+Geotechnical Relationships
+--------------------------
+
+These relationships were incorporated from the former pyGEEMs package. They
+are plain functions rather than :class:`.Model` subclasses, and are not in the
+registry. Lognormal relationships return the median, or ``(ln_mean, ln_std)``
+when called with ``stats=True``. Install ``pygmm[slope]`` for numba (faster
+rigid-block analysis) and pyrotd (required by
+:class:`~pygmm.slope_displacement.HaleAbrahamson19`).
+
+.. currentmodule:: pygmm
+.. autosummary::
+    :toctree: _autosummary
+    :nosignatures:
+
+    ~slope_displacement.calc_disp_rs08
+    ~slope_displacement.calc_disp_ra11
+    ~slope_displacement.calc_disp_wla06
+    ~slope_displacement.calc_disp_bt07
+    ~slope_displacement.calc_prob_disp_bt07
+    ~slope_displacement.calc_disp_bea17
+    ~slope_displacement.calc_prob_disp_bea17
+    ~slope_displacement.calc_disp_cr20
+    ~slope_displacement.calc_disp_cr21
+    ~slope_displacement.calc_disp_cr22
+    ~slope_displacement.calc_dam_period_pk19
+    ~slope_displacement.calc_rigid_disp
+    ~slope_displacement.HaleAbrahamson19
+    ~kappa.calc_site_atten_vhea11
+    ~kappa.calc_site_atten_xr21
+    ~ground_motion.calc_damping_scaling_rea15
+    ~ground_motion.calc_period_rea05
+    ~ground_motion.calc_pulse_proportion_hea12
+    ~velocity_profile.calc_density_bea16
+    ~velocity_profile.calc_vel_comp_bea16
+    ~velocity_profile.calc_vel_shear_spt_wds12
+    ~liquefaction.calc_triggering
+    ~elastic.calc_mod_bulk
+    ~elastic.calc_mod_shear
+    ~elastic.calc_poissons_ratio
+    ~time_series.TimeSeries

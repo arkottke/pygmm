@@ -36,6 +36,14 @@ pygmm.velocity\_profile.shi\_asimaki\_2018 module
    :show-inheritance:
    :undoc-members:
 
+pygmm.velocity\_profile.wair\_dejong\_shantz\_2012 module
+---------------------------------------------------------
+
+.. automodule:: pygmm.velocity_profile.wair_dejong_shantz_2012
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 Module contents
 ---------------
 
