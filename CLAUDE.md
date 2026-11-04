@@ -6,8 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two, and the difference matters:
 
-- **`/home/albert/envs/py312`** (Python 3.12.9) — a shared environment with
-  pygmm, **pyrvt and pystrata all installed editable**. Use this for anything
+- **`/home/albert/envs/py313`** (Python 3.13) — a shared environment with
+  pygmm, **pyrvt, pystrata and pyrotd all installed editable**. (The older
+  `py312` environment is below the Python floor and is not maintained.) Use this for anything
   touching cross-package interop; it is the only place the
   `tests/test_fourier_spectrum_interop.py` cases actually run rather than
   being skipped by `importorskip`.
@@ -23,12 +24,12 @@ All pytest config now lives in `pyproject.toml`.
 ## Commands
 
 ```bash
-# Run all tests (use the py312 env for interop coverage)
-/home/albert/envs/py312/bin/python -m pytest tests/
+# Run all tests (use the py313 env for interop coverage)
+/home/albert/envs/py313/bin/python -m pytest tests/
 uv run pytest                      # equivalent, minus the interop tests
 
 # A single test file
-/home/albert/envs/py312/bin/python -m pytest tests/test_registry.py
+/home/albert/envs/py313/bin/python -m pytest tests/test_registry.py
 
 # Coverage
 uv run pytest --cov=pygmm --cov-report=html
@@ -133,7 +134,7 @@ This repo follows [SPEC 0](https://scientific-python.org/specs/spec-0000/):
 - **Python** — support the minors released in the last **36 months**.
 - **Core dependencies** — support the minors released in the last **24 months**.
 
-Floor as of 2026-08-03: **Python 3.12**; CI runs 3.12, 3.13, 3.14.
+Floor as of 2026-11-03: **Python 3.13**; CI runs 3.13, 3.14.
 
 The dated drop schedule lives in `pyproject.toml` next to `[project.urls]`.
 When advancing a floor, update all four in step: `requires-python`, the

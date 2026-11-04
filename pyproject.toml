@@ -9,12 +9,12 @@ authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 # Lower bounds follow SPEC 0: the oldest minor released within the last
 # 24 months. See the SPEC 0 note below for the review schedule.
 dependencies = [
     "matplotlib>=3.10",
-    "numpy>=2.1",
+    "numpy>=2.2",
     "pandas>=2.3",
     "pint>=0.25",
     "scipy>=1.15",
@@ -78,13 +78,13 @@ dev = [
 # Python:       support minors released in the last 36 months.
 # Core packages: support minors released in the last 24 months.
 #
-# Reviewed 2026-08-03. Next scheduled changes:
-#   2026-08-18  numpy >=2.2       (2.1 released 2024-08-18)
-#   2026-10-01  drop Python 3.12  -> requires-python >=3.13
+# Reviewed 2026-11-03. Next scheduled changes:
+#   2026-12-08  numpy >=2.3       (2.2 released 2024-12-08)
 #   2026-12-14  matplotlib >=3.11 (3.10 released 2024-12-14)
 #   2027-01-03  scipy >=1.16      (1.15 released 2025-01-03)
 #   2027-06-05  pandas >=3.0      (2.3 released 2025-06-05)
 #   2027-08-15  pint >=0.26       (0.25 released 2025-08-15)
+#   2027-10-07  drop Python 3.13  -> requires-python >=3.14
 # ---------------------------------------------------------------------------
 
 [project.urls]
@@ -101,7 +101,7 @@ write_to = "src/pygmm/_version.py"
 exclude = ["docs"]
 line-length = 88
 indent-width = 4
-target-version = "py312"
+target-version = "py313"
 extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
@@ -139,7 +139,7 @@ convention = "numpy"
 match = "(?!test_).*\\.py"
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 files = ["src/pygmm"]
 # The scientific stack is only partially typed; stubs are pulled in for pandas
 # and scipy, and the rest is allowed through untyped.
