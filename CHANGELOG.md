@@ -7,6 +7,12 @@
   damping and first-mode frequency that define it, as a `HaleTransferFunction`.
   It takes the 5% damped spectral acceleration [g] at `period_nl`, so it works
   with any motion. It replaces the private `_calc_trans_func`.
+- Changed: the documentation is reorganized: a user guide that describes how the
+  scenario, the models and their outputs fit together, the API reference in
+  `api/`, and six executed example notebooks (NGA-West2 models, the spread
+  between models, Fourier spectra and kappa, soil curves and velocity profiles,
+  slope displacement, duration) that replace the example scripts and the example
+  pages, whose code did not run. The notebooks are executed by the tests.
 - Added: `HaleAbrahamson19.from_metric` creates the model from a height in
   meters and a velocity in m/s; the model itself works in feet.
 
