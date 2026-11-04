@@ -157,7 +157,7 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
 
         Returns
@@ -225,14 +225,14 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
         v_s30 : float
             site condition. Set `v_s30` to the reference
             velocity (e.g., 1180 m/s) for the reference response.
         depth_1_0 : float
             depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{1.0}` in (km).
+            :math:`Z_{1.0}` in [km].
         region : str, optional
             region of basin model. Valid options: 'california', 'japan'. If
             *None*, then 'california' is used as the default value.

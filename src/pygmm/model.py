@@ -18,16 +18,16 @@ class Scenario(collections.UserDict):
     ----------
     depth_1_0 : float
         depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-        :math:`Z_{1.0}` in (km).
+        :math:`Z_{1.0}` in [km].
     depth_2_5 : float
         depth to the 2.5 km∕s shear-wave velocity horizon beneath the site,
-        :math:`Z_{2.5}` in (km).
+        :math:`Z_{2.5}` in [km].
     depth_tor : float
         depth to the top of the rupture plane (:math:`Z_{tor}`, km).
     depth_bor : float
         depth to the bottom of the rupture plane (:math:`Z_{bor}`, km).
     depth_bot : float
-        depth to bottom of seismogenic crust (km).
+        depth to bottom of seismogenic crust [km].
     dip : float
         fault dip angle (:math:`\phi`, deg).
     dist_jb : float
@@ -303,7 +303,7 @@ class GroundMotionModel(Model):
 
     @property
     def spec_accels(self) -> np.ndarray:
-        """Pseudo-spectral accelerations computed by the model (g)."""
+        """Pseudo-spectral accelerations computed by the model [g]."""
         return self._resp(self.INDICES_PSA)
 
     def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum:
@@ -342,7 +342,7 @@ class GroundMotionModel(Model):
 
     @property
     def pga(self) -> float:
-        """Peak ground acceleration (PGA) computed by the model (g)."""
+        """Peak ground acceleration (PGA) computed by the model [g]."""
         if self.INDEX_PGA is None:
             raise NotImplementedError
         else:
@@ -358,7 +358,7 @@ class GroundMotionModel(Model):
 
     @property
     def pgv(self) -> float:
-        """Peak ground velocity (PGV) computed by the model (cm/sec)."""
+        """Peak ground velocity (PGV) computed by the model [cm/sec]."""
         if self.INDEX_PGV is None:
             raise NotImplementedError
         else:

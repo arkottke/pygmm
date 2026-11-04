@@ -1,7 +1,7 @@
 """Single-corner source-theory FAS model (Campbell 2003 defaults).
 
 Ported from ``pyrvt.motions.SourceTheoryMotion``. This class produces only the
-Fourier amplitude spectrum (g-sec) and a duration estimate; it has no RVT peak
+Fourier amplitude spectrum [g-sec] and a duration estimate; it has no RVT peak
 calculator. Combine with ``pyrvt.motions.RvtMotion.from_fas`` to evaluate peak
 ground motions.
 """

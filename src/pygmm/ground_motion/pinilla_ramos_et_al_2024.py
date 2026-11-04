@@ -35,8 +35,8 @@ class PinillaRamosEtAl2024(model.Model):
     - event_type: 'interface' for interface events, 'slab' for intraslab events
     - region: 'Japan', 'New Zealand', 'South America', or 'Taiwan' (slab only)
     - mag: moment magnitude (Mw)
-    - dist_rup: rupture distance (km)
-    - v_s30: time-averaged shear-wave velocity in top 30m (m/s)
+    - dist_rup: rupture distance [km]
+    - v_s30: time-averaged shear-wave velocity in top 30m [m/s]
 
     References
     ----------

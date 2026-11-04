@@ -68,7 +68,7 @@ class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
 
         Returns

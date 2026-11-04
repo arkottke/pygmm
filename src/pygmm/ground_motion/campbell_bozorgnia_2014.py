@@ -114,7 +114,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
         v_s30 : float
             time-averaged shear-wave velocity over the top 30 m
@@ -217,7 +217,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             velocity (e.g., 1180 m/s) for the reference response.
         depth_2_5 : float
             depth to the 2.5 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{2.5}` in (km).
+            :math:`Z_{2.5}` in [km].
         region : str, optional
             region of basin model. Valid options:
             "global", "california", "japan", "italy", "china". If
@@ -281,7 +281,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition.
 
         Returns
@@ -351,7 +351,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             "california", "japan". (Default value = 'global')
         depth_1_0 : Optional[float]
             depth to the 1.0 km∕s shear-wave
-            velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+            velocity horizon beneath the site, :math:`Z_{1.0}` in [km].
             (Default value = None)
 
         Returns
@@ -360,7 +360,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             estimated depth to a shear-wave velocity of 2.5 km/sec
         float
             estimated depth to a shear-wave velocity of 2.5 km/sec
-            (km).
+            [km].
 
         """
         if v_s30:
@@ -420,7 +420,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         Returns
         -------
         float
-            estimated hypocenter depth (km)
+            estimated hypocenter depth [km]
 
         """
         # Equations 35, 36, and 37 of journal article
@@ -451,13 +451,13 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
             Keyword Args:
         depth_bot : Optional[float]
             depth to bottom of seismogenic crust
-            (km). Used to calculate fault width if none is specified. If
+            [km]. Used to calculate fault width if none is specified. If
             *None*, then a value of 15 km is used. (Default value = 15.0)
 
         Returns
         -------
         float
-            estimated fault width (km)
+            estimated fault width [km]
         """
         return min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
@@ -466,7 +466,7 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_bor(depth_tor: float, dip: float, width: float) -> float:
-        r"""Compute the depth to bottom of the rupture (km).
+        r"""Compute the depth to bottom of the rupture [km].
 
         Parameters
         ----------
@@ -481,6 +481,6 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         Returns
         -------
         float
-            depth to bottom of the fault rupture (km)
+            depth to bottom of the fault rupture [km]
         """
         return depth_tor + width * np.sin(np.radians(dip))

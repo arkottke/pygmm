@@ -41,10 +41,10 @@ class AbrahamsonShiYang2016(model.Model):
         ``'ASK14'``, ``'BSSA14'``, ``'CB14'``, ``'CY14'``, ``'I14'``.
         Default ``None`` selects conditional mode.
     pga : float or None, optional
-        Peak ground acceleration (g) for conditional mode. Required when
+        Peak ground acceleration [g] for conditional mode. Required when
         ``backbone`` is ``None``.
     sa_t1 : float or None, optional
-        Spectral acceleration at T=1 s (g) for conditional mode. Required
+        Spectral acceleration at T=1 s [g] for conditional mode. Required
         when ``backbone`` is ``None``.
 
     References
@@ -131,7 +131,7 @@ class AbrahamsonShiYang2016(model.Model):
 
     @property
     def ia(self):
-        """Median Arias intensity (m/s)."""
+        """Median Arias intensity [m/s]."""
         return np.exp(self._ln_ia)
 
     @property
@@ -151,12 +151,12 @@ class AbrahamsonShiYang2016(model.Model):
 
     @property
     def ia_plus_sigma(self):
-        """84th-percentile Arias intensity (m/s): ``exp(ln_ia + ln_std)``."""
+        """84th-percentile Arias intensity [m/s]: ``exp(ln_ia + ln_std)``."""
         return np.exp(self._ln_ia + self._ln_std)
 
     @property
     def ia_minus_sigma(self):
-        """16th-percentile Arias intensity (m/s): ``exp(ln_ia - ln_std)``."""
+        """16th-percentile Arias intensity [m/s]: ``exp(ln_ia - ln_std)``."""
         return np.exp(self._ln_ia - self._ln_std)
 
     # ------------------------------------------------------------------ #

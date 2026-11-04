@@ -119,9 +119,9 @@ class NonlinearSoilCurves:
     mod_reduc : np.ndarray
         Shear-modulus reduction ratio G/G_max.
     damping : np.ndarray
-        Material damping ratio (decimal).
+        Material damping ratio [decimal].
     damping_min : float
-        Small-strain (minimum) damping (decimal).
+        Small-strain (minimum) damping [decimal].
     unit_wt : float, optional
         Soil unit weight [kN/m^3].
     name : str, optional

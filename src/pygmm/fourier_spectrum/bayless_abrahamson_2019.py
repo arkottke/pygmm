@@ -69,7 +69,7 @@ class BaylessAbrahamson2019(model.Model):
 
     @property
     def fourier_amps(self):
-        """Fourier amplitudes (g-sec).
+        """Fourier amplitudes [g-sec].
 
         Canonical name for :attr:`eas`. Consumers such as pyRVT's
         ``RvtMotion.from_fas`` duck-type on ``freqs``/``fourier_amps``/

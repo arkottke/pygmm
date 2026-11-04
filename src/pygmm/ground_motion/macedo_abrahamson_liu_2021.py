@@ -115,12 +115,12 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     @property
     def ln_cav(self):
-        """Natural log of the median CAV (m/s)."""
+        """Natural log of the median CAV [m/s]."""
         return self._ln_cav
 
     @property
     def cav(self):
-        """Median CAV (m/s)."""
+        """Median CAV [m/s]."""
         return np.exp(self._ln_cav)
 
     @property
@@ -140,12 +140,12 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     @property
     def cav_plus_sigma(self):
-        """84th-percentile CAV (m/s): ``exp(ln_cav + ln_std)``."""
+        """84th-percentile CAV [m/s]: ``exp(ln_cav + ln_std)``."""
         return np.exp(self._ln_cav + self._ln_std)
 
     @property
     def cav_minus_sigma(self):
-        """16th-percentile CAV (m/s): ``exp(ln_cav - ln_std)``."""
+        """16th-percentile CAV [m/s]: ``exp(ln_cav - ln_std)``."""
         return np.exp(self._ln_cav - self._ln_std)
 
     # ------------------------------------------------------------------ #

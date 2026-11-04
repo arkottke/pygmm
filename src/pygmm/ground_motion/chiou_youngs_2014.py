@@ -177,7 +177,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
             velocity (e.g., 1180 m/s) for the reference response.
         depth_1_0 : float
             depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{1.0}` in (km).
+            :math:`Z_{1.0}` in [km].
         region : str, optional
             region of basin model. Valid options: 'california', 'japan'. If
             *None*, then 'california' is used as the default value.
@@ -304,7 +304,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
         Returns
         -------
         depth_1_0 : float
-            estimated depth to a shear-wave velocity of 1 km/sec (km)
+            estimated depth to a shear-wave velocity of 1 km/sec [km]
 
         """
         if region in ["japan"]:
@@ -328,7 +328,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_tor(mag: float, mechanism: str) -> float:
-        """Calculate an estimate of the depth to top of rupture (km).
+        """Calculate an estimate of the depth to top of rupture [km].
 
         Parameters
         ----------
@@ -341,7 +341,7 @@ class ChiouYoungs2014(model.GroundMotionModel):
         Returns
         -------
         depth_tor : float
-            estimated depth to top of rupture (km)
+            estimated depth to top of rupture [km]
 
         """
         if mechanism == "RS":
