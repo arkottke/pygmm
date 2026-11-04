@@ -52,7 +52,7 @@ class Scenario(collections.UserDict):
         strike (:math:`R_{y0}`, km).
     dpp_centered : float
         direct point parameter (DPP) for directivity effect (see Chiou and
-        Spudich (2014, :cite:`spudich14`)) centered on the earthquake-specific
+        Spudich (2014, :cite:p:`spudich14`)) centered on the earthquake-specific
         average DPP for California.
     event_type : str
         event type. Type of event used in subduction models to distinguish

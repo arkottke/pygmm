@@ -1,4 +1,4 @@
-"""Stafford (2017, :cite:`stafford17`) correlation."""
+"""Stafford (2017, :cite:p:`stafford17`) correlation."""
 
 import json
 import os

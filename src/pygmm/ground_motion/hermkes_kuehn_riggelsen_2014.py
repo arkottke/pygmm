@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model."""
+"""Hermkes, Kuehn, Riggelsen (2014, :cite:p:`hermkes14`) model."""
 
 import logging
 import pathlib
@@ -42,7 +42,7 @@ INTERPOLATOR = None
 
 @register(lazy_data=True)
 class HermkesKuehnRiggelsen2014(model.GroundMotionModel):
-    """Hermkes, Kuehn, Riggelsen (2014, :cite:`hermkes14`) model.
+    """Hermkes, Kuehn, Riggelsen (2014, :cite:p:`hermkes14`) model.
 
     Only the *GPSELinCorr* model is implemented. This model must be imported
     directly by::

@@ -14,7 +14,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
-    """Boore, Stewart, Seyhan, and Atkinson (2014, :cite:`boore14`) model.
+    """Boore, Stewart, Seyhan, and Atkinson (2014, :cite:p:`boore14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.

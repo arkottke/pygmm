@@ -1,4 +1,4 @@
-"""Chiou and Youngs (2014, :cite:`chiou14`) model."""
+"""Chiou and Youngs (2014, :cite:p:`chiou14`) model."""
 
 import logging
 
@@ -13,7 +13,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class ChiouYoungs2014(model.GroundMotionModel):
-    """Chiou and Youngs (2014, :cite:`chiou14`) model.
+    """Chiou and Youngs (2014, :cite:p:`chiou14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.

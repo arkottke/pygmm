@@ -1,4 +1,4 @@
-"""Kempton and Stewart (2006, :cite:`kempton2006`) duration model."""
+"""Kempton and Stewart (2006, :cite:p:`kempton2006`) duration model."""
 
 import numpy as np
 
@@ -11,7 +11,7 @@ __author__ = ""
 
 @register(provides=("duration",))
 class KemptonStewart2006(model.Model):
-    """Kempton and Stewart (2006, :cite:`kempton2006`) duration model.
+    """Kempton and Stewart (2006, :cite:p:`kempton2006`) duration model.
 
     Parameters
     ----------

@@ -1,4 +1,4 @@
-"""Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model."""
+"""Abrahamson, Silva, and Kamai (2014, :cite:p:`abrahamson14`) model."""
 
 import numpy as np
 from scipy.interpolate import interp1d
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
-    """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model.
+    """Abrahamson, Silva, and Kamai (2014, :cite:p:`abrahamson14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
@@ -305,8 +305,8 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
         """Estimate the depth to the 1 km/sec horizon (:math:`Z_{1.0}`).
 
         The estimate is based on :math:`V_{s30}` and region, using equations 18
-        and 19 in :cite:`abrahamson14`. It differs from the equations in
-        :cite:`chiou14`.
+        and 19 in :cite:p:`abrahamson14`. It differs from the equations in
+        :cite:p:`chiou14`.
 
         Parameters
         ----------

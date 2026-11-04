@@ -1,4 +1,4 @@
-"""Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model."""
+"""Macedo, Abrahamson, and Liu (2021, :cite:p:`macedo21`) CAV model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Mahdi Bahrampouri"
 
 @register(provides=("cav",), input="conditional")
 class MacedoAbrahamsonLiu2021(model.Model):
-    r"""Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model.
+    r"""Macedo, Abrahamson, and Liu (2021, :cite:p:`macedo21`) CAV model.
 
     Conditional ground-motion model (CGMM) and scenario-based models for
     cumulative absolute velocity (CAV, m/s) for shallow crustal tectonic

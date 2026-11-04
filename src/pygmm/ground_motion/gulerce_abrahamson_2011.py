@@ -1,4 +1,4 @@
-"""Gülerce and Abrahamson (2011, :cite:`gulerce11`) V/H model."""
+"""Gülerce and Abrahamson (2011, :cite:p:`gulerce11`) V/H model."""
 
 import numpy as np
 
@@ -14,7 +14,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("vh_ratio",), tectonic="active_crustal")
 class GulerceAbrahamson2011(model.Model):
-    """Gülerce and Abrahamson (2011, :cite:`gulerce11`) V/H model.
+    """Gülerce and Abrahamson (2011, :cite:p:`gulerce11`) V/H model.
 
     This model was developed for active tectonic regions.
 

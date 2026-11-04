@@ -1,4 +1,4 @@
-"""Atkinson and Boore (2006, :cite:`atkinson06`) model."""
+"""Atkinson and Boore (2006, :cite:p:`atkinson06`) model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="stable_continental")
 class AtkinsonBoore2006(model.GroundMotionModel):
-    """Atkinson and Boore (2006, :cite:`atkinson06`) model.
+    """Atkinson and Boore (2006, :cite:p:`atkinson06`) model.
 
     Developed for the Eastern North America with a reference velocity of 760
     or 2000 m/s.
@@ -117,7 +117,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         """Calculate the stress correction factor.
 
         The factor was proposed by Atkinson and Boore (2011)
-        :cite:`atkinson11`.
+        :cite:p:`atkinson11`.
 
         Returns
         -------

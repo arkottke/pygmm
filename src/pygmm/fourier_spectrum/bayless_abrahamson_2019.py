@@ -1,4 +1,4 @@
-"""Bayless and Abrahamson (2019, :cite:`bayless19`) model."""
+"""Bayless and Abrahamson (2019, :cite:p:`bayless19`) model."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("fas",), tectonic="active_crustal")
 class BaylessAbrahamson2019(model.Model):
-    """Bayless and Abrahamson (2019, :cite:`bayless19`) model.
+    """Bayless and Abrahamson (2019, :cite:p:`bayless19`) model.
 
     This Fourier-amplitude spectra model was developed for active tectonic regions.
 

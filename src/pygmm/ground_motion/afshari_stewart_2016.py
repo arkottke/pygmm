@@ -1,4 +1,4 @@
-"""Afshari and Stewart (2016, :cite:`afshari2016`) duration model."""
+"""Afshari and Stewart (2016, :cite:p:`afshari2016`) duration model."""
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from ..registry import register
 
 @register(provides=("duration",))
 class AfshariStewart2016(model.Model):
-    """Afshari and Stewart (2016, :cite:`afshari2016`) duration model.
+    """Afshari and Stewart (2016, :cite:p:`afshari2016`) duration model.
 
     Parameters
     ----------

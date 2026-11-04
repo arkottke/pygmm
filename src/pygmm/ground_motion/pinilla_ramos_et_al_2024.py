@@ -1,4 +1,4 @@
-"""Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model."""
+"""Pinilla-Ramos et al. (2024, :cite:p:`pinilla-ramos24`) subduction duration model."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("duration",), tectonic="subduction")
 class PinillaRamosEtAl2024(model.Model):
-    """Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model.
+    """Pinilla-Ramos et al. (2024, :cite:p:`pinilla-ramos24`) subduction duration model.
 
     This model predicts significant duration for different energy thresholds
     (D5-X) where X represents the percentage of cumulative energy. The model

@@ -1,4 +1,4 @@
-"""Abrahamson and Bhasin (2020, :cite:`abrahamson20`) model."""
+"""Abrahamson and Bhasin (2020, :cite:p:`abrahamson20`) model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("pgv",), input="conditional")
 class AbrahamsonBhasin2020(model.Model):
-    """Abrahamson (2020, :cite:`abrahamson20`) model.
+    """Abrahamson (2020, :cite:p:`abrahamson20`) model.
 
     Conditional PGV model
 

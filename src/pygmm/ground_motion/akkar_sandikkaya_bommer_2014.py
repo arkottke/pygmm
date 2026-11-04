@@ -1,4 +1,4 @@
-"""Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model."""
+"""Akkar, Sandikkaya, & Bommer (2014, :cite:p:`akkar14`) model."""
 
 import collections
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register()
 class AkkarSandikkayaBommer2014(model.GroundMotionModel):
-    """Akkar, Sandikkaya, & Bommer (2014, :cite:`akkar14`) model.
+    """Akkar, Sandikkaya, & Bommer (2014, :cite:p:`akkar14`) model.
 
     The model is specified for three different distance metrics. However,
     the implementation uses only one distance metric. They are used in

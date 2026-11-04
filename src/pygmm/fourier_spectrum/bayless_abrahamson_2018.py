@@ -1,4 +1,4 @@
-"""Bayless and Abrahamson (2018, :cite:`bayless19`) correlation."""
+"""Bayless and Abrahamson (2018, :cite:p:`bayless19`) correlation."""
 
 import numpy as np
 import numpy.typing as npt

@@ -1,4 +1,4 @@
-"""Pezeshk, Zandieh, and Tavakoli (2011, :cite:`pezeshk11`) model."""
+"""Pezeshk, Zandieh, and Tavakoli (2011, :cite:p:`pezeshk11`) model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="stable_continental")
 class PezeshkZandiehTavakoli2011(model.GroundMotionModel):
-    """Pezeshk, Zandieh, and Tavakoli (2011, :cite:`pezeshk11`) model.
+    """Pezeshk, Zandieh, and Tavakoli (2011, :cite:p:`pezeshk11`) model.
 
     Developed for the Eastern North America with a reference velocity of 2000
     m/s.

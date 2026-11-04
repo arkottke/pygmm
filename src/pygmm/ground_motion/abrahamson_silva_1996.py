@@ -1,4 +1,4 @@
-"""Abrahamson and Silva (1996, :cite:`abrahamson96`) duration model."""
+"""Abrahamson and Silva (1996, :cite:p:`abrahamson96`) duration model."""
 
 import numpy as np
 
@@ -11,7 +11,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("duration",))
 class AbrahamsonSilva1996(model.Model):
-    """Abrahamson and Silva (1996, :cite:`abrahamson96`) duration model.
+    """Abrahamson and Silva (1996, :cite:p:`abrahamson96`) duration model.
 
     Parameters
     ----------

@@ -14,7 +14,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class CampbellBozorgnia2014(model.GroundMotionModel):
-    """Campbell and Bozorgnia (2014, :cite:`campbell14`) model.
+    """Campbell and Bozorgnia (2014, :cite:p:`campbell14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.

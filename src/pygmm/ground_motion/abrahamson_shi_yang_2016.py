@@ -1,4 +1,7 @@
-"""Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity model."""
+"""Abrahamson, Shi, and Yang (2016) Arias intensity model.
+
+See :cite:t:`abrahamson16arias`.
+"""
 
 import numpy as np
 
