@@ -5,11 +5,10 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from .._utils import KPA_TO_ATM
 from ..registry import register
 from ._hyperbolic import ModifiedHyperbolicBase
 from ._units import convert_units
-
-_KPA_TO_ATM = 1.0 / 101.325
 
 
 @register(provides=("soil_curves",), input="kwargs")
@@ -71,7 +70,7 @@ class MenqSoilType(ModifiedHyperbolicBase):
             0.55
             * self._coef_unif**0.1
             * self._diam_mean**-0.3
-            * (self._stress_mean * _KPA_TO_ATM) ** -0.08
+            * (self._stress_mean * KPA_TO_ATM) ** -0.08
         ) / 100
 
     @property
@@ -83,12 +82,12 @@ class MenqSoilType(ModifiedHyperbolicBase):
         return (
             0.12
             * self._coef_unif**-0.6
-            * (self._stress_mean * _KPA_TO_ATM) ** (0.5 * self._coef_unif**-0.15)
+            * (self._stress_mean * KPA_TO_ATM) ** (0.5 * self._coef_unif**-0.15)
         ) / 100
 
     @property
     def curvature(self) -> float:
-        return 0.86 + 0.1 * np.log10(self._stress_mean * _KPA_TO_ATM)
+        return 0.86 + 0.1 * np.log10(self._stress_mean * KPA_TO_ATM)
 
     def _create_name(self) -> str:
         return (

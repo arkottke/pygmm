@@ -5,12 +5,12 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from .._utils import KPA_TO_ATM
 from ..registry import register
 from ._hyperbolic import ModifiedHyperbolicBase
 from ._units import convert_units
 
 # 1 kPa = 1/101.325 atm
-_KPA_TO_ATM = 1.0 / 101.325
 
 
 @register(provides=("soil_curves",), input="kwargs")
@@ -74,7 +74,7 @@ class DarendeliSoilType(ModifiedHyperbolicBase):
     def _calc_damping_min(self) -> float:
         return (
             (0.8005 + 0.0129 * self._plas_index * self._ocr**-0.1069)
-            * (self._stress_mean * _KPA_TO_ATM) ** -0.2889
+            * (self._stress_mean * KPA_TO_ATM) ** -0.2889
             * (1 + 0.2919 * np.log(self._freq))
         ) / 100
 
@@ -86,7 +86,7 @@ class DarendeliSoilType(ModifiedHyperbolicBase):
     def strain_ref(self) -> float:
         return (
             (0.0352 + 0.0010 * self._plas_index * self._ocr**0.3246)
-            * (self._stress_mean * _KPA_TO_ATM) ** 0.3483
+            * (self._stress_mean * KPA_TO_ATM) ** 0.3483
         ) / 100
 
     @property

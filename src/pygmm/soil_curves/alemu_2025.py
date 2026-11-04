@@ -5,11 +5,10 @@ from __future__ import annotations
 import numpy as np
 import numpy.typing as npt
 
+from .._utils import KPA_TO_ATM
 from ..contracts import NonlinearSoilCurves
 from ..registry import register
 from ._units import convert_units
-
-_KPA_TO_ATM = 1.0 / 101.325
 
 
 @register(provides=("soil_curves",), input="kwargs")
@@ -78,7 +77,7 @@ class AlemuEtAlSoilType:
             )
         self.name = name
 
-        stress_ratio = stress_mean * _KPA_TO_ATM
+        stress_ratio = stress_mean * KPA_TO_ATM
 
         # G/Gmax backbone (Eqs. 2, 11)
         gamma_mr = (
