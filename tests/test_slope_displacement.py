@@ -217,8 +217,8 @@ def test_ha19_trans_func():
     ha19 = sd.HaleAbrahamson19(100, freq_nat=5.0)
     np.testing.assert_allclose(ha19.shear_vel, 1500)
 
-    trans_func = ha19._calc_trans_func([0.1], 0.01)
-    np.testing.assert_allclose(trans_func, [1])
+    result = ha19.transfer_function([0.1], 0.01)
+    np.testing.assert_allclose(result.tf, [1])
 
 
 # FIXME: Add test value
@@ -304,7 +304,7 @@ def test_ha19_trans_func_shape():
     freq_nat = freq_first / np.sqrt(1 - damping**2)
 
     freqs = np.array([0.1, 0.5 * freq_first, freq_first, 2 * freq_first, 20.0])
-    trans_func = ha19._calc_trans_func(freqs, ln_sa)
+    trans_func = ha19.transfer_function(freqs, np.exp(ln_sa)).tf
 
     # Equation 4.1
     w, wn = 2 * np.pi * freqs, 2 * np.pi * freq_nat
@@ -315,3 +315,52 @@ def test_ha19_trans_func_shape():
     # Resonance near the first-mode frequency and decay to alpha-scaled zero
     assert np.abs(trans_func[2]) > np.abs(trans_func[1])
     assert np.abs(trans_func[-1]) < 0.85
+
+
+def test_ha19_transfer_function_result():
+    """The result carries the parameters of the worked example, Section 4.5.2."""
+    ha19 = sd.HaleAbrahamson19(100, shear_vel=1160)
+    freqs = np.logspace(-1, 1.5, 50)
+    result = ha19.transfer_function(freqs, 1.392)
+
+    np.testing.assert_allclose(result.freqs, freqs)
+    assert result.tf.shape == freqs.shape and np.iscomplexobj(result.tf)
+    np.testing.assert_allclose(result.damping, 0.363, atol=5e-4)
+    np.testing.assert_allclose(result.period_ratio, 2.601, atol=5e-4)
+    np.testing.assert_allclose(1 / result.freq_first, 0.673, atol=5e-4)
+    np.testing.assert_allclose(2 * np.pi * result.freq_nat_eff, 10.023, atol=5e-3)
+    # The first-mode frequency is below the natural frequency of the undamped system
+    assert result.freq_first < result.freq_nat_eff < ha19.freq_nat
+
+
+def test_ha19_transfer_function_strengthens_with_shaking():
+    """Stronger shaking lowers the frequency and raises the damping."""
+    ha19 = sd.HaleAbrahamson19(100, shear_vel=1160)
+    weak, strong = (
+        ha19.transfer_function([1.0], 0.05),
+        ha19.transfer_function([1.0], 2.0),
+    )
+    assert strong.freq_first < weak.freq_first
+    assert strong.damping > weak.damping
+
+
+@pytest.mark.parametrize("spec_accel", [0.0, -1.0, np.nan])
+def test_ha19_transfer_function_rejects_bad_spec_accel(spec_accel):
+    with pytest.raises(ValueError, match="spec_accel"):
+        sd.HaleAbrahamson19(100, shear_vel=1160).transfer_function([1.0], spec_accel)
+
+
+def test_ha19_from_metric():
+    metric = sd.HaleAbrahamson19.from_metric(30.48, shear_vel=353.568)
+    feet = sd.HaleAbrahamson19(100.0, shear_vel=1160.0)
+    np.testing.assert_allclose(metric.height, feet.height)
+    np.testing.assert_allclose(metric.shear_vel, feet.shear_vel)
+    np.testing.assert_allclose(metric.freq_nat, feet.freq_nat)
+    np.testing.assert_allclose(
+        metric.transfer_function([1.0], 1.392).tf,
+        feet.transfer_function([1.0], 1.392).tf,
+    )
+    # The natural frequency does not depend on the units
+    by_freq = sd.HaleAbrahamson19.from_metric(30.48, freq_nat=5.0)
+    assert by_freq.freq_nat == 5.0
+    np.testing.assert_allclose(by_freq.height, 100.0)

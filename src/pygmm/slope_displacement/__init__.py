@@ -15,7 +15,7 @@ from .bray_travasarou_2007 import calc_disp_bt07, calc_prob_disp_bt07
 from .cho_rathje_2020 import calc_disp_cr20
 from .cho_rathje_2021 import calc_disp_cr21
 from .cho_rathje_2022 import calc_disp_cr22
-from .hale_abrahamson_2019 import HaleAbrahamson19
+from .hale_abrahamson_2019 import HaleAbrahamson19, HaleTransferFunction
 from .park_kishida_2019 import calc_dam_period_pk19
 from .rathje_antonakos_2011 import calc_disp_ra11
 from .rathje_saygili_2008 import calc_disp_rs08
@@ -24,6 +24,7 @@ from .watson_lamprey_abrahamson_2006 import calc_disp_wla06
 
 __all__ = [
     "HaleAbrahamson19",
+    "HaleTransferFunction",
     "calc_dam_period_pk19",
     "calc_disp_bea17",
     "calc_disp_bt07",

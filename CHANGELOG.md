@@ -2,6 +2,14 @@
 
 ## 0.9.0 (unreleased)
 
+- Added: `HaleAbrahamson19.transfer_function(freqs, spec_accel)` returns the
+  transfer function to the average acceleration of the sliding mass, with the
+  damping and first-mode frequency that define it, as a `HaleTransferFunction`.
+  It takes the 5% damped spectral acceleration [g] at `period_nl`, so it works
+  with any motion. It replaces the private `_calc_trans_func`.
+- Added: `HaleAbrahamson19.from_metric` creates the model from a height in
+  meters and a velocity in m/s; the model itself works in feet.
+
 - Changed: adopted [SPEC 0](https://scientific-python.org/specs/spec-0000/) for
   version support -- Python minors from the last 36 months, core dependencies
   from the last 24 months. **Minimum Python is now 3.12** (was 3.10), and

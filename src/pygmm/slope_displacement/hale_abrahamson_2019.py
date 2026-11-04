@@ -7,12 +7,46 @@ Requires :mod:`pyrotd` (``pip install pygmm[slope]``).
 
 from __future__ import annotations
 
+from dataclasses import dataclass
+
 import numpy as np
 import numpy.typing as npt
 
 from .rigid_block import calc_rigid_disp
 
 __author__ = "Albert Kottke"
+
+#: Feet per meter, for :meth:`HaleAbrahamson19.from_metric`
+_FT_PER_M = 1 / 0.3048
+
+
+@dataclass(frozen=True)
+class HaleTransferFunction:
+    """Transfer function of :class:`HaleAbrahamson19` and its parameters.
+
+    Attributes
+    ----------
+    freqs : np.ndarray
+        Frequencies [Hz].
+    tf : np.ndarray
+        Complex transfer function from the input motion to the average
+        acceleration of the sliding mass.
+    damping : float
+        Damping ratio of the dam (Eq. 4.9).
+    period_ratio : float
+        Ratio of the first-mode period to the small-strain period (Eq. 4.4).
+    freq_first : float
+        First-mode frequency of the dam [Hz], shortened by nonlinearity.
+    freq_nat_eff : float
+        Natural frequency of the undamped system [Hz] (Eq. 4.2).
+    """
+
+    freqs: np.ndarray
+    tf: np.ndarray
+    damping: float
+    period_ratio: float
+    freq_first: float
+    freq_nat_eff: float
 
 
 class HaleAbrahamson19:
@@ -22,6 +56,10 @@ class HaleAbrahamson19:
 
     The input motion is filtered by a nonlinear transfer function of the dam
     before a rigid sliding-block analysis is performed.
+
+    The model works in feet; use :meth:`from_metric` for meters. The transfer
+    function to the average acceleration of the sliding mass is
+    :meth:`transfer_function`.
 
     Provide exactly one of `shear_vel` and `freq_nat`; the other is computed
     from :math:`f_n = V_S / (3 H)`. This is the empirical relation of the
@@ -92,6 +130,39 @@ class HaleAbrahamson19:
         else:
             raise NotImplementedError("Provide one of `shear_vel` or `freq_nat`.")
 
+    @classmethod
+    def from_metric(
+        cls,
+        height: float,
+        shear_vel: float | None = None,
+        freq_nat: float | None = None,
+        nl_model: str = "darendeli",
+    ) -> HaleAbrahamson19:
+        """Create the model from a height and velocity in meters.
+
+        Parameters
+        ----------
+        height : float
+            Height [m].
+        shear_vel : float, optional
+            Shear-wave velocity [m/s].
+        freq_nat : float, optional
+            Natural frequency [Hz]; it does not depend on the units.
+        nl_model : str, default "darendeli"
+            Nonlinear model of the material, see the class.
+
+        Returns
+        -------
+        HaleAbrahamson19
+            Model with the height and velocity converted to feet.
+        """
+        return cls(
+            height * _FT_PER_M,
+            shear_vel=None if shear_vel is None else shear_vel * _FT_PER_M,
+            freq_nat=freq_nat,
+            nl_model=nl_model,
+        )
+
     @property
     def freq_nat(self) -> float:
         """Natural frequency of the dam [Hz]."""
@@ -148,19 +219,16 @@ class HaleAbrahamson19:
         accels = np.asarray(accels)
         fourier_amps = np.fft.rfft(accels)
         freqs = np.fft.rfftfreq(accels.size, d=time_step)
-        ln_spec_accel = np.log(
-            pyrotd.calc_oscillator_resp(
-                freqs,
-                fourier_amps,
-                0.05,
-                1 / self.period_nl,
-                peak_resp_only=True,
-                osc_type="psa",
-            )
+        spec_accel = pyrotd.calc_oscillator_resp(
+            freqs,
+            fourier_amps,
+            0.05,
+            1 / self.period_nl,
+            peak_resp_only=True,
+            osc_type="psa",
         )
 
-        trans_func = self._calc_trans_func(freqs, ln_spec_accel)
-        fourier_amps *= trans_func
+        fourier_amps *= self.transfer_function(freqs, spec_accel).tf
 
         return np.fft.irfft(fourier_amps)
 
@@ -215,14 +283,34 @@ class HaleAbrahamson19:
 
         return damping, period_ratio
 
-    def _calc_trans_func(self, freqs: npt.ArrayLike, ln_spec_accel):
-        """Transfer function to the average acceleration of the sliding mass.
+    def transfer_function(
+        self, freqs: npt.ArrayLike, spec_accel: float
+    ) -> HaleTransferFunction:
+        """Compute the transfer function to the average sliding-mass acceleration.
 
-        Equation 4.1 of :cite:t:`hale19`, with the natural frequency from
-        Equations 4.2 and 4.4.
+        This is Equation 4.1 of :cite:t:`hale19`, with the first-mode frequency
+        from Equations 4.2 and 4.4. The transfer function is nonlinear: it
+        depends on the strength of the input motion through its spectral
+        acceleration at the nonlinear period of the dam.
+
+        Parameters
+        ----------
+        freqs : array_like
+            Frequencies [Hz].
+        spec_accel : float
+            5% damped pseudo-spectral acceleration [g] of the input motion at
+            :attr:`period_nl`.
+
+        Returns
+        -------
+        HaleTransferFunction
+            The transfer function and the parameters that define it.
         """
-        freqs = np.asarray(freqs)
-        damping, period_ratio = self._calc_params(ln_spec_accel)
+        if not spec_accel > 0:
+            raise ValueError("spec_accel must be positive [g].")
+
+        freqs = np.asarray(freqs, dtype=float)
+        damping, period_ratio = self._calc_params(np.log(spec_accel))
 
         # First-mode (damped) frequency of the dam, shortened by nonlinearity
         freq_first = self.freq_nat / period_ratio
@@ -238,4 +326,11 @@ class HaleAbrahamson19:
         mask = (freqs < freq_first) & (np.abs(trans_func) < 1.0)
         trans_func[mask] = 1.0
 
-        return trans_func
+        return HaleTransferFunction(
+            freqs=freqs,
+            tf=trans_func,
+            damping=float(damping),
+            period_ratio=float(period_ratio),
+            freq_first=float(freq_first),
+            freq_nat_eff=float(nat_freq_eff),
+        )
