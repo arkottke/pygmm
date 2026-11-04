@@ -12,10 +12,10 @@
 
 - Changed: adopted [SPEC 0](https://scientific-python.org/specs/spec-0000/) for
   version support -- Python minors from the last 36 months, core dependencies
-  from the last 24 months. **Minimum Python is now 3.12** (was 3.10), and
+  from the last 24 months. **Minimum Python is now 3.13** (was 3.10), and
   dependency lower bounds are declared explicitly: `matplotlib>=3.10`,
-  `numpy>=2.1`, `pandas>=2.3`, `pint>=0.25`, `scipy>=1.15`. CI now runs 3.12,
-  3.13 and 3.14. The dated drop schedule is in `pyproject.toml`.
+  `numpy>=2.2`, `pandas>=2.3`, `pint>=0.25`, `scipy>=1.15`. CI now runs 3.13
+  and 3.14. The dated drop schedule is in `pyproject.toml`.
 
     The old `>=3.10` floor was already unmet in practice: numpy, scipy, pandas,
     matplotlib and pint all require >=3.11, so a 3.10 install silently resolved
