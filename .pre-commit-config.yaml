@@ -16,6 +16,16 @@ repos:
                 [--fix]
                 # Run the formatter.
           - id: ruff-format
+    - repo: local
+      hooks:
+          # Pinned: the pre-commit mirror only offers 4.0 alphas after 3.1.0, and
+          # 4.0.0-alpha.8 hangs. Needs node on PATH.
+          - id: prettier
+            name: prettier
+            entry: prettier --write --ignore-unknown
+            language: node
+            additional_dependencies: ["prettier@3.9.10"]
+            files: \.(md|yml)$
 #   - repo: https://github.com/pycqa/pydocstyle
 #     rev: 5.1.1  # pick a git hash / tag to point to
 #     hooks:

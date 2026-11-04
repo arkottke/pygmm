@@ -4,9 +4,9 @@ title: Credits
 
 # Development Lead
 
--   Albert Kottke \<<albert.kottke@gmail.com>\>
+- Albert Kottke \<<albert.kottke@gmail.com>\>
 
 # Contributors
 
--   Greg Lavrentiadis
--   Artie Rodgers
+- Greg Lavrentiadis
+- Artie Rodgers

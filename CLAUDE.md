@@ -83,11 +83,11 @@ subpackages demanded a four-axis classification and consequently misfiled
 `GulerceAbrahamson2011` (a V/H ratio model, filed under `response_spectrum/`)
 and `Stafford2017`.
 
-| Varies with | Package | Contents |
-|---|---|---|
-| shear strain | `soil_curves/` | G/Gmax and damping curves (Darendeli, Menq, Kishida, Wang, Alemu, Rollins) |
-| frequency | `fourier_spectrum/` | FAS models (BA19, Stafford 2022, SourceTheoryModel) and inter-frequency correlation (BA18, Stafford 2017) |
-| period, or a scalar from a `Scenario` | `ground_motion/` | response spectra, peak parameters, duration, Arias, CAV, V/H ratio, inter-period correlation |
+| Varies with                           | Package             | Contents                                                                                                  |
+| ------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
+| shear strain                          | `soil_curves/`      | G/Gmax and damping curves (Darendeli, Menq, Kishida, Wang, Alemu, Rollins)                                |
+| frequency                             | `fourier_spectrum/` | FAS models (BA19, Stafford 2022, SourceTheoryModel) and inter-frequency correlation (BA18, Stafford 2017) |
+| period, or a scalar from a `Scenario` | `ground_motion/`    | response spectra, peak parameters, duration, Arias, CAV, V/H ratio, inter-period correlation              |
 
 Anything else stays at the top level until a second producer of the same
 quantity earns it a package.

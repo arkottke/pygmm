@@ -15,10 +15,10 @@ Report bugs at <https://github.com/arkottke/pygmm/issues>.
 
 If you are reporting a bug, please include:
 
--   Your operating system name and version.
--   Any details about your local setup that might be helpful in
-    troubleshooting.
--   Detailed steps to reproduce the bug.
+- Your operating system name and version.
+- Any details about your local setup that might be helpful in
+  troubleshooting.
+- Detailed steps to reproduce the bug.
 
 ## Fix Bugs
 
@@ -43,11 +43,11 @@ The best way to send feedback is to file an issue at
 
 If you are proposing a feature:
 
--   Explain in detail how it would work.
--   Keep the scope as narrow as possible, to make it easier to
-    implement.
--   Remember that this is a volunteer-driven project, and that
-    contributions are welcome :)
+- Explain in detail how it would work.
+- Keep the scope as narrow as possible, to make it easier to
+  implement.
+- Remember that this is a volunteer-driven project, and that
+  contributions are welcome :)
 
 # Get Started!
 
@@ -58,7 +58,7 @@ development.
 
 2.  Clone your fork locally:
 
-    ``` shell
+    ```shell
     $ git clone git@github.com:your_name_here/pygmm.git
     ```
 
@@ -66,7 +66,7 @@ development.
     virtualenvwrapper installed, this is how you set up your fork for
     local development:
 
-    ``` shell
+    ```shell
     $ mkvirtualenv pygmm
     $ cd pygmm/
     $ python setup.py develop
@@ -74,7 +74,7 @@ development.
 
 4.  Create a branch for local development:
 
-    ``` shell
+    ```shell
     $ git checkout -b name-of-your-bugfix-or-feature
     ```
 
@@ -84,7 +84,7 @@ development.
     flake8 and the tests, including testing other Python versions with
     tox:
 
-    ``` shell
+    ```shell
     $ flake8 pygmm tests
     $ python setup.py test
     $ tox
@@ -94,7 +94,7 @@ development.
 
 6.  Commit your changes and push your branch to GitHub:
 
-    ``` shell
+    ```shell
     $ git add .
     $ git commit -m "Your detailed description of your changes."
     $ git push origin name-of-your-bugfix-or-feature
@@ -119,6 +119,6 @@ Before you submit a pull request, check that it meets these guidelines:
 
 To run a subset of tests:
 
-``` shell
+```shell
 $ python -m unittest tests.test_pygmm
 ```

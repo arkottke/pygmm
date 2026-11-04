@@ -23,28 +23,28 @@ checking out.
 
 Models currently supported:
 
--   Akkar, Sandikkaya, & Bommer (2014) with unit tests
--   Atkinson & Boore (2006)
--   Abrahamson, Silva, & Kamai (2014) with unit tests
--   Abrahamson, Gregor, & Addo (2016) with unit tests
--   Boore, Stewart, Seyhan, & Atkinson (2014) with unit tests
--   Campbell (2003)
--   Campbell & Bozorgnia (2014) with unit tests
--   Chiou & Youngs (2014) with unit tests
--   Derras, Bard & Cotton (2013) with unit tests
--   Idriss (2014) with unit tests
--   Pezeshk, Zandieh, & Tavakoli (2001)
--   Tavakoli & Pezeshk (2005)
+- Akkar, Sandikkaya, & Bommer (2014) with unit tests
+- Atkinson & Boore (2006)
+- Abrahamson, Silva, & Kamai (2014) with unit tests
+- Abrahamson, Gregor, & Addo (2016) with unit tests
+- Boore, Stewart, Seyhan, & Atkinson (2014) with unit tests
+- Campbell (2003)
+- Campbell & Bozorgnia (2014) with unit tests
+- Chiou & Youngs (2014) with unit tests
+- Derras, Bard & Cotton (2013) with unit tests
+- Idriss (2014) with unit tests
+- Pezeshk, Zandieh, & Tavakoli (2001)
+- Tavakoli & Pezeshk (2005)
 
 Conditional spectra models:
 
--   Baker & Jayaram (2008) with unit tests
--   Kishida (2017) with unit tests
+- Baker & Jayaram (2008) with unit tests
+- Kishida (2017) with unit tests
 
 Duration models:
 
--   Kempton and Stewart (2006)
--   Afshari and Stewart (2016)
+- Kempton and Stewart (2006)
+- Afshari and Stewart (2016)
 
 Most models are tested with unit tests that test the implemention of the
 model.
@@ -56,6 +56,6 @@ Please cite this software using the
 
 ## Contributors
 
--   Albert Kottke
--   Greg Lavrentiadis
--   Artie Rodgers
+- Albert Kottke
+- Greg Lavrentiadis
+- Artie Rodgers

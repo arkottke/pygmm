@@ -4,29 +4,29 @@
 name: Upload Python Package
 
 on:
-  release:
-    types: [published]  # Changed from 'created' to 'published'
+    release:
+        types: [published] # Changed from 'created' to 'published'
 
 jobs:
-  deploy:
-    name: Upload release to PyPI
-    runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/pygmm
-    permissions:
-      id-token: write  # IMPORTANT: this permission is mandatory for trusted publishing
-    steps:
-    - uses: actions/checkout@v4.2.2
-      with:
-        fetch-depth: 0  # Fetch full history for proper version detection
-    - name: Set up uv
-      uses: astral-sh/setup-uv@v4
-      with:
-        enable-cache: true
-    - name: Set up Python
-      run: uv python install
-    - name: Build
-      run: uv build
-    - name: Publish to PyPI
-      uses: pypa/gh-action-pypi-publish@v1.12.4
+    deploy:
+        name: Upload release to PyPI
+        runs-on: ubuntu-latest
+        environment:
+            name: pypi
+            url: https://pypi.org/p/pygmm
+        permissions:
+            id-token: write # IMPORTANT: this permission is mandatory for trusted publishing
+        steps:
+            - uses: actions/checkout@v4.2.2
+              with:
+                  fetch-depth: 0 # Fetch full history for proper version detection
+            - name: Set up uv
+              uses: astral-sh/setup-uv@v4
+              with:
+                  enable-cache: true
+            - name: Set up Python
+              run: uv python install
+            - name: Build
+              run: uv build
+            - name: Publish to PyPI
+              uses: pypa/gh-action-pypi-publish@v1.12.4
