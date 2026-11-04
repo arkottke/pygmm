@@ -1,21 +1,7 @@
-pygmm package
-=============
+Core
+====
 
-Subpackages
------------
-
-.. toctree::
-   :maxdepth: 4
-
-   pygmm.fourier_spectrum
-   pygmm.ground_motion
-   pygmm.kappa
-   pygmm.slope_displacement
-   pygmm.soil_curves
-   pygmm.velocity_profile
-
-Submodules
-----------
+The scenario, model registry and the contracts that other libraries consume.
 
 pygmm.contracts module
 ----------------------
@@ -65,10 +51,9 @@ pygmm.time\_series module
    :show-inheritance:
    :undoc-members:
 
-Module contents
----------------
+Finding models
+--------------
 
-.. automodule:: pygmm
-   :members:
-   :show-inheritance:
-   :undoc-members:
+.. autofunction:: pygmm.find_models
+
+.. autofunction:: pygmm.get_model

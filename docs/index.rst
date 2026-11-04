@@ -12,19 +12,19 @@ pyGMM: Ground Motion Models in Python
         Get up and running with pyGMM in minutes. Install the package and run your first ground motion calculation.
 
     .. grid-item-card:: 📚 User Guide
-        :link: user-guide/usage
+        :link: user-guide/index
         :link-type: doc
 
-        Learn how to use pyGMM effectively with comprehensive examples and tutorials.
+        How the scenario, the models and their outputs fit together.
 
     .. grid-item-card:: 🔬 Ground Motion Models
-        :link: user-guide/models
+        :link: user-guide/ground-motion
         :link-type: doc
 
-        Explore the available ground motion prediction equations and their implementations.
+        The ground-motion models, and how to find them by what they predict.
 
     .. grid-item-card:: 📖 API Reference
-        :link: modules
+        :link: api/index
         :link-type: doc
 
         Detailed documentation of all classes, functions, and modules in pyGMM.
@@ -32,9 +32,10 @@ pyGMM: Ground Motion Models in Python
 .. admonition:: What is pyGMM?
    :class: important
 
-   pyGMM is a Python library for evaluating ground motion prediction equations (GMPEs).
-   It provides a unified interface to numerous published ground motion models, making it
-   easy to compare predictions and perform probabilistic seismic hazard analysis.
+   pyGMM is a Python library for evaluating published empirical models: ground-motion
+   models, Fourier amplitude spectrum models, soil curves, velocity profiles and
+   slope-displacement models. The models share an interface, so they can be compared
+   and used as input to site response and random vibration theory calculations.
 
 Features
 ========
@@ -78,14 +79,12 @@ Quick example:
 
    import pygmm
 
-   # Create a scenario
-   scenario = pygmm.Scenario(mag=6.5, dist_rup=20, v_s30=760)
-
-   # Initialize a ground motion model
-   gmpe = pygmm.CampbellBozorgnia2014(scenario)
-
-   # Calculate ground motion
-   mean, std = gmpe(scenario)
+   scenario = pygmm.Scenario(
+       mag=6.5, dist_rup=20.0, dist_jb=20.0, dist_x=20.0, dip=90.0,
+       mechanism="SS", v_s30=760.0,
+   )
+   model = pygmm.ChiouYoungs2014(scenario)
+   model.periods, model.spec_accels, model.ln_stds
 
 .. toctree::
    :maxdepth: 2
@@ -107,21 +106,21 @@ Quick example:
    :hidden:
    :caption: Reference
 
-   modules
-   pygmm
+   api/index
+   references
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
    :caption: Development
 
    developer-guide/index
-   authors
 
 .. toctree::
    :maxdepth: 1
    :hidden:
    :caption: About
 
-   readme
-   zreferences
-   license
+   about/authors
+   about/readme
+   about/license

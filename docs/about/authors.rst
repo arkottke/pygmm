@@ -1,5 +1,5 @@
 Authors
 =======
 
-.. include:: ../AUTHORS.md
+.. include:: ../../AUTHORS.md
    :parser: myst_parser.sphinx_

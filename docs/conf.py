@@ -29,6 +29,7 @@ extensions = [
     "sphinx_design",
     "myst_parser",
     "nbsphinx",
+    "nbsphinx_link",
 ]
 
 templates_path = ["_templates"]
@@ -50,7 +51,7 @@ napoleon_include_special_with_doc = True
 napoleon_use_admonition_for_examples = False
 napoleon_use_admonition_for_notes = False
 napoleon_use_admonition_for_references = False
-napoleon_use_ivar = False
+napoleon_use_ivar = True
 napoleon_use_param = True
 napoleon_use_rtype = True
 
@@ -117,9 +118,46 @@ autodoc_default_options = {
     "special-members": "__init__",
     "undoc-members": True,
     "exclude-members": "__weakref__",
-    "no-index": False,
 }
 
 # Notebook execution configuration
 nbsphinx_execute = "never"  # Don't execute notebooks during build
 nbsphinx_allow_errors = True
+
+
+def _resolve_public_names(app, env, node, contnode):
+    """Resolve ``pygmm.X`` references to where ``X`` is documented.
+
+    The models are exported from the top level of the package, but are documented
+    in the module that defines them.
+    """
+    import importlib
+
+    if node.get("refdomain") != "py":
+        return None
+    target = node["reftarget"]
+    if not target.startswith("pygmm."):
+        return None
+    obj = importlib.import_module("pygmm")
+    try:
+        for part in target.split(".")[1:]:
+            obj = getattr(obj, part)
+    except AttributeError:
+        return None
+    module = getattr(obj, "__module__", None)
+    name = getattr(obj, "__qualname__", None)
+    if not module or not name or f"{module}.{name}" == target:
+        return None
+    return env.get_domain("py").resolve_xref(
+        env,
+        node.get("refdoc", ""),
+        app.builder,
+        node["reftype"],
+        f"{module}.{name}",
+        node,
+        contnode,
+    )
+
+
+def setup(app):
+    app.connect("missing-reference", _resolve_public_names)

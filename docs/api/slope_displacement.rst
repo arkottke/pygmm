@@ -91,11 +91,3 @@ pygmm.slope\_displacement.watson\_lamprey\_abrahamson\_2006 module
    :members:
    :show-inheritance:
    :undoc-members:
-
-Module contents
----------------
-
-.. automodule:: pygmm.slope_displacement
-   :members:
-   :show-inheritance:
-   :undoc-members:
