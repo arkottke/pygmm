@@ -145,6 +145,13 @@ class Scenario(collections.UserDict):
 
 
 class Model:
+    """Base class of the ground motion models.
+
+    A model is constructed from a :class:`Scenario`, or the keywords of one.
+    Only the parameters in ``PARAMS`` are kept, and each is checked against the
+    range recommended for the model.
+    """
+
     #: Long name of the model
     NAME = ""
     #: Short name of the model
