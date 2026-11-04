@@ -1,5 +1,7 @@
 """Hale and Abrahamson (2019) flexible sliding-mass displacement of earth dams.
 
+The model is described in the dissertation of :cite:t:`hale19`.
+
 Requires :mod:`pyrotd` (``pip install pygmm[slope]``).
 """
 
@@ -15,6 +17,8 @@ __author__ = "Albert Kottke"
 
 class HaleAbrahamson19:
     """Hale and Abrahamson (2019) displacement of a flexible sliding mass.
+
+    The model is described in :cite:t:`hale19`.
 
     The input motion is filtered by a nonlinear transfer function of the dam
     before a rigid sliding-block analysis is performed.
@@ -162,7 +166,7 @@ class HaleAbrahamson19:
 
     @property
     def period_nl(self) -> float:
-        r"""Nonlinear period [s] of the dam (Eq. 4.3 of Hale, 2019).
+        r"""Nonlinear period [s] of the dam (Eq. 4.3 of :cite:t:`hale19`).
 
         This is the period at which the 5% damped pseudo-spectral acceleration
         is computed, :math:`\ln T_{NL} = a_1 \ln T_o + a_2`, where
@@ -214,7 +218,7 @@ class HaleAbrahamson19:
     def _calc_trans_func(self, freqs: npt.ArrayLike, ln_spec_accel):
         """Transfer function to the average acceleration of the sliding mass.
 
-        Equation 4.1 of Hale (2019), with the natural frequency from
+        Equation 4.1 of :cite:t:`hale19`, with the natural frequency from
         Equations 4.2 and 4.4.
         """
         freqs = np.asarray(freqs)
