@@ -302,11 +302,11 @@ class AbrahamsonSilvaKamai2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_1_0(v_s30: float, region: str = "california") -> float:
-        """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
-        :math:`V_{s30}` and region.
+        """Estimate the depth to the 1 km/sec horizon (:math:`Z_{1.0}`).
 
-        This is based on equations 18 and 19 in the :cite:`abrahamson14`
-        and differs from the equations in the :cite:`chiou14`.
+        The estimate is based on :math:`V_{s30}` and region, using equations 18
+        and 19 in :cite:`abrahamson14`. It differs from the equations in
+        :cite:`chiou14`.
 
         Parameters
         ----------

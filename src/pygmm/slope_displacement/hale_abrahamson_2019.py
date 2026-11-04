@@ -159,10 +159,10 @@ class HaleAbrahamson19:
 
     @property
     def period_nl(self) -> float:
-        """Nonlinear period [s] of the dam (Eq. 4.3 of Hale, 2019).
+        r"""Nonlinear period [s] of the dam (Eq. 4.3 of Hale, 2019).
 
         This is the period at which the 5% damped pseudo-spectral acceleration
-        is computed, :math:`\\ln T_{NL} = a_1 \\ln T_o + a_2`, where
+        is computed, :math:`\ln T_{NL} = a_1 \ln T_o + a_2`, where
         :math:`T_o = 1 / f_n` is the small-strain period.
         """
         return float(np.exp(self.C.a1 * np.log(1 / self.freq_nat) + self.C.a2))

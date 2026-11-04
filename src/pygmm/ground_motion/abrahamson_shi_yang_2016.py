@@ -10,12 +10,12 @@ __author__ = "Albert Kottke"
 
 @register(provides=("arias",), input="conditional")
 class AbrahamsonShiYang2016(model.Model):
-    """Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity
-    model.
+    r"""Abrahamson, Shi, and Yang (2016) Arias intensity model.
 
-    Conditional ground-motion model (CGMM) and scenario-based models for
-    Arias intensity (Ia, m/s) for shallow crustal tectonic settings, consistent
-    with the NGA-West2 ground-motion models. Calibrated on the NGA-West2
+    See :cite:t:`abrahamson16arias`. Conditional ground-motion model (CGMM)
+    and scenario-based models for Arias intensity (Ia, m/s) for shallow
+    crustal tectonic settings, consistent with the NGA-West2 ground-motion
+    models. Calibrated on the NGA-West2
     database (~15,209 recordings, 326 events, M 3.0–7.9).
 
     Two evaluation modes are supported:
@@ -23,7 +23,7 @@ class AbrahamsonShiYang2016(model.Model):
     **Conditional mode** (``backbone=None``): Ia is estimated from user-supplied
     PGA and SA(T=1 s) values (both in g) using Equations (3.3) and (3.4).
     The aleatory variability is
-    :math:`\\sigma = \\sqrt{\\tau^2 + \\phi^2} \\approx 0.38`.
+    :math:`\sigma = \sqrt{\tau^2 + \phi^2} \approx 0.38`.
 
     **Scenario mode** (``backbone`` is one of ``'ASK14'``, ``'BSSA14'``,
     ``'CB14'``, ``'CY14'``, ``'I14'``): The median PGA and SA(T=1 s), and

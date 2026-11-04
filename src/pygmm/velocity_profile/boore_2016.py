@@ -1,20 +1,20 @@
-"""Boore & Joyner (1997) / Boore (2016) generic rock velocity profiles.
+r"""Boore & Joyner (1997) / Boore (2016) generic rock velocity profiles.
 
 Boore and Joyner (1997; BJ97) defined two reference shear-wave velocity
 profiles used widely for computing generic crustal amplifications:
 
 - ``BJ97gr``, the "generic rock" profile, with a 30 m time-averaged
-  velocity :math:`\\bar V_S(30\\ \\mathrm{m})` of 618 m/s.
+  velocity :math:`\bar V_S(30\ \mathrm{m})` of 618 m/s.
 - ``BJ97gvhr``, the "generic very hard rock" profile, with
-  :math:`\\bar V_S(30\\ \\mathrm{m})` of 2780 m/s.
+  :math:`\bar V_S(30\ \mathrm{m})` of 2780 m/s.
 
 Boore (2016) interpolates these two profiles (in slowness space) to derive a
 third profile, ``BJ97gr760``, with the more commonly used reference velocity
-:math:`\\bar V_S(30\\ \\mathrm{m})` = 760 m/s, and tabulates it (with a
+:math:`\bar V_S(30\ \mathrm{m})` = 760 m/s, and tabulates it (with a
 companion density model) in Table 1 of that article. ``BJ97gr`` itself is
 reconstructed here algebraically by inverting Boore's (2016) interpolation
 equations using the tabulated ``BJ97gr760`` and ``BJ97gvhr`` profiles; this
-recovers :math:`\\bar V_S(30\\ \\mathrm{m})` of about 616 m/s (versus the
+recovers :math:`\bar V_S(30\ \mathrm{m})` of about 616 m/s (versus the
 618 m/s target), the small difference being due to the decimation of the
 tabulated profiles.
 
@@ -25,7 +25,7 @@ sites, *BSSA*, 87(2), 327-341.
 
 Boore, D. M. (2016). Determining generic velocity and density models for
 crustal amplification calculations, with an update of the Boore and Joyner
-(1997) generic site amplification for :math:`\\bar V_S(Z)` = 760 m/s,
+(1997) generic site amplification for :math:`\bar V_S(Z)` = 760 m/s,
 *BSSA*, 106(1), 316-320.
 """
 

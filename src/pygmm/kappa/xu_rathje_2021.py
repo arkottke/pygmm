@@ -1,4 +1,4 @@
-"""Xu and Rathje (2021) :math:`\\kappa_0`--:math:`V_{S30}` relationship."""
+r"""Xu and Rathje (2021) :math:`\kappa_0`--:math:`V_{S30}` relationship."""
 
 from __future__ import annotations
 

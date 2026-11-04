@@ -10,7 +10,7 @@ __author__ = "Mahdi Bahrampouri"
 
 @register(provides=("cav",), input="conditional")
 class MacedoAbrahamsonLiu2021(model.Model):
-    """Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model.
+    r"""Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model.
 
     Conditional ground-motion model (CGMM) and scenario-based models for
     cumulative absolute velocity (CAV, m/s) for shallow crustal tectonic
@@ -21,7 +21,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     **Conditional mode** (``pga_model=None``): CAV is estimated from a
     user-supplied PGA value (in g) using Eq. (12). The aleatory variability is
-    :math:`\\sigma = \\sqrt{\\tau^2 + \\phi^2} \\approx 0.31`.
+    :math:`\sigma = \sqrt{\tau^2 + \phi^2} \approx 0.31`.
 
     **Scenario mode** (``pga_model`` is one of ``'ASK14'``, ``'BSSA14'``,
     ``'CB14'``, ``'CY14'``, ``'I14'``): The median PGA and its lognormal

@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 
 def _calc_wla06_ln_a_rms(pga):
-    """Calculate :math:`\\ln a_{rms}`, Equation (2)."""
+    r"""Calculate :math:`\ln a_{rms}`, Equation (2)."""
     return -1.167 + 1.02 * np.log(pga)
 
 

@@ -41,15 +41,15 @@ class Stafford2017:
         """
         Compute sigmoid function used throughout the model.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         f : float or array-like
             Frequency value(s)
         alpha0, alpha1, alpha2 : float
             Sigmoid function parameters
 
-        Returns:
-        --------
+        Returns
+        -------
         float or array-like
             Sigmoid function value(s)
         """
@@ -69,8 +69,8 @@ class Stafford2017:
 
     @classmethod
     def compute_gamma_E(cls, f_min, mag):
-        """
-        Compute gamma_E parameter for between-event correlations.
+        """Compute gamma_E parameter for between-event correlations.
+
         Uses equation 12 from the paper.
         """
         # Corner frequency for given magnitude
@@ -89,8 +89,8 @@ class Stafford2017:
 
     @classmethod
     def compute_eta_A(cls, f_min):
-        """
-        Compute eta_A parameter for within-event correlations nugget effect.
+        """Compute eta_A parameter for within-event correlations nugget effect.
+
         Uses equation 16 from the paper.
         """
         # Apply equation 16
@@ -105,8 +105,8 @@ class Stafford2017:
 
     @classmethod
     def compute_gamma_A(cls, f_min):
-        """
-        Compute gamma_A parameter for within-event correlations.
+        """Compute gamma_A parameter for within-event correlations.
+
         Uses equation 17 from the paper.
         """
         # Apply equation 17
@@ -119,8 +119,8 @@ class Stafford2017:
 
     @classmethod
     def compute_eta_S(cls, f_min):
-        """
-        Compute eta_S parameter for between-site correlations nugget effect.
+        """Compute eta_S parameter for between-site correlations nugget effect.
+
         Uses equation 18 from the paper.
         """
         f_ref1 = cls.COEFF.eta_S_FREF1  # 0.25
@@ -136,8 +136,8 @@ class Stafford2017:
 
     @classmethod
     def compute_gamma_S(cls, f_min):
-        """
-        Compute gamma_S parameter for between-site correlations.
+        """Compute gamma_S parameter for between-site correlations.
+
         Uses equation 19 from the paper.
         """
         # Apply equation 19
@@ -152,8 +152,8 @@ class Stafford2017:
 
     @classmethod
     def between_event_correlation(cls, f_i, f_j, mag):
-        """
-        Compute the between-event correlation between two frequencies.
+        """Compute the between-event correlation between two frequencies.
+
         Uses equation 11 from the paper.
         """
         f_min = np.minimum(f_i, f_j)
@@ -176,8 +176,8 @@ class Stafford2017:
 
     @classmethod
     def within_event_correlation(cls, f_i, f_j):
-        """
-        Compute the within-event correlation between two frequencies.
+        """Compute the within-event correlation between two frequencies.
+
         Uses equations 14 and 15 from the paper.
         """
         f_min = np.minimum(f_i, f_j)
@@ -199,8 +199,8 @@ class Stafford2017:
 
     @classmethod
     def between_site_correlation(cls, f_i, f_j):
-        """
-        Compute the between-site correlation between two frequencies.
+        """Compute the between-site correlation between two frequencies.
+
         Uses equations 14 and 15 from the paper with S parameters.
         """
         f_min = np.minimum(f_i, f_j)
@@ -222,17 +222,15 @@ class Stafford2017:
 
     @classmethod
     def compute_variances(cls, freqs):
-        """
-        Compute standard deviations for between-event, between-site,
-        and within-event terms.
+        """Compute the between-event, between-site and within-event deviations.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         freqs : array-like
             Array of frequencies for which to compute standard deviations.
 
-        Returns:
-        --------
+        Returns
+        -------
         tuple of arrays
             (sigma_E, sigma_S, sigma_A) arrays for each frequency
         """
@@ -277,8 +275,8 @@ class Stafford2017:
         """
         Compute the covariance matrix for Fourier spectral ordinates.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         freqs : array-like
             Array of frequencies for which to compute the covariance matrix.
         sigma_E : array-like, optional
@@ -294,8 +292,8 @@ class Stafford2017:
             Earthquake magnitude (used for between-event correlations).
             Default is 6.0.
 
-        Returns:
-        --------
+        Returns
+        -------
         cov_matrix : ndarray
             The covariance matrix for the Fourier spectral ordinates.
         """
@@ -336,8 +334,8 @@ class Stafford2017:
         """
         Compute the correlation matrix for Fourier spectral ordinates.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         freqs : array-like
             Array of frequencies for which to compute the correlation matrix.
         sigma_E : array-like, optional
@@ -353,8 +351,8 @@ class Stafford2017:
             Earthquake magnitude (used for between-event correlations).
             Default is 6.0.
 
-        Returns:
-        --------
+        Returns
+        -------
         cor_matrix : ndarray
             The correlation matrix for the Fourier spectral ordinates.
         """

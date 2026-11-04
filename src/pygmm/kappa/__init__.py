@@ -1,7 +1,7 @@
-"""Models of the site attenuation parameter, :math:`\\kappa_0`.
+r"""Models of the site attenuation parameter, :math:`\kappa_0`.
 
 Each relationship follows the function-style convention of
-:func:`pygmm._utils.dist_lognorm`: it returns the median :math:`\\kappa_0`
+:func:`pygmm._utils.dist_lognorm`: it returns the median :math:`\kappa_0`
 [s], or ``(ln_mean, ln_std)`` when called with ``stats=True``.
 """
 

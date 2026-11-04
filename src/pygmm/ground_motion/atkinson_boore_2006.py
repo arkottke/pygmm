@@ -114,8 +114,10 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         return ln_std
 
     def _calc_stress_factor(self) -> float:
-        """Calculate the stress correction factor proposed by Atkinson and
-        Boore (2011) :cite:`atkinson11`.
+        """Calculate the stress correction factor.
+
+        The factor was proposed by Atkinson and Boore (2011)
+        :cite:`atkinson11`.
 
         Returns
         -------

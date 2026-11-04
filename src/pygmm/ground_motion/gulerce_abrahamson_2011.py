@@ -84,7 +84,6 @@ class GulerceAbrahamson2011(model.Model):
             interpolated ratio
 
         """
-
         return np.exp(
             np.interp(
                 np.log(periods),
@@ -109,7 +108,6 @@ class GulerceAbrahamson2011(model.Model):
             interpolated ratio
 
         """
-
         return np.exp(
             np.interp(
                 np.log(periods),

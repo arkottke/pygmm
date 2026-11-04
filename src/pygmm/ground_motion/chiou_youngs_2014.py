@@ -187,7 +187,6 @@ class ChiouYoungs2014(model.GroundMotionModel):
         site_term: :class:`np.ndarray`
             site term that is applied to the natural log response.
         """
-
         c = cls.COEFF
 
         if region in ["japan"]:

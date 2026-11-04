@@ -1,4 +1,4 @@
-"""Van Houtte et al. (2011) :math:`\\kappa_0`--:math:`V_{S30}` relationship."""
+r"""Van Houtte et al. (2011) :math:`\kappa_0`--:math:`V_{S30}` relationship."""
 
 from __future__ import annotations
 

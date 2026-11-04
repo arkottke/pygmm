@@ -122,7 +122,6 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         Returns
         -------
-
             class:`np.array`: Natural log of the response.
 
         """
@@ -229,7 +228,6 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
         site_term: :class:`np.ndarray`
             site term that is applied to the natural log response.
         """
-
         c = cls.COEFF
 
         # Site term
@@ -288,7 +286,6 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
         Returns
         -------
-
             class:`np.array`: Logarithmic standard deviation.
 
         """
@@ -337,8 +334,9 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
     def calc_depth_2_5(
         v_s30: float, region: str = "global", depth_1_0: float | None = None
     ) -> float:
-        """Calculate the depth to a shear-wave velocity of 2.5 km/sec
-        (:math:`Z_{2.5}`).
+        """Calculate the depth to a shear-wave velocity of 2.5 km/sec.
+
+        This is :math:`Z_{2.5}`.
 
         Provide either `v_s30` or `depth_1_0`.
 
@@ -404,14 +402,14 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
     def calc_depth_hyp(
         mag: float, dip: float, depth_tor: float, depth_bor: float
     ) -> float:
-        """Estimate the depth to hypocenter.
+        r"""Estimate the depth to hypocenter.
 
         Parameters
         ----------
         mag : float
             moment magnitude of the event (:math:`M_w`)
         dip : float
-            fault dip angle (:math:`\\phi`, deg).
+            fault dip angle (:math:`\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).
@@ -439,14 +437,14 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
     def calc_width(
         mag: float, dip: float, depth_tor: float, depth_bot: float = 15.0
     ) -> float:
-        """Estimate the fault width using Equation (39) of CB14.
+        r"""Estimate the fault width using Equation (39) of CB14.
 
         Parameters
         ----------
         mag : float
             moment magnitude of the event (:math:`M_w`)
         dip : float
-            fault dip angle (:math:`\\phi`, deg).
+            fault dip angle (:math:`\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).
@@ -468,12 +466,12 @@ class CampbellBozorgnia2014(model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_bor(depth_tor: float, dip: float, width: float) -> float:
-        """Compute the depth to bottom of the rupture (km).
+        r"""Compute the depth to bottom of the rupture (km).
 
         Parameters
         ----------
         dip : float
-            fault dip angle (:math:`\\phi`, deg).
+            fault dip angle (:math:`\phi`, deg).
         depth_tor : float
             depth to the top of the rupture
             plane (:math:`Z_{tor}`, km).

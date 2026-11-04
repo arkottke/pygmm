@@ -138,14 +138,18 @@ class AfshariStewart2016(model.Model):
 
     @property
     def duration(self):
-        """Return the durations as a `np.recarray`. Values can be accessed with
-        'D_5t75', 'D_5t95', or 'D_20t80'."""
+        """Return the durations as a `np.recarray`.
+
+        Values can be accessed with 'D_5t75', 'D_5t95', or 'D_20t80'.
+        """
         return AfshariStewart2016._as_recarray(np.exp(self._ln_dur))
 
     @property
     def std_err(self):
-        """Return the standard errors of the durations as a `np.recarray`. Values can be
-        accessed with 'D_5t75', 'D_5t95', or 'D_20t80'."""
+        """Return the standard errors of the durations as a `np.recarray`.
+
+        Values can be accessed with 'D_5t75', 'D_5t95', or 'D_20t80'.
+        """
         return AfshariStewart2016._as_recarray(self._std_err[:3])
 
     @staticmethod

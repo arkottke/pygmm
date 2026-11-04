@@ -242,7 +242,6 @@ class BooreStewartSeyhanAtkinson2014(model.GroundMotionModel):
         site_term: :class:`np.ndarray`
             site term that is applied to the natural log response.
         """
-
         c = cls.COEFF
 
         f_lin = c.c * np.log(np.minimum(v_s30, c.V_c) / c.V_ref)

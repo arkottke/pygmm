@@ -19,10 +19,10 @@ _MAX_DEPTH_M = _COEFF.depth_m.max()
 
 
 def btc11_profile(depth: npt.ArrayLike, vs30: float) -> VelocityProfile:
-    """Generic time-averaged velocity profile from Boore et al. (2011).
+    r"""Generic time-averaged velocity profile from Boore et al. (2011).
 
-    Gives the time-averaged shear-wave velocity :math:`\\bar V_S(z)` to
-    depth ``z`` as a quadratic function of :math:`\\ln(V_{S30})`::
+    Gives the time-averaged shear-wave velocity :math:`\bar V_S(z)` to
+    depth ``z`` as a quadratic function of :math:`\ln(V_{S30})`::
 
         ln(Vz) = c0 + c1 * ln(Vs30) + c2 * ln(Vs30) ** 2
 

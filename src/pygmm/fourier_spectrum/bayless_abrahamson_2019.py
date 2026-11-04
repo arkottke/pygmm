@@ -197,7 +197,7 @@ class BaylessAbrahamson2019(model.Model):
         """Compute the generic depth to 1 km/sec based on Vs30.
 
         Parameters
-        ---------
+        ----------
         v_s30 : float
             site condition. Set `v_s30` to the reference
             velocity (e.g., 1180 m/s) for the reference response.

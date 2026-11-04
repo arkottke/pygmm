@@ -27,18 +27,18 @@ class BaylessAbrahamson2018:
 
     @classmethod
     def corr(cls, freqs: npt.ArrayLike) -> np.ndarray:
-        """
+        """Compute the correlation matrix between frequencies.
+
         Parameters
         ----------
-        freq : array_like
-            Frequencies
+        freqs : array_like
+            Frequencies [Hz].
 
         Returns
         -------
         corr : np.ndarray
-            Correlation coefficient matrix
+            Correlation coefficient matrix.
         """
-
         # Create two matrices of frequencies
         n = freqs.shape[0]
         freqs_row = np.full((n, n), freqs)
@@ -65,22 +65,23 @@ class BaylessAbrahamson2018:
         std: npt.ArrayLike | None = None,
         component: str | None = None,
     ) -> np.ndarray:
-        """
+        """Compute the covariance matrix between frequencies.
+
         Parameters
         ----------
-        freq : array_like
-            Frequencies [Hz]
+        freqs : array_like
+            Frequencies [Hz].
         std : array_like, optional
-            Standard deviation at the frequencies
+            Standard deviation at the frequencies.
         component : str, optional
             Component of the published standard deviation.
-            Possible options: tau, phi_s2s, phi_s, sigma
+            Possible options: tau, phi_s2s, phi_s, sigma.
+
         Returns
         -------
-        corr : np.ndarray
-            Correlation coefficient matrix
+        cov : np.ndarray
+            Covariance matrix.
         """
-
         corr = cls.corr(freqs)
         if std is None and component is not None:
             fp = getattr(cls.COEFF, component)

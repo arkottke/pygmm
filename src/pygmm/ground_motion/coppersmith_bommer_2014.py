@@ -1,5 +1,7 @@
-"""Coppersmith and Bommer (2014) ground motion model, part of the PNNL Site
-Wide Hazard."""
+"""Coppersmith and Bommer (2014) ground motion model.
+
+The model is part of the PNNL Site Wide Hazard study.
+"""
 
 import numpy as np
 
@@ -12,8 +14,10 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="subduction")
 class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
-    """Coppersmith and Bommer (2014) ground motion model developed as part of
-    the PNNL hazard study for the Hanford site.
+    """Coppersmith and Bommer (2014) ground motion model.
+
+    The model was developed as part of the PNNL hazard study for the Hanford
+    site.
 
     This model was developed for subduction regions and is a modified version
     of the BCHydro model.
