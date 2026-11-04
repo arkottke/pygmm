@@ -1,5 +1,5 @@
 ---
-title: Credits
+title: Authors
 ---
 
 # Development Lead
