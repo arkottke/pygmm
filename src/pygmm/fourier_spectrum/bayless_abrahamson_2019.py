@@ -186,8 +186,13 @@ class BaylessAbrahamson2019(model.Model):
         s = self._scenario
         c = self.COEFF
 
+        # Eqs. 19a-c: the first value below M 4, the second above M 6, and a
+        # linear interpolation between. The weight is clipped rather than the
+        # result because the first value can be larger than the second.
+        weight = np.clip((s.mag - 4) / 2, 0, 1)
+
         def interp(left, right):
-            return np.clip(left + (right - left) / 2 * (s.mag - 4), left, right)
+            return left + weight * (right - left)
 
         tau = interp(c.s1, c.s2)
         phi_s2s = interp(c.s3, c.s4)

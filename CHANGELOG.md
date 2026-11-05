@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Fixed: the total standard deviation of `BaylessAbrahamson2019` was wrong for
+  magnitudes below 6 at the frequencies where the first coefficient of Eqs.
+  19a-c is larger than the second. The interpolated value was clipped between
+  the coefficients in the wrong order, which returned the second coefficient;
+  the interpolation weight is now clipped instead. At 0.5 Hz the total
+  standard deviation was 0.729 instead of 0.811 at M 3 and 0.730 instead of
+  0.769 at M 5. The median was not affected.
+
 ## 0.9.0 (2026-11-05)
 
 - Added: `HaleAbrahamson19.transfer_function(freqs, spec_accel)` returns the

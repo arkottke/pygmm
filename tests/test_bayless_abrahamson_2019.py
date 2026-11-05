@@ -51,3 +51,28 @@ def test_ba19(scenario):
     m = BA19(scenario)
     assert_allclose(m.freqs, scenario["freqs"])
     assert_allclose(m.eas, scenario["eas_median"] * TO_G, rtol=0.005)
+
+
+def _piecewise(mag, left, right):
+    """Eqs. 19a-c written out as separate branches."""
+    if mag < 4:
+        return left
+    if mag <= 6:
+        return left + (right - left) / 2 * (mag - 4)
+    return right
+
+
+@pytest.mark.parametrize("mag", [3.0, 4.0, 5.0, 6.0, 7.0])
+def test_ba19_ln_std(mag):
+    # The first coefficient is larger than the second at some frequencies and
+    # smaller at others, so both orderings are covered.
+    base = next(iter_scenarios())
+    scenario = {k: v for k, v in base.items() if k not in ("freqs", "eas_median")}
+    m = BA19({**scenario, "mag": mag})
+    c = BA19.COEFF
+    tau = _piecewise(mag, c.s1, c.s2)
+    phi_s2s = _piecewise(mag, c.s3, c.s4)
+    phi_ss = _piecewise(mag, c.s5, c.s6)
+    expected = np.sqrt(tau**2 + phi_s2s**2 + phi_ss**2 + c.c1a**2)
+    assert np.any(c.s1 > c.s2) and np.any(c.s1 < c.s2)
+    assert_allclose(m.ln_std, expected)
