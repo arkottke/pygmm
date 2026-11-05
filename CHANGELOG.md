@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.9.0 (unreleased)
+## 0.9.0 (2026-11-05)
 
 - Added: `HaleAbrahamson19.transfer_function(freqs, spec_accel)` returns the
   transfer function to the average acceleration of the sliding mass, with the
