@@ -14,5 +14,7 @@ recursive-include tests *
 recursive-include examples *.py
 recursive-include src *.csv
 recursive-include src *.json
+recursive-include src *.gz
+exclude src/pygmm/data/*.npz
 recursive-include utils *.py
 recursive-include docs *.rst conf.py Makefile make.bat *.bib *.txt *.gitkeep

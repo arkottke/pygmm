@@ -17,6 +17,34 @@ spectrum, in log period and log amplitude, to other periods. The standard
 deviation is of the natural logarithm; a spectrum at a number of standard
 deviations from the median is ``spec_accels * exp(n * ln_stds)``.
 
+Arrays of scenarios
+-------------------
+
+The ground-motion models accept arrays of scenario values, so many scenarios
+are computed at once. For N scenarios, ``spec_accels`` and ``ln_stds`` have the
+shape (N, periods) and ``pga`` has the shape (N,); scalar values are broadcast
+against the arrays. The ``ims`` argument limits the computation to the requested
+intensity measures, for example ``"pga"``, ``"psa_1p000"`` (1.0 s) or
+``"psa_ngawest2_21"`` (the 21 NGA-West2 comparison periods).
+
+.. code-block:: python
+
+   scenario = pygmm.Scenario(
+       mag=np.array([5.5, 6.5, 7.5]), dist_jb=20.0, v_s30=400.0, mechanism="SS"
+   )
+   model = pygmm.BooreStewartSeyhanAtkinson2014(scenario, ims=["pga", "psa_1p000"])
+   model.spec_accels   # shape (3, 1)
+
+USGS nshmp-lib variants
+-----------------------
+
+The NGA-West2, NGA-East and NGA-Subduction models, and Atkinson and Macias
+(2009) and Zhao et al. (2006), follow the USGS nshmp-lib implementations used by
+the National Seismic Hazard Model. Constructor options (for example ``basin``,
+``m9`` or ``adjusted``) select the nshmp-lib variants, and the ``GMM_IDS``
+attribute of each model maps the nshmp-lib identifiers to the options that
+reproduce them.
+
 Finding models
 --------------
 
@@ -92,12 +120,40 @@ Registered models
      - psa, pga
      - stable continental
      - scenario
+   * - :class:`~pygmm.NgaEast`
+     - psa, pga, pgv
+     - stable continental
+     - scenario
+   * - :class:`~pygmm.NgaEastSeeds`
+     - psa, pga
+     - stable continental
+     - scenario
    * - :class:`~pygmm.AbrahamsonGregorAddo2016`
      - psa, pga
      - subduction
      - scenario
    * - :class:`~pygmm.CoppersmithBommer2014`
      - psa, pga
+     - subduction
+     - scenario
+   * - :class:`~pygmm.AbrahamsonGulerce2020`
+     - psa, pga, pgv
+     - subduction
+     - scenario
+   * - :class:`~pygmm.KuehnEtAl2020`
+     - psa, pga, pgv
+     - subduction
+     - scenario
+   * - :class:`~pygmm.ParkerEtAl2020`
+     - psa, pga, pgv
+     - subduction
+     - scenario
+   * - :class:`~pygmm.AtkinsonMacias2009`
+     - psa, pga, pgv
+     - subduction
+     - scenario
+   * - :class:`~pygmm.ZhaoEtAl2006`
+     - psa, pga, pgv
      - subduction
      - scenario
 

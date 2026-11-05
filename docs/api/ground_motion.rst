@@ -20,6 +20,14 @@ pygmm.ground\_motion.abrahamson\_gregor\_addo\_2016 module
    :show-inheritance:
    :undoc-members:
 
+pygmm.ground\_motion.abrahamson\_gulerce\_2020 module
+-----------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.abrahamson_gulerce_2020
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pygmm.ground\_motion.abrahamson\_shi\_yang\_2016 module
 -------------------------------------------------------
 
@@ -64,6 +72,14 @@ pygmm.ground\_motion.atkinson\_boore\_2006 module
 -------------------------------------------------
 
 .. automodule:: pygmm.ground_motion.atkinson_boore_2006
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.atkinson\_macias\_2009 module
+--------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.atkinson_macias_2009
    :members:
    :show-inheritance:
    :undoc-members:
@@ -172,10 +188,42 @@ pygmm.ground\_motion.kishida\_2017 module
    :show-inheritance:
    :undoc-members:
 
+pygmm.ground\_motion.kuehn\_et\_al\_2020 module
+-----------------------------------------------
+
+.. automodule:: pygmm.ground_motion.kuehn_et_al_2020
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pygmm.ground\_motion.macedo\_abrahamson\_liu\_2021 module
 ---------------------------------------------------------
 
 .. automodule:: pygmm.ground_motion.macedo_abrahamson_liu_2021
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.nga\_east module
+-------------------------------------
+
+.. automodule:: pygmm.ground_motion.nga_east
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.nshmp module
+---------------------------------
+
+.. automodule:: pygmm.ground_motion.nshmp
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.parker\_et\_al\_2020 module
+------------------------------------------------
+
+.. automodule:: pygmm.ground_motion.parker_et_al_2020
    :members:
    :show-inheritance:
    :undoc-members:
@@ -224,6 +272,14 @@ pygmm.ground\_motion.tavakoli\_pezeshk\_2005 module
 ---------------------------------------------------
 
 .. automodule:: pygmm.ground_motion.tavakoli_pezeshk_2005
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.ground\_motion.zhao\_et\_al\_2006 module
+----------------------------------------------
+
+.. automodule:: pygmm.ground_motion.zhao_et_al_2006
    :members:
    :show-inheritance:
    :undoc-members:

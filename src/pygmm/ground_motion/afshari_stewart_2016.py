@@ -11,10 +11,38 @@ from ..registry import register
 class AfshariStewart2016(model.Model):
     """Afshari and Stewart (2016, :cite:p:`afshari2016`) duration model.
 
+    The basin term uses the difference between `depth_1_0` and the average
+    depth for the site's `v_s30`. The average depth uses the Japan relation for
+    ``region="japan"``, and the California relation otherwise. If `depth_1_0`
+    is *None* or NaN, no basin term is applied.
+
+    The model is vectorized. Each scenario value (``mag``, ``dist_rup``,
+    ``v_s30``, ``mechanism``, ``depth_1_0``, and ``region``) can be a scalar or
+    an array, and the arrays are broadcast against each other. If
+    ``depth_1_0`` is *None*, no basin term is applied to any of the scenarios.
+    :attr:`duration` and :attr:`std_err` are record arrays with the fields
+    ``D_5t75``, ``D_5t95``, and ``D_20t80``. For a scalar scenario, each field
+    is a scalar, as before. For arrays of N scenarios, each field has shape
+    (N,). Multidimensional scenario arrays keep their shape.
+
     Parameters
     ----------
     scenario : :class:`pygmm.model.Scenario`
         earthquake scenario
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> import pygmm
+    >>> s = pygmm.Scenario(
+    ...     mag=np.array([5.5, 6.5, 7.5]), dist_rup=np.array([5.0, 20.0, 80.0]),
+    ...     v_s30=400.0, mechanism=np.array(["SS", "NS", "RS"]),
+    ...     depth_1_0=np.array([0.1, 0.3, 0.6]))
+    >>> m = pygmm.AfshariStewart2016(s)
+    >>> m.duration.D_5t95.shape
+    (3,)
+    >>> m.std_err.D_5t95.shape
+    (3,)
 
     """
 
@@ -27,6 +55,9 @@ class AfshariStewart2016(model.Model):
         model.NumericParameter("v_s30", True, 200, 1000),
         model.CategoricalParameter("mechanism", True, ["SS", "NS", "RS"]),
         model.NumericParameter("depth_1_0", False),
+        model.CategoricalParameter(
+            "region", False, ["california", "global", "japan"], "california"
+        ),
     ]
 
     def __init__(self, scenario):
@@ -35,38 +66,53 @@ class AfshariStewart2016(model.Model):
         # scenario
         s = self._scenario
 
-        # duration D_{5-75}, D_{5-95}, D_{20-80},
+        # Scenario values get a trailing axis to broadcast against the
+        # coefficients, which have one value per duration measure:
+        # D_{5-75}, D_{5-95}, D_{20-80}
+        mag = model.as_column(s.mag)
+        dist_rup = model.as_column(s.dist_rup)
+        v_s30 = model.as_column(s.v_s30)
 
         # source coefficients
         mag_1 = np.array([5.35, 5.2, 5.2])
         mag_2 = np.array([7.15, 7.4, 7.4])
         mag_star = 6
-        if s.mechanism is None:
-            b_0 = np.array([1.280, 2.182, 0.8822])
-            b_1 = np.array([5.576, 3.628, 6.182])
-        elif s.mechanism == "NS":
-            b_0 = np.array([1.555, 2.541, 1.409])
-            b_1 = np.array([4.992, 3.170, 4.778])
-        elif s.mechanism == "RS":
-            b_0 = np.array([0.7806, 1.612, 0.7729])
-            b_1 = np.array([7.061, 4.536, 6.188])
-        elif s.mechanism == "SS":
-            b_0 = np.array([1.279, 2.302, 0.8804])
-            b_1 = np.array([5.578, 3.467, 6.188])
+        # Coefficients by mechanism. Mechanisms that are not one of the options
+        # (None after checking the scenario) use the unspecified coefficients.
+        mechanism = model.as_column(s.mechanism)
+        is_mech = [model.equals(mechanism, m) for m in ["NS", "RS", "SS"]]
+        b_0 = np.select(
+            is_mech,
+            [
+                np.array([1.555, 2.541, 1.409]),
+                np.array([0.7806, 1.612, 0.7729]),
+                np.array([1.279, 2.302, 0.8804]),
+            ],
+            np.array([1.280, 2.182, 0.8822]),
+        )
+        b_1 = np.select(
+            is_mech,
+            [
+                np.array([4.992, 3.170, 4.778]),
+                np.array([7.061, 4.536, 6.579]),
+                np.array([5.578, 3.467, 6.188]),
+            ],
+            np.array([5.576, 3.628, 6.182]),
+        )
         b_2 = np.array([0.9011, 0.9443, 0.7414])
         b_3 = np.array([-1.684, -3.911, -3.164])
         # stress drop indices for duration measures
 
         stress_drop = np.exp(
             b_1
-            + b_2 * (np.minimum(s.mag, mag_2) - mag_star)
-            + b_3 * np.maximum((s.mag - mag_2), 0)
+            + b_2 * (np.minimum(mag, mag_2) - mag_star)
+            + b_3 * np.maximum((mag - mag_2), 0)
         )
         # corner frequency
         f_0 = self._corner_freq(stress_drop)
 
         # source duration
-        F_E = (s.mag <= mag_1) * b_0 + (s.mag > mag_1) * (1 / f_0)
+        F_E = (mag <= mag_1) * b_0 + (mag > mag_1) * (1 / f_0)
 
         # path coeficients
         c_1 = np.array([0.1159, 0.3165, 0.0646])
@@ -78,9 +124,9 @@ class AfshariStewart2016(model.Model):
         R_2 = 50
         # path duration
         F_P = (
-            c_1 * np.minimum(s.dist_rup, R_1)
-            + c_2 * np.maximum((np.minimum(s.dist_rup, R_2) - R_1), 0)
-            + c_3 * np.maximum((s.dist_rup - R_2), 0)
+            c_1 * np.minimum(dist_rup, R_1)
+            + c_2 * np.maximum((np.minimum(dist_rup, R_2) - R_1), 0)
+            + c_3 * np.maximum((dist_rup - R_2), 0)
         )
 
         # site coefficients
@@ -89,12 +135,22 @@ class AfshariStewart2016(model.Model):
         dz_1ref = 200
         # depth to bedrock duration
         if s.depth_1_0 is not None:
-            dz_1 = s.depth_1_0 - self.calc_depth_1_0(s.v_s30, s.mechanism)
-            F_dz1 = c_5 * (dz_1 if dz_1 <= dz_1ref else dz_1ref)
+            # Basin depth differential in m (Equation 10 and Figure 12 of the
+            # paper). depth_1_0 and calc_depth_1_0 are in km. Table 2 lists
+            # c_5 in 1/km, but Figure 12 shows that it applies to dz_1 in m,
+            # consistent with dz_1ref = 200 m.
+            dz_1 = model.as_column(
+                1000 * (s.depth_1_0 - self.calc_depth_1_0(s.v_s30, s.region))
+            )
+            # Same as `dz_1 if dz_1 <= dz_1ref else dz_1ref`. Unknown depths
+            # (NaN) have no basin term.
+            F_dz1 = np.where(
+                np.isnan(dz_1), 0.0, c_5 * np.where(dz_1 <= dz_1ref, dz_1, dz_1ref)
+            )
         else:
             F_dz1 = 0
         # site duration
-        F_S = c_4 * np.log(np.minimum(s.v_s30, V_1) / V_ref) + F_dz1
+        F_S = c_4 * np.log(np.minimum(v_s30, V_1) / V_ref) + F_dz1
 
         # aleatory coefficients
         tau_1 = np.array([0.28, 0.25, 0.30])
@@ -103,10 +159,10 @@ class AfshariStewart2016(model.Model):
         phi_2 = np.array([0.41, 0.35, 0.45])
         # aleatory variability
         tau = tau_1 + (tau_2 - tau_1) * (
-            np.minimum(np.maximum(s.mag, 6.5), 7.0) - 6.5
+            np.minimum(np.maximum(mag, 6.5), 7.0) - 6.5
         ) / (7.0 - 6.5)
         phi = phi_1 + (phi_2 - phi_1) * (
-            np.minimum(np.maximum(s.mag, 5.5), 5.75) - 5.5
+            np.minimum(np.maximum(mag, 5.5), 5.75) - 5.5
         ) / (5.75 - 5.50)
 
         # total druation
@@ -116,16 +172,32 @@ class AfshariStewart2016(model.Model):
         self._std_err = np.sqrt(tau**2 + phi**2)
 
     @staticmethod
-    def calc_depth_1_0(v_s30: float, region: str = "california") -> float:
-        """Estimate the depth to the 1 km/sec horizon (:math:`Z_{1.0}`) [km].
+    def calc_depth_1_0(
+        v_s30: float | np.ndarray, region: str | np.ndarray = "california"
+    ) -> float | np.ndarray:
+        """Calculate the average depth to 1 km/sec (:math:`Z_{1.0}`).
 
         Parameters
         ----------
-        v_s30 : float
-            Time-averaged shear-wave velocity of the upper 30 m [m/s].
-        region : str, default="california"
-            ``"japan"`` for the Japan model; any other region uses the global model.
+        v_s30 : float or array_like
+            time-averaged shear-wave velocity over the top 30 m of the site
+            (:math:`V_{s30}`, m/s).
+        region : str or array_like, optional
+            basin region. The Japan relation is used for "japan", and the
+            California relation otherwise. An array of regions is broadcast
+            against `v_s30`.
+
+        Returns
+        -------
+        depth_1_0 : float or :class:`np.ndarray`
+            average depth to a shear-wave velocity of 1 km/sec [km]
         """
+        if np.ndim(region) > 0:
+            return np.where(
+                model.equals(region, "japan"),
+                AfshariStewart2016.calc_depth_1_0(v_s30, "japan"),
+                AfshariStewart2016.calc_depth_1_0(v_s30, "california"),
+            )
         if region in ["japan"]:
             # Japan
             power = 2
@@ -159,12 +231,16 @@ class AfshariStewart2016(model.Model):
 
         Values can be accessed with 'D_5t75', 'D_5t95', or 'D_20t80'.
         """
-        return AfshariStewart2016._as_recarray(self._std_err[:3])
+        std_err = self._std_err
+        if np.ndim(self._ln_dur) > 1:
+            std_err = np.broadcast_to(std_err, np.shape(self._ln_dur))
+        return AfshariStewart2016._as_recarray(std_err)
 
     @staticmethod
     def _as_recarray(values):
+        # The duration measures are along the last axis
         return np.rec.fromarrays(
-            values,
+            np.moveaxis(values, -1, 0),
             names=[
                 "D_5t75",
                 "D_5t95",
@@ -174,7 +250,7 @@ class AfshariStewart2016(model.Model):
 
     def _corner_freq(self, stress_drop):
         """Corner frequency."""
-        moment = 10 ** (1.5 * self.scenario.mag + 16.05)
+        moment = model.as_column(10 ** (1.5 * self.scenario.mag + 16.05))
         return (4.9e6 * 3.2) * (stress_drop / moment) ** (1 / 3)
 
     def duration_model(self) -> Duration:
@@ -182,12 +258,15 @@ class AfshariStewart2016(model.Model):
 
         ``duration`` and ``std_err`` are record arrays over the three energy
         intervals; 5-95% is taken as the primary value.
+
+        The values are floats for a scalar scenario and arrays for a vectorized
+        scenario.
         """
         d, s = self.duration, self.std_err
         return Duration(
-            duration=float(d["D_5t95"]),
-            d_5_75=float(d["D_5t75"]),
-            d_5_95=float(d["D_5t95"]),
-            d_20_80=float(d["D_20t80"]),
-            ln_std=float(s["D_5t95"]),
+            duration=model.as_scalar_or_array(d["D_5t95"]),
+            d_5_75=model.as_scalar_or_array(d["D_5t75"]),
+            d_5_95=model.as_scalar_or_array(d["D_5t95"]),
+            d_20_80=model.as_scalar_or_array(d["D_20t80"]),
+            ln_std=model.as_scalar_or_array(s["D_5t95"]),
         )

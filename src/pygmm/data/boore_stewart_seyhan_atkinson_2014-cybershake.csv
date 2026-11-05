@@ -1,0 +1,8 @@
+# Boore, Stewart, Seyhan, and Atkinson (2014) CyberShake basin coefficients from USGS nshmp-lib (public domain, commit 44728a7d): src/main/resources/gmm/coeffs/BSSA14.csv, which nshmp-lib uses for spectral periods longer than 1.9 s. Column T is renamed to period (s), and the coefficients are renamed (f6cy as f_6, f7cy as f_7, dz1cy as dz1_max).
+period,f_6,f_7,dz1_max
+2,0.296,0.163,0.55
+3,0.503,0.277,0.55
+4,0.878,0.483,0.55
+5,1.18,0.457,0.388695
+7.5,1.48,0.549,0.370751
+10,1.34,0.498,0.370755

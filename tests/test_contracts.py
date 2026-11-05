@@ -93,6 +93,30 @@ def test_response_spectrum_protocol():
     assert len(rs.periods) == len(rs.spec_accels)
 
 
+def test_response_spectrum_vectorized():
+    """A vectorized scenario gives one spectrum per scenario."""
+    mags = np.array([5.5, 6.5, 7.5])
+    m = pygmm.ChiouYoungs2014(pygmm.Scenario(**dict(SCENARIO, mag=mags)))
+    rs = m.response_spectrum()
+    assert rs.spec_accels.shape == (len(mags), len(rs.periods))
+    for i, mag in enumerate(mags):
+        scalar = pygmm.ChiouYoungs2014(pygmm.Scenario(**dict(SCENARIO, mag=mag)))
+        np.testing.assert_allclose(
+            rs.spec_accels[i], scalar.response_spectrum().spec_accels
+        )
+
+
+def test_response_spectrum_with_ims():
+    """``ims`` limits the spectrum to the requested periods."""
+    m = pygmm.ChiouYoungs2014(SCENARIO, ims=["psa_0p200", "psa_1p000"])
+    rs = m.response_spectrum()
+    np.testing.assert_allclose(rs.periods, [0.2, 1.0])
+    full = pygmm.ChiouYoungs2014(SCENARIO)
+    np.testing.assert_allclose(
+        rs.spec_accels, full.interp_spec_accels([0.2, 1.0]), rtol=1e-12
+    )
+
+
 @pytest.mark.parametrize(
     "cls",
     [i.cls for i in pygmm.find_models(provides="duration")],
@@ -111,6 +135,29 @@ def test_duration_protocol(cls):
     assert np.isfinite(d.duration) and d.duration > 0
     # Exactly one uncertainty convention is populated.
     assert (d.ln_std is None) != (d.plus_sigma is None)
+
+
+@pytest.mark.parametrize(
+    "cls",
+    [i.cls for i in pygmm.find_models(provides="duration")],
+    ids=lambda c: c.__name__,
+)
+def test_duration_protocol_vectorized(cls):
+    """A vectorized scenario gives one duration per scenario."""
+    kwds = {"region": "Japan"} if cls.__name__ == "PinillaRamosEtAl2024" else {}
+    mags = np.array([5.5, 6.5, 7.5])
+    base = dict(SCENARIO, site_cond="soil", event_type="interface", **kwds)
+    d = cls(pygmm.Scenario(**dict(base, mag=mags))).duration_model()
+    assert np.shape(d.duration) == (len(mags),)
+    for i, mag in enumerate(mags):
+        scalar = cls(pygmm.Scenario(**dict(base, mag=mag))).duration_model()
+        assert isinstance(scalar.duration, float)
+        for name in _names(contracts.Duration):
+            value = getattr(d, name)
+            if value is None:
+                assert getattr(scalar, name) is None
+            else:
+                np.testing.assert_allclose(value[i], getattr(scalar, name))
 
 
 @pytest.mark.parametrize(

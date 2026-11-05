@@ -1,0 +1,8 @@
+# Chiou and Youngs (2014) CyberShake basin coefficients from USGS nshmp-lib (public domain, commit 44728a7d): src/main/resources/gmm/coeffs/CY14.csv, which nshmp-lib uses for spectral periods longer than 1.9 s. Column T is renamed to period (s), and the coefficients are renamed (phi5cy as phi_5, phi6cy as phi_6).
+period,phi_5,phi_6
+2,0.2440,1000
+3,0.2620,608
+4,0.8190,1000
+5,1.0850,1000
+7.5,1.3650,1000
+10,1.2340,1000

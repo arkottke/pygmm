@@ -1,0 +1,8 @@
+# Abrahamson, Silva, and Kamai (2014) CyberShake basin coefficients from USGS nshmp-lib (public domain, commit 44728a7d): src/main/resources/gmm/coeffs/ASK14.csv, which nshmp-lib uses for spectral periods longer than 1.9 s. Column T is renamed to period (s), and the coefficients are renamed (a44cy as a44, a45cy as a45).
+period,a44,a45
+2,0.048,0.114
+3,0.092,0.223
+4,0.202,0.333
+5,0.270,0.399
+7.5,0.354,0.426
+10,0.343,0.334

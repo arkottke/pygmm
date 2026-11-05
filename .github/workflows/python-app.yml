@@ -5,6 +5,8 @@ on: [push, pull_request]
 jobs:
     build:
         runs-on: ubuntu-latest
+        env:
+            CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         strategy:
             matrix:
                 python-version: ["3.13", "3.14"]
@@ -25,6 +27,8 @@ jobs:
                   uv run make test
                   uv run coverage xml
             - name: Run codacy-coverage-reporter
+              # The token is not available to forks or pull requests from forks
+              if: ${{ env.CODACY_PROJECT_TOKEN != '' }}
               uses: codacy/codacy-coverage-reporter-action@v1.3.0
               with:
                   project-token: ${{ secrets.CODACY_PROJECT_TOKEN }}

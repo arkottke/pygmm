@@ -1,0 +1,8 @@
+# Campbell and Bozorgnia (2014) CyberShake basin coefficients from USGS nshmp-lib (public domain, commit 44728a7d): src/main/resources/gmm/coeffs/CB14.csv, which nshmp-lib uses for spectral periods longer than 1.9 s. Column T is renamed to period (s), and the coefficients are renamed (slope_cy as slope).
+period,slope
+2,0.764
+3,1.279
+4,1.726
+5,2.080
+7.5,3.000
+10,3.000

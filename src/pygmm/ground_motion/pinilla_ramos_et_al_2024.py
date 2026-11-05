@@ -23,11 +23,37 @@ class PinillaRamosEtAl2024(model.Model):
     regional adjustments for Japan, New Zealand, South America, and Taiwan
     (Taiwan only for slab events).
 
+    The model is vectorized. Each scenario value (``mag``, ``dist_rup``,
+    ``v_s30``, ``event_type``, and ``region``) can be a scalar or an array, and
+    the arrays are broadcast against each other. For a scalar scenario, the
+    durations and standard deviations are scalars, as before. For arrays of
+    scenarios, ``d575_median``, ``d575_sigma``, ``d5x_median``, ``d5x_sigma``,
+    ``duration``, ``duration_plus_sigma``, ``duration_minus_sigma``, and each of
+    the three values returned by ``duration_for_energy`` are arrays with the
+    broadcast shape of the scenario values, e.g., shape (N,) for N scenarios.
+    The energy threshold applies to all scenarios.
+
     Parameters
     ----------
     scenario : :class:`pygmm.model.Scenario`
         earthquake scenario. Must include event_type ('interface' or 'slab')
         and region specifications.
+
+    Examples
+    --------
+    >>> import numpy as np
+    >>> from pygmm import Scenario
+    >>> from pygmm.ground_motion.pinilla_ramos_et_al_2024 import PinillaRamosEtAl2024
+    >>> s = Scenario(
+    ...     mag=np.array([6.0, 7.0, 8.0]), dist_rup=np.array([50.0, 100.0, 200.0]),
+    ...     v_s30=400.0, event_type=np.array(["slab", "interface", "interface"]),
+    ...     region="Japan")
+    >>> m = PinillaRamosEtAl2024(s)
+    >>> m.duration.shape
+    (3,)
+    >>> median, plus, minus = m.duration_for_energy(0.95)
+    >>> median.shape
+    (3,)
 
     Notes
     -----
@@ -85,100 +111,149 @@ class PinillaRamosEtAl2024(model.Model):
         """Initialize the model."""
         super().__init__(scenario)
 
+        s = self._scenario
+        # Broadcast shape of the scenario values, () for a scalar scenario
+        self._shape = np.broadcast_shapes(
+            *(
+                np.shape(s[name])
+                for name in ("mag", "dist_rup", "v_s30", "event_type", "region")
+            )
+        )
+
         # Validate region-event_type combination
         self._validate_region_event_type()
+
+        # After the validation, each event is either interface or slab
+        self._is_interface = model.equals(s.event_type, "interface")
+        self._d575_median = self._calc_d575_median()
+        self._d575_sigma = self._calc_d575_sigma()
 
         # Calculate the duration for D5-75 by default
         self._duration, self._duration_plus_sigma, self._duration_minus_sigma = (
             self._calc_duration(0.75)
         )
 
+    def _output(self, value) -> ArrayLike:
+        """Broadcast a computed value to the scenario shape.
+
+        Scalar scenarios give a scalar (:class:`numpy.float64`), as before.
+        """
+        value = np.asarray(value)
+        if value.shape != self._shape:
+            value = np.broadcast_to(value, self._shape).copy()
+        return value[()] if value.ndim == 0 else value
+
     def _validate_region_event_type(self) -> None:
-        """Validate that the region-event_type combination is supported."""
+        """Validate that the region-event_type combination is supported.
+
+        For arrays of scenarios, an error is raised if any scenario is not
+        supported.
+        """
         event_type = self._scenario.event_type
         region = self._scenario.region
+        shape = self._shape
+        vectorized = len(shape) > 0
 
-        if event_type == "interface" and region == "Taiwan":
-            raise ValueError("No model available for interface earthquakes in Taiwan.")
+        def describe(values, invalid) -> str:
+            """Describe the invalid values for the error message."""
+            if not vectorized:
+                return str(values)
+            invalid = np.broadcast_to(invalid, shape)
+            values = np.broadcast_to(np.asarray(values, dtype=object), shape)
+            names = ", ".join(sorted({str(v) for v in values[invalid]}))
+            return f"{names} ({np.count_nonzero(invalid)} of {invalid.size} scenarios)"
 
-        if event_type not in ["interface", "slab"]:
+        is_interface = model.equals(event_type, "interface")
+        is_slab = model.equals(event_type, "slab")
+        is_taiwan = model.equals(region, "Taiwan")
+
+        interface_taiwan = is_interface & is_taiwan
+        if np.any(interface_taiwan):
+            msg = "No model available for interface earthquakes in Taiwan."
+            if vectorized:
+                count = np.count_nonzero(np.broadcast_to(interface_taiwan, shape))
+                msg += f" ({count} of {int(np.prod(shape))} scenarios)"
+            raise ValueError(msg)
+
+        invalid = ~(is_interface | is_slab)
+        if np.any(invalid):
             raise ValueError(
-                f"event_type must be 'interface' or 'slab', got: {event_type}"
+                "event_type must be 'interface' or 'slab', got: "
+                + describe(event_type, invalid)
             )
 
         valid_regions = ["Japan", "New Zealand", "South America", "Taiwan"]
-        if region not in valid_regions:
-            raise ValueError(f"region must be one of {valid_regions}, got: {region}")
+        invalid = ~np.logical_or.reduce(
+            [model.equals(region, r) for r in valid_regions]
+        )
+        if np.any(invalid):
+            raise ValueError(
+                f"region must be one of {valid_regions}, got: "
+                + describe(region, invalid)
+            )
 
-    def _calc_d575_median(self) -> float:
+    def _calc_d575_median(self) -> np.ndarray:
         """Calculate the median D5-75 duration.
 
         Returns
         -------
-        float
-            Median D5-75 duration in seconds
+        array_like
+            Median D5-75 duration in seconds (unbroadcast)
         """
         s = self._scenario
-        mag = float(s.mag)
-        rrup = float(s.dist_rup)
-        vs30 = float(s.v_s30)
-        region = s.region
-        event_type = s.event_type
+        mag = np.asarray(s.mag, dtype=float)
+        rrup = np.asarray(s.dist_rup, dtype=float)
+        vs30 = np.asarray(s.v_s30, dtype=float)
+        is_interface = self._is_interface
 
-        # Initialize variables
-        c3_1 = c3_12 = mag_th = c1 = 0.0
-        c3_base = c4_1 = 0.0
-        r1 = v3 = 0.0
+        # Distance coefficients
+        c3_1 = np.where(is_interface, 0.031, 0.013)
+        c3_12 = np.where(is_interface, 0.029, 0.020)
+        r1, v3 = 250, 3100
 
-        if event_type == "interface":
-            # Interface earthquake coefficients
-            c3_1, c3_12, mag_th, c1 = 0.031, 0.029, 7.0, 5.268
+        # Regional coefficients for each (event_type, region) combination
+        regional = [
+            ("interface", "Japan", 0.03, -2.485),
+            ("interface", "New Zealand", 0.024, -2.420),
+            ("interface", "South America", 0.024, -2.248),
+            ("slab", "Japan", 0.046, -1.480),
+            ("slab", "New Zealand", 0.032, -1.252),
+            ("slab", "South America", 0.042, -1.510),
+            ("slab", "Taiwan", 0.038, -1.151),
+        ]
+        is_region = {
+            region: model.equals(s.region, region)
+            for region in {r[1] for r in regional}
+        }
+        conds = [
+            (is_interface if event_type == "interface" else ~is_interface)
+            & is_region[region]
+            for event_type, region, _, _ in regional
+        ]
+        c3_base = np.select(conds, [r[2] for r in regional], default=0.0)
+        c4_1 = np.select(conds, [r[3] for r in regional], default=0.0)
 
-            if region == "Japan":
-                c3_base, c4_1 = 0.03, -2.485
-            elif region == "New Zealand":
-                c3_base, c4_1 = 0.024, -2.420
-            elif region == "South America":
-                c3_base, c4_1 = 0.024, -2.248
-
-            r1, v3 = 250, 3100
-            c2 = 0.275
-
-            # Source term
-            source_component = c1 * 10 ** ((mag - mag_th) * c2)
-
-        elif event_type == "slab":
-            # Slab earthquake coefficients
-            c3_1, c3_12, mag_th, c1 = 0.013, 0.020, 6.0, 0.340
-
-            if region == "Japan":
-                c3_base, c4_1 = 0.046, -1.480
-            elif region == "New Zealand":
-                c3_base, c4_1 = 0.032, -1.252
-            elif region == "South America":
-                c3_base, c4_1 = 0.042, -1.510
-            elif region == "Taiwan":
-                c3_base, c4_1 = 0.038, -1.151
-
-            r1, v3 = 250, 3100
-            d1, m0, c2_base = 2.770, 4.250, 0.5
-
-            # Source term (magnitude-dependent)
-            if mag < mag_th:
-                source_component = c1 * 10 ** ((mag - m0) * c2_base)
-            else:
-                source_component = c1 * 10 ** ((mag_th - m0) * c2_base) + d1 * (
-                    mag - mag_th
-                ) / (8.5 - mag_th)
+        # Source term. Interface: c1 = 5.268, mag_th = 7.0, c2 = 0.275. Slab:
+        # c1 = 0.340, mag_th = 6.0, d1 = 2.770, m0 = 4.250, c2_base = 0.5, with
+        # magnitude scaling that changes at mag_th.
+        source_interface = 5.268 * 10 ** ((mag - 7.0) * 0.275)
+        source_slab_small = 0.340 * 10 ** ((mag - 4.250) * 0.5)
+        source_slab_large = 0.340 * 10 ** ((6.0 - 4.250) * 0.5) + 2.770 * (
+            mag - 6.0
+        ) / (8.5 - 6.0)
+        source_component = np.select(
+            [is_interface, mag < 6.0],
+            [source_interface, source_slab_small],
+            default=source_slab_large,
+        )
 
         # Site term
         site_component = c4_1 * np.log(vs30 / v3)
 
         # Path term
-        if rrup < r1:
-            path_component = c3_1 * rrup
-        else:
-            path_component = c3_12 * (rrup - r1) + r1 * c3_1
+        path_component = np.where(
+            rrup < r1, c3_1 * rrup, c3_12 * (rrup - r1) + r1 * c3_1
+        )
 
         # Main path term
         main_path = rrup * c3_base
@@ -186,87 +261,89 @@ class PinillaRamosEtAl2024(model.Model):
         return source_component + site_component + path_component + main_path
 
     @property
-    def d575_median(self) -> float:
+    def d575_median(self) -> ArrayLike:
         """D5-75 median duration in seconds."""
-        return self._calc_d575_median()
+        return self._output(self._d575_median)
 
     @property
-    def d575_sigma(self) -> float:
+    def d575_sigma(self) -> ArrayLike:
         """D5-75 standard deviation of logarithmic duration."""
-        return self._calc_d575_sigma()
+        return self._output(self._d575_sigma)
 
-    def d5x_median(self, energy_threshold: str) -> float:
+    def d5x_median(self, energy_threshold: str) -> ArrayLike:
         """Calculate median duration for specified energy threshold.
 
+        The median is computed with the conditional model, as for
+        :meth:`duration_for_energy`.
+
         Parameters
         ----------
         energy_threshold : str
-            Energy threshold (e.g., "D5-10", "D5-95")
+            Energy threshold (e.g., "D5-10", "D5-95"), from "D5-10" to "D5-95"
+            in steps of 5%.
 
         Returns
         -------
-        float
-            Median duration in seconds
+        float or array_like
+            Median duration in seconds, with the scenario shape
         """
-        # Convert D5-75 to other thresholds using scaling relationships
-        d575_med = self.d575_median
+        median, _ = self._calc_d5x(self._parse_energy_threshold(energy_threshold))
+        return self._output(median)
 
-        # Scaling factors from paper (approximate)
-        scaling_factors = {
-            "D5-10": 0.25,
-            "D5-20": 0.35,
-            "D5-30": 0.50,
-            "D5-40": 0.65,
-            "D5-50": 0.75,
-            "D5-60": 0.85,
-            "D5-70": 0.95,
-            "D5-75": 1.00,  # Reference
-            "D5-80": 1.10,
-            "D5-85": 1.25,
-            "D5-90": 1.45,
-            "D5-95": 1.80,
-        }
-
-        if energy_threshold not in scaling_factors:
-            raise ValueError(f"Unsupported energy threshold: {energy_threshold}")
-
-        return d575_med * scaling_factors[energy_threshold]
-
-    def d5x_sigma(self, energy_threshold: str) -> float:
+    def d5x_sigma(self, energy_threshold: str) -> ArrayLike:
         """Calculate sigma for specified energy threshold.
 
+        The standard deviation is computed with the conditional model, as for
+        :meth:`duration_for_energy`, in the same units as :attr:`d575_sigma`.
+
         Parameters
         ----------
         energy_threshold : str
-            Energy threshold (e.g., "D5-10", "D5-95")
+            Energy threshold (e.g., "D5-10", "D5-95"), from "D5-10" to "D5-95"
+            in steps of 5%.
 
         Returns
         -------
-        float
-            Standard deviation of logarithmic duration
+        float or array_like
+            Standard deviation of the duration, with the scenario shape
         """
-        # For simplicity, use same sigma as D5-75
-        # Could implement threshold-specific sigmas if data available
-        return self.d575_sigma
+        _, sigma = self._calc_d5x(self._parse_energy_threshold(energy_threshold))
+        return self._output(sigma)
 
-    def _calc_d575_sigma(self) -> float:
+    def _parse_energy_threshold(self, energy_threshold: str) -> float:
+        """Energy of a threshold name, e.g., 0.95 for "D5-95"."""
+        try:
+            if not energy_threshold.startswith("D5-"):
+                raise ValueError
+            energy = int(energy_threshold[len("D5-") :]) / 100
+        except (AttributeError, ValueError):
+            raise ValueError(
+                f"Unsupported energy threshold: {energy_threshold}"
+            ) from None
+        if not np.any(np.isclose(self.ENERGY_THRESHOLDS, energy)):
+            raise ValueError(f"Unsupported energy threshold: {energy_threshold}")
+        return energy
+
+    def _calc_d575_sigma(self) -> np.ndarray:
         """Calculate the standard deviation for D5-75 duration.
 
         Returns
         -------
-        float
-            Standard deviation of D5-75 duration
+        array_like
+            Standard deviation of D5-75 duration (unbroadcast)
         """
         s = self._scenario
-        mag = float(s.mag)
-        rrup = float(s.dist_rup)
-        vs30 = float(s.v_s30)
-        event_type = s.event_type
+        mag = np.asarray(s.mag, dtype=float)
+        rrup = np.asarray(s.dist_rup, dtype=float)
+        vs30 = np.asarray(s.v_s30, dtype=float)
 
-        if event_type == "interface":
-            a0, a1, a2, b1, b2, c1 = 0.3107, -0.0393, 0.0062, -0.0519, 0.0041, 0.0028
-        elif event_type == "slab":
-            a0, a1, a2, b1, b2, c1 = 0.3035, -0.0188, 0.004, -0.0288, 0.0019, 0.0038
+        a0, a1, a2, b1, b2, c1 = (
+            np.where(self._is_interface, interface, slab)
+            for interface, slab in zip(
+                (0.3107, -0.0393, 0.0062, -0.0519, 0.0041, 0.0028),
+                (0.3035, -0.0188, 0.004, -0.0288, 0.0019, 0.0038),
+            )
+        )
 
         return (
             a0
@@ -277,7 +354,7 @@ class PinillaRamosEtAl2024(model.Model):
             + np.log(vs30) * c1
         )
 
-    def _get_energy_coefficients(self, energy: float) -> tuple[float, ...]:
+    def _get_energy_coefficients(self, energy: float) -> tuple[np.ndarray, ...]:
         """Get the model coefficients for a specific energy threshold.
 
         Parameters
@@ -288,13 +365,23 @@ class PinillaRamosEtAl2024(model.Model):
         Returns
         -------
         tuple
-            Model coefficients for the specified energy threshold
+            Model coefficients for the specified energy threshold, selected by
+            the event type of each scenario
         """
         # Find the closest supported energy threshold
         idx_energy = np.argmin(np.abs(self.ENERGY_THRESHOLDS - energy))
 
-        event_type = self._scenario.event_type
+        interface = self._event_type_coefficients("interface", idx_energy)
+        slab = self._event_type_coefficients("slab", idx_energy)
+        return tuple(
+            np.where(self._is_interface, i, s) for i, s in zip(interface, slab)
+        )
 
+    @staticmethod
+    def _event_type_coefficients(
+        event_type: str, idx_energy: int | np.integer
+    ) -> tuple[float, ...]:
+        """Model coefficients for an event type and energy threshold index."""
         if event_type == "interface":
             c_median = np.array(
                 [
@@ -625,7 +712,64 @@ class PinillaRamosEtAl2024(model.Model):
 
         return c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2
 
-    def _calc_duration(self, energy: float = 0.75) -> tuple[float, float, float]:
+    def _calc_d5x(self, energy: float) -> tuple[np.ndarray, np.ndarray]:
+        """Calculate the median and standard deviation for an energy threshold.
+
+        Parameters
+        ----------
+        energy : float
+            Energy threshold (0.75 for D5-75, 0.95 for D5-95, etc.)
+
+        Returns
+        -------
+        tuple
+            (median_duration, sigma), unbroadcast. D5-75 uses the base model,
+            and other thresholds use the conditional model.
+        """
+        if np.isclose(energy, 0.75):
+            # Use base D5-75 model
+            return self._d575_median, self._d575_sigma
+
+        s = self._scenario
+        mag = np.asarray(s.mag, dtype=float)
+        rrup = np.asarray(s.dist_rup, dtype=float)
+        vs30 = np.asarray(s.v_s30, dtype=float)
+        is_interface = self._is_interface
+
+        # Use conditional model for other energy thresholds
+        d575_median = self._d575_median
+        sigma_575 = self._d575_sigma
+
+        # Get energy-specific coefficients
+        c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2 = (
+            self._get_energy_coefficients(energy)
+        )
+        # Square of n2 from the scalar values (as for a scalar scenario)
+        n2_sq = np.where(is_interface, 0.15**2, 0.25**2)
+
+        # Calculate conditional model components
+        c_ratio = c_median + a0 + m1 * mag + r1 * rrup / 100 + v1 * np.log(vs30 / 3100)
+
+        # Median duration for this energy threshold
+        d5x_median = d575_median * c_ratio
+
+        # Standard deviation calculation
+        var_5x = (
+            sigma_575**2 * c_ratio ** (2 * n2)
+            + n2_sq * sigma_c**2 * d575_median ** (2 * n2) * c_ratio ** (2 * n2 - 2)
+            + 2
+            * n2
+            * rho_c_d575
+            * c_ratio ** (2 * n2 - 1)
+            * d575_median**n2
+            * sigma_575
+            * sigma_c
+        )
+        d5x_sigma = np.sqrt(var_5x)
+
+        return d5x_median, d5x_sigma
+
+    def _calc_duration(self, energy: float = 0.75) -> tuple[ArrayLike, ...]:
         """Calculate duration for specified energy threshold.
 
         Parameters
@@ -636,93 +780,56 @@ class PinillaRamosEtAl2024(model.Model):
         Returns
         -------
         tuple
-            (median_duration, duration_plus_sigma, duration_minus_sigma) in seconds
+            (median_duration, duration_plus_sigma, duration_minus_sigma) in
+            seconds. Each is a scalar for a scalar scenario, or an array with the
+            scenario shape.
         """
-        s = self._scenario
-        mag = float(s.mag)
-        rrup = float(s.dist_rup)
-        vs30 = float(s.v_s30)
-        event_type = s.event_type
+        median, sigma = self._calc_d5x(energy)
 
-        if np.isclose(energy, 0.75):
-            # Use base D5-75 model
-            median = self._calc_d575_median()
-            sigma = self._calc_d575_sigma()
+        # Exponent of the transformation
+        n = np.where(self._is_interface, 0.15, 0.25)
 
-            # Transform from log space
-            n = 0.15 if event_type == "interface" else 0.25
-            duration_plus = (median**n + sigma) ** (1 / n)
-            duration_minus = (median**n - sigma) ** (1 / n)
+        # Transform from log space
+        duration_plus = (median**n + sigma) ** (1 / n)
+        duration_minus = (median**n - sigma) ** (1 / n)
 
-            return median, duration_plus, duration_minus
-
-        else:
-            # Use conditional model for other energy thresholds
-            d575_median = self._calc_d575_median()
-            sigma_575 = self._calc_d575_sigma()
-
-            # Get energy-specific coefficients
-            c_median, a0, m1, r1, v1, rho_c_d575, sigma_c, n2 = (
-                self._get_energy_coefficients(energy)
-            )
-
-            # Calculate conditional model components
-            c_ratio = (
-                c_median + a0 + m1 * mag + r1 * rrup / 100 + v1 * np.log(vs30 / 3100)
-            )
-
-            # Median duration for this energy threshold
-            d5x_median = d575_median * c_ratio
-
-            # Standard deviation calculation
-            var_5x = (
-                sigma_575**2 * c_ratio ** (2 * n2)
-                + n2**2 * sigma_c**2 * d575_median ** (2 * n2) * c_ratio ** (2 * n2 - 2)
-                + 2
-                * n2
-                * rho_c_d575
-                * c_ratio ** (2 * n2 - 1)
-                * d575_median**n2
-                * sigma_575
-                * sigma_c
-            )
-            d5x_sigma = np.sqrt(var_5x)
-
-            # Transform from log space
-            n = 0.15 if event_type == "interface" else 0.25
-            duration_plus = (d5x_median**n + d5x_sigma) ** (1 / n)
-            duration_minus = (d5x_median**n - d5x_sigma) ** (1 / n)
-
-            return d5x_median, duration_plus, duration_minus
+        return (
+            self._output(median),
+            self._output(duration_plus),
+            self._output(duration_minus),
+        )
 
     @property
-    def duration(self) -> float:
+    def duration(self) -> ArrayLike:
         """D5-75 duration in seconds."""
         return self._duration
 
     @property
-    def duration_plus_sigma(self) -> float:
+    def duration_plus_sigma(self) -> ArrayLike:
         """D5-75 duration plus one standard deviation in seconds."""
         return self._duration_plus_sigma
 
     @property
-    def duration_minus_sigma(self) -> float:
+    def duration_minus_sigma(self) -> ArrayLike:
         """D5-75 duration minus one standard deviation in seconds."""
         return self._duration_minus_sigma
 
-    def duration_for_energy(self, energy: float) -> tuple[float, float, float]:
+    def duration_for_energy(self, energy: float) -> tuple[ArrayLike, ...]:
         """Calculate duration for specified energy threshold.
 
         Parameters
         ----------
         energy : float
             Energy threshold. For D5-95 use 0.95, for D5-45 use 0.45, etc.
-            Valid range is approximately 0.10 to 0.95.
+            Valid range is approximately 0.10 to 0.95. The same threshold is
+            used for all scenarios.
 
         Returns
         -------
         tuple
-            (median_duration, duration_plus_sigma, duration_minus_sigma) in seconds
+            (median_duration, duration_plus_sigma, duration_minus_sigma) in
+            seconds. Each is a scalar for a scalar scenario, or an array with the
+            scenario shape.
 
         Raises
         ------
@@ -731,6 +838,7 @@ class PinillaRamosEtAl2024(model.Model):
 
         Examples
         --------
+        >>> from pygmm import Scenario
         >>> scenario = Scenario(mag=7.0, dist_rup=100, v_s30=300,
         ...                     event_type='interface', region='Japan')
         >>> model = PinillaRamosEtAl2024(scenario)
@@ -761,13 +869,16 @@ class PinillaRamosEtAl2024(model.Model):
         Sigma is applied in a transformed power space rather than
         lognormally, so the percentiles are reported directly and ``ln_std``
         is left unset.
+
+        The values are floats for a scalar scenario and arrays for a vectorized
+        scenario.
         """
-        dur = float(self.duration)
+        dur = model.as_scalar_or_array(self.duration)
         return Duration(
             duration=dur,
             d_5_75=dur,
-            plus_sigma=float(self.duration_plus_sigma),
-            minus_sigma=float(self.duration_minus_sigma),
+            plus_sigma=model.as_scalar_or_array(self.duration_plus_sigma),
+            minus_sigma=model.as_scalar_or_array(self.duration_minus_sigma),
         )
 
 
@@ -790,9 +901,9 @@ def duration_model(
         Rupture distance in km
     vs30 : array_like
         Time-averaged shear-wave velocity in the top 30 m in m/s
-    region : str
+    region : str or array_like
         Tectonic region ('Japan', 'New Zealand', 'South America', 'Taiwan')
-    eq_type : str
+    eq_type : str or array_like
         Event type ('interface' or 'slab')
     energy : float
         Energy threshold (e.g., 0.75 for D5-75)
@@ -800,22 +911,20 @@ def duration_model(
     Returns
     -------
     tuple
-        (median_duration, duration_plus_sigma, duration_minus_sigma)
+        (median_duration, duration_plus_sigma, duration_minus_sigma). Each is an
+        array with the broadcast shape of the inputs, or shape (1,) if all of the
+        inputs are scalars.
     """
-    from .model import Scenario
+    from ..model import Scenario
 
-    # Convert inputs to arrays
-    mag_arr = np.atleast_1d(mag)
-    rrup_arr = np.atleast_1d(rrup)
-    vs30_arr = np.atleast_1d(vs30)
-
-    # Create scenario and model
+    # Create scenario and model. Scalars are kept as scalars so that the
+    # results are the same as for a scalar scenario.
     scenario = Scenario(
-        mag=mag_arr[0],
-        dist_rup=rrup_arr[0],
-        v_s30=vs30_arr[0],
-        event_type=eq_type,
-        region=region,
+        mag=mag if np.ndim(mag) == 0 else np.asarray(mag),
+        dist_rup=rrup if np.ndim(rrup) == 0 else np.asarray(rrup),
+        v_s30=vs30 if np.ndim(vs30) == 0 else np.asarray(vs30),
+        event_type=eq_type if np.ndim(eq_type) == 0 else np.asarray(eq_type),
+        region=region if np.ndim(region) == 0 else np.asarray(region),
     )
     model_inst = PinillaRamosEtAl2024(scenario)
 
@@ -829,7 +938,11 @@ def duration_model(
         duration, plus_sigma, minus_sigma = model_inst.duration_for_energy(energy)
 
     # Return as arrays to match expected return type
-    return np.array([duration]), np.array([plus_sigma]), np.array([minus_sigma])
+    return (
+        np.atleast_1d(duration),
+        np.atleast_1d(plus_sigma),
+        np.atleast_1d(minus_sigma),
+    )
 
 
 if __name__ == "__main__":
@@ -841,7 +954,7 @@ if __name__ == "__main__":
 
     For example, for D5-45, use 0.45.
     """
-    from .model import Scenario
+    from ..model import Scenario
 
     # Example usage - Interface earthquake in Japan
     scenario = Scenario(

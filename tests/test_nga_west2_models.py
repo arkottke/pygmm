@@ -74,3 +74,11 @@ def test_im_values(model, params, expected, key):
         expected[key],
         rtol=RTOL,
     )
+
+
+@pytest.mark.parametrize("model,params,expected", testdata)
+def test_ln_pga(model, params, expected):
+    m = model(pygmm.model.Scenario(**params))
+    assert np.exp(m.ln_pga) == m.pga
+    if expected.get("pga", None) is not None:
+        np.testing.assert_allclose(np.exp(m.ln_pga), expected["pga"], rtol=RTOL)

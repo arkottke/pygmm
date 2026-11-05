@@ -24,6 +24,9 @@ from typing import Protocol, runtime_checkable
 import numpy as np
 import numpy.typing as npt
 
+#: A scalar value, or an array of values for a vectorized scenario
+FloatOrArray = float | npt.NDArray[np.floating]
+
 
 @dataclass(frozen=True)
 class ResponseSpectrum:
@@ -34,7 +37,8 @@ class ResponseSpectrum:
     periods : np.ndarray
         Oscillator periods [s].
     spec_accels : np.ndarray
-        Pseudo-spectral accelerations [g].
+        Pseudo-spectral accelerations [g]. For a model computed for a
+        vectorized scenario of N earthquakes, the shape is (N, periods).
     damping : float
         Oscillator damping ratio (decimal, e.g. 0.05).
     duration : float, optional
@@ -85,6 +89,9 @@ class Duration:
     they report ``plus_sigma``/``minus_sigma`` directly and leave ``ln_std``
     unset. Collapsing these into one field would misstate one of them.
 
+    The values are floats for a scalar scenario, and arrays with one value per
+    scenario for a model computed for a vectorized scenario.
+
     Attributes
     ----------
     duration : float
@@ -99,13 +106,13 @@ class Duration:
         is not lognormal.
     """
 
-    duration: float
-    d_5_75: float | None = None
-    d_5_95: float | None = None
-    d_20_80: float | None = None
-    ln_std: float | None = None
-    plus_sigma: float | None = None
-    minus_sigma: float | None = None
+    duration: FloatOrArray
+    d_5_75: FloatOrArray | None = None
+    d_5_95: FloatOrArray | None = None
+    d_20_80: FloatOrArray | None = None
+    ln_std: FloatOrArray | None = None
+    plus_sigma: FloatOrArray | None = None
+    minus_sigma: FloatOrArray | None = None
 
 
 @dataclass(frozen=True)

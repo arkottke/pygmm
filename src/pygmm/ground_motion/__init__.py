@@ -25,12 +25,14 @@ that file is absent. Import it directly, which also registers it::
 
 from .abrahamson_bhasin_2020 import AbrahamsonBhasin2020
 from .abrahamson_gregor_addo_2016 import AbrahamsonGregorAddo2016
+from .abrahamson_gulerce_2020 import AbrahamsonGulerce2020
 from .abrahamson_shi_yang_2016 import AbrahamsonShiYang2016
 from .abrahamson_silva_1996 import AbrahamsonSilva1996
 from .abrahamson_silva_kamai_2014 import AbrahamsonSilvaKamai2014
 from .afshari_stewart_2016 import AfshariStewart2016
 from .akkar_sandikkaya_bommer_2014 import AkkarSandikkayaBommer2014
 from .atkinson_boore_2006 import AtkinsonBoore2006
+from .atkinson_macias_2009 import AtkinsonMacias2009
 from .baker_jayaram_2008 import calc_cond_mean_spectrum, calc_correls
 from .boore_stewart_seyhan_atkinson_2014 import BooreStewartSeyhanAtkinson2014
 from .campbell_2003 import Campbell2003
@@ -43,23 +45,29 @@ from .hayden_et_al_2012 import calc_pulse_proportion_hea12
 from .idriss_2014 import Idriss2014
 from .kempton_stewart_2006 import KemptonStewart2006
 from .kishida_2017 import calc_cond_mean_spectrum_vector
+from .kuehn_et_al_2020 import KuehnEtAl2020
 from .macedo_abrahamson_liu_2021 import MacedoAbrahamsonLiu2021
+from .nga_east import NgaEast, NgaEastSeeds
+from .parker_et_al_2020 import ParkerEtAl2020
 from .pezeshk_zandieh_tavakoli_2011 import PezeshkZandiehTavakoli2011
 from .pinilla_ramos_et_al_2023 import PinillaRamosEtAl2023
 from .pinilla_ramos_et_al_2024 import PinillaRamosEtAl2024
 from .rathje_et_al_2005 import calc_period_rea05
 from .rezaeian_et_al_2014 import calc_damping_scaling_rea15
 from .tavakoli_pezeshk_2005 import TavakoliPezeshk05
+from .zhao_et_al_2006 import ZhaoEtAl2006
 
 __all__ = [
     "AbrahamsonBhasin2020",
     "AbrahamsonGregorAddo2016",
+    "AbrahamsonGulerce2020",
     "AbrahamsonShiYang2016",
     "AbrahamsonSilva1996",
     "AbrahamsonSilvaKamai2014",
     "AfshariStewart2016",
     "AkkarSandikkayaBommer2014",
     "AtkinsonBoore2006",
+    "AtkinsonMacias2009",
     "BooreStewartSeyhanAtkinson2014",
     "Campbell2003",
     "CampbellBozorgnia2014",
@@ -69,11 +77,16 @@ __all__ = [
     "GulerceAbrahamson2011",
     "Idriss2014",
     "KemptonStewart2006",
+    "KuehnEtAl2020",
     "MacedoAbrahamsonLiu2021",
+    "NgaEast",
+    "NgaEastSeeds",
+    "ParkerEtAl2020",
     "PezeshkZandiehTavakoli2011",
     "PinillaRamosEtAl2023",
     "PinillaRamosEtAl2024",
     "TavakoliPezeshk05",
+    "ZhaoEtAl2006",
     "calc_cond_mean_spectrum",
     "calc_cond_mean_spectrum_vector",
     "calc_correls",

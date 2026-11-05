@@ -1,14 +1,24 @@
 #!/usr/bin/env python3
 """Tests for Pinilla-Ramos et al. (2024) subduction duration model."""
 
+import functools
+import itertools
 import os
+import warnings
 
 import numpy as np
 import pandas as pd
 import pytest
 
 from pygmm import Scenario
-from pygmm.ground_motion import PinillaRamosEtAl2024
+from pygmm.ground_motion.pinilla_ramos_et_al_2024 import (
+    PinillaRamosEtAl2024,
+    duration_model,
+)
+
+# Vectorized and scalar results can differ in the last bit, because NumPy's
+# SIMD loops may round differently than its scalar functions on some CPUs
+assert_close = functools.partial(np.testing.assert_allclose, rtol=1e-12, atol=0)
 
 
 class TestPinillaRamosEtAl2024:
@@ -382,5 +392,351 @@ class TestPinillaRamosEtAl2024:
             )
 
 
+# Tests of the vectorized model against scalar scenarios
+
+COMBOS = [
+    ("Japan", "interface"),
+    ("New Zealand", "interface"),
+    ("South America", "interface"),
+    ("Japan", "slab"),
+    ("New Zealand", "slab"),
+    ("South America", "slab"),
+    ("Taiwan", "slab"),
+]
+# Slab magnitude scaling changes at 6.0, path scaling at 250 km
+MAGS = [4.5, 5.99, 6.0, 6.01, 7.0, 8.5]
+DISTS = [0.0, 100.0, 249.99, 250.0, 250.01, 300.0]
+V_S30S = [150.0, 760.0, 2000.0]
+# 0.333 is not a supported threshold and uses the closest (0.35)
+ENERGIES = [0.1, 0.333, 0.5, 0.75, 0.95]
+THRESHOLDS = ["D5-10", "D5-50", "D5-75", "D5-95"]
+OUTPUTS = [
+    "d575_median",
+    "d575_sigma",
+    "duration",
+    "duration_plus_sigma",
+    "duration_minus_sigma",
+]
+
+
+def scalar_results(region, event_type, mag, dist_rup, v_s30):
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=mag,
+            dist_rup=dist_rup,
+            v_s30=v_s30,
+            region=region,
+            event_type=event_type,
+        )
+    )
+    results = {key: getattr(m, key) for key in OUTPUTS}
+    for threshold in THRESHOLDS:
+        results[("d5x_median", threshold)] = m.d5x_median(threshold)
+        results[("d5x_sigma", threshold)] = m.d5x_sigma(threshold)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for energy in ENERGIES:
+            results[("duration_for_energy", energy)] = m.duration_for_energy(energy)
+    return results
+
+
+@pytest.fixture(scope="module")
+def grid():
+    rows = [
+        (region, event_type, mag, dist, v_s30)
+        for (region, event_type), mag, dist, v_s30 in itertools.product(
+            COMBOS, MAGS, DISTS, V_S30S
+        )
+    ]
+    region, event_type, mag, dist_rup, v_s30 = (np.array(c) for c in zip(*rows))
+    scenario = Scenario(
+        mag=mag, dist_rup=dist_rup, v_s30=v_s30, region=region, event_type=event_type
+    )
+    expected = [scalar_results(*row) for row in rows]
+    return rows, scenario, expected
+
+
+def vectorized_results(m):
+    results = {key: getattr(m, key) for key in OUTPUTS}
+    for threshold in THRESHOLDS:
+        results[("d5x_median", threshold)] = m.d5x_median(threshold)
+        results[("d5x_sigma", threshold)] = m.d5x_sigma(threshold)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        for energy in ENERGIES:
+            results[("duration_for_energy", energy)] = m.duration_for_energy(energy)
+    return results
+
+
+def test_vectorized_matches_scalar(grid):
+    rows, scenario, expected = grid
+    actual = vectorized_results(PinillaRamosEtAl2024(scenario))
+    for key, value in actual.items():
+        if key[0] == "duration_for_energy":
+            assert isinstance(value, tuple) and len(value) == 3
+            for i in range(3):
+                assert_close(
+                    value[i], np.array([e[key][i] for e in expected]), err_msg=str(key)
+                )
+        else:
+            assert_close(value, np.array([e[key] for e in expected]), err_msg=str(key))
+
+
+def test_vectorized_shapes(grid):
+    rows, scenario, _ = grid
+    m = PinillaRamosEtAl2024(scenario)
+    for key, value in vectorized_results(m).items():
+        if key[0] == "duration_for_energy":
+            for v in value:
+                assert v.shape == (len(rows),), key
+        else:
+            assert value.shape == (len(rows),), key
+
+
+def test_scalar_types_are_unchanged():
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=7.0, dist_rup=100.0, v_s30=400.0, region="Japan", event_type="slab"
+        )
+    )
+    for key, value in vectorized_results(m).items():
+        if key[0] == "duration_for_energy":
+            assert isinstance(value, tuple) and len(value) == 3
+            assert all(type(v) is np.float64 for v in value), key
+        else:
+            assert type(value) is np.float64, key
+
+
+def test_scalars_broadcast_with_arrays():
+    mag = np.array([5.5, 6.5, 7.5])
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=mag,
+            dist_rup=120.0,
+            v_s30=500.0,
+            region=np.array(["Japan", "Taiwan", "New Zealand"]),
+            event_type="slab",
+        )
+    )
+    for key, value in vectorized_results(m).items():
+        values = value if key[0] == "duration_for_energy" else (value,)
+        for v in values:
+            assert v.shape == (3,), key
+    for i, mag_i in enumerate(mag):
+        expected = scalar_results(
+            ["Japan", "Taiwan", "New Zealand"][i], "slab", mag_i, 120.0, 500.0
+        )
+        assert_close(m.duration[i], expected["duration"])
+        assert_close(m.d575_sigma[i], expected["d575_sigma"])
+        assert_close(
+            m.duration_for_energy(0.95)[2][i],
+            expected[("duration_for_energy", 0.95)][2],
+        )
+
+
+def test_values_depending_on_some_inputs_have_scenario_shape():
+    # The standard deviation does not depend on the region, but it has the
+    # broadcast shape of all of the scenario values
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=7.0,
+            dist_rup=100.0,
+            v_s30=400.0,
+            region=np.array(["Japan", "Taiwan"]),
+            event_type="slab",
+        )
+    )
+    assert m.d575_sigma.shape == (2,)
+    assert m.d5x_sigma("D5-95").shape == (2,)
+    assert m.d575_sigma[0] == m.d575_sigma[1]
+    # Broadcast results are writable arrays
+    assert m.d575_sigma.flags.writeable
+
+
+def test_multidimensional_inputs():
+    mag = np.array([[5.5], [6.5], [7.5]])
+    dist_rup = np.array([20.0, 150.0, 260.0, 300.0])
+    event_type = np.array([["interface"], ["slab"], ["slab"]])
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=mag,
+            dist_rup=dist_rup,
+            v_s30=350.0,
+            region="South America",
+            event_type=event_type,
+        )
+    )
+    actual = vectorized_results(m)
+    for i, j in itertools.product(range(3), range(4)):
+        expected = scalar_results(
+            "South America", event_type[i, 0], mag[i, 0], dist_rup[j], 350.0
+        )
+        for key, value in actual.items():
+            if key[0] == "duration_for_energy":
+                for k in range(3):
+                    assert value[k].shape == (3, 4)
+                    assert_close(value[k][i, j], expected[key][k], err_msg=str(key))
+            else:
+                assert value.shape == (3, 4)
+                assert_close(value[i, j], expected[key], err_msg=str(key))
+
+
+def scenario_with(region, event_type):
+    n = max(np.size(region), np.size(event_type))
+    return Scenario(
+        mag=np.full(n, 7.0),
+        dist_rup=100.0,
+        v_s30=400.0,
+        region=region,
+        event_type=event_type,
+    )
+
+
+def test_invalid_interface_taiwan_entries_raise():
+    with pytest.raises(
+        ValueError, match=r"interface earthquakes in Taiwan. \(1 of 3 scenarios\)"
+    ):
+        PinillaRamosEtAl2024(
+            scenario_with(
+                np.array(["Japan", "Taiwan", "Taiwan"]),
+                np.array(["interface", "interface", "slab"]),
+            )
+        )
+
+
+def test_invalid_event_type_entries_raise():
+    # Like a scalar scenario, the invalid value is replaced with the default
+    # (None) with a warning, and then an error is raised
+    with pytest.warns(UserWarning, match="event_type has 1 of 3 values"):
+        with pytest.raises(
+            ValueError,
+            match=r"event_type must be 'interface' or 'slab', got: None "
+            r"\(1 of 3 scenarios\)",
+        ):
+            PinillaRamosEtAl2024(
+                scenario_with("Japan", np.array(["slab", "crustal", "interface"]))
+            )
+
+
+def test_invalid_region_entries_raise():
+    with pytest.warns(UserWarning, match="region has 2 of 3 values"):
+        with pytest.raises(
+            ValueError, match=r"region must be one of .* got: None \(2 of 3 scenarios\)"
+        ):
+            PinillaRamosEtAl2024(
+                scenario_with(np.array(["Japan", "California", "Mars"]), "slab")
+            )
+
+
+def test_invalid_entries_are_reported_for_broadcast_scenarios():
+    # A scalar invalid event type applies to all of the scenarios
+    with pytest.warns(UserWarning):
+        with pytest.raises(ValueError, match=r"got: None \(3 of 3 scenarios\)"):
+            PinillaRamosEtAl2024(scenario_with(np.array(["Japan"] * 3), "crustal"))
+
+
+def test_scalar_error_messages_are_unchanged():
+    with pytest.warns(UserWarning):
+        with pytest.raises(
+            ValueError, match=r"^event_type must be 'interface' or 'slab', got: None$"
+        ):
+            PinillaRamosEtAl2024(scenario_with("Japan", "crustal").copy_with(mag=7.0))
+    with pytest.raises(
+        ValueError, match=r"^No model available for interface earthquakes in Taiwan.$"
+    ):
+        PinillaRamosEtAl2024(scenario_with("Taiwan", "interface").copy_with(mag=7.0))
+
+
+def test_mismatched_lengths_raise():
+    with pytest.raises(ValueError):
+        PinillaRamosEtAl2024(
+            Scenario(
+                mag=np.array([6.0, 7.0]),
+                dist_rup=np.array([10.0, 20.0, 30.0]),
+                v_s30=400.0,
+                region="Japan",
+                event_type="slab",
+            )
+        )
+
+
+@pytest.mark.parametrize("energy", [0.5, 0.75, 0.95])
+def test_duration_model_arrays(grid, energy):
+    rows, scenario, expected = grid
+    actual = duration_model(
+        scenario.mag,
+        scenario.dist_rup,
+        scenario.v_s30,
+        scenario.region,
+        scenario.event_type,
+        energy,
+    )
+    assert len(actual) == 3
+    for i in range(3):
+        assert_close(
+            actual[i],
+            np.array([e[("duration_for_energy", energy)][i] for e in expected]),
+        )
+
+
+@pytest.mark.parametrize("energy", [0.5, 0.75, 0.95])
+def test_duration_model_scalars(energy):
+    actual = duration_model(7.0, 100.0, 400.0, "Japan", "interface", energy)
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=7.0, dist_rup=100.0, v_s30=400.0, region="Japan", event_type="interface"
+        )
+    )
+    expected = m.duration_for_energy(energy)
+    for a, e in zip(actual, expected):
+        assert a.shape == (1,)
+        assert_close(a[0], e)
+
+
+def test_duration_model_broadcasts():
+    median, plus, minus = duration_model(
+        np.array([6.0, 7.0, 8.0]), 100.0, 400.0, "Japan", "slab", 0.95
+    )
+    assert median.shape == plus.shape == minus.shape == (3,)
+    assert np.all(np.diff(median) > 0)
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+@pytest.mark.parametrize(
+    "event_type,region", [("interface", "Japan"), ("slab", "Taiwan")]
+)
+@pytest.mark.parametrize("threshold", ["D5-10", "D5-50", "D5-75", "D5-95"])
+def test_d5x_matches_duration_for_energy(event_type, region, threshold):
+    # d5x_median and d5x_sigma use the conditional model, like duration_for_energy
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=np.array([5.5, 7.0, 8.0]),
+            dist_rup=np.array([20.0, 100.0, 300.0]),
+            v_s30=np.array([200.0, 400.0, 1000.0]),
+            region=region,
+            event_type=event_type,
+        )
+    )
+    energy = int(threshold[3:]) / 100
+    median, plus, _ = m.duration_for_energy(energy)
+    n = 0.15 if event_type == "interface" else 0.25
+    assert_close(m.d5x_median(threshold), median)
+    np.testing.assert_allclose(
+        (m.d5x_median(threshold) ** n + m.d5x_sigma(threshold)) ** (1 / n),
+        plus,
+        rtol=1e-12,
+    )
+
+
+@pytest.mark.parametrize("threshold", ["D5-99", "D5-12", "D5-", "5-95", 95])
+def test_d5x_unsupported_thresholds_raise(threshold):
+    m = PinillaRamosEtAl2024(
+        Scenario(
+            mag=7.0, dist_rup=100.0, v_s30=400.0, region="Japan", event_type="interface"
+        )
+    )
+    with pytest.raises(ValueError, match="Unsupported energy threshold"):
+        m.d5x_median(threshold)

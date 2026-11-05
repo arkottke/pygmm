@@ -62,14 +62,23 @@ CONSTRUCTOR_KWDS = {
 
 #: Models that cannot currently be constructed, with the reason. Recorded as
 #: xfail rather than skipped so the breakage stays visible.
-KNOWN_BROKEN = {
-    "HermkesKuehnRiggelsen2014": (
-        "data/hermkes_kuehn_riggelsen_2014.npz holds pickled objects, which "
-        "numpy has refused to load without allow_pickle=True since 1.16.3. "
-        "Pre-existing; the model's own test is marked slow and deselected by "
-        "default, so this has been invisible."
-    ),
-}
+KNOWN_BROKEN: dict[str, str] = {}
+
+
+def _data_missing(info):
+    """Reason a model's data file is not available, or None if it is.
+
+    The Hermkes et al. (2014) data (164 MB) is stored with Git LFS and is
+    downloaded on first import; a clone without Git LFS, or an install without
+    network access, has only the pointer file.
+    """
+    if info.key == "HermkesKuehnRiggelsen2014":
+        import zipfile
+
+        hkr = pygmm.ground_motion.hermkes_kuehn_riggelsen_2014
+        if not zipfile.is_zipfile(hkr.fname_data):
+            return f"model data not available at {hkr.fname_data}"
+    return None
 
 
 def _build(info):
@@ -148,6 +157,9 @@ def test_scenario_models_construct_and_honour_provides(info):
     """
     if info.key in KNOWN_BROKEN:
         pytest.xfail(KNOWN_BROKEN[info.key])
+    reason = _data_missing(info)
+    if reason:
+        pytest.skip(reason)
 
     obj = _build(info)
 
@@ -157,6 +169,35 @@ def test_scenario_models_construct_and_honour_provides(info):
             value = getattr(obj, attr)
             assert value is not None, f"{cap!r}: {attr!r} is None"
             assert _all_finite(value), f"{cap!r}: {attr!r} is not finite"
+
+
+@pytest.mark.parametrize(
+    "info",
+    [
+        i
+        for i in ALL_MODELS
+        if "pga" in i.provides and i.input == "scenario" and i.key not in KNOWN_BROKEN
+    ],
+    ids=lambda i: i.key,
+)
+def test_ln_branches_are_consistent(info):
+    """Every ground motion model gives its logic-tree branches.
+
+    Models without branches give a single branch with a weight of 1, and the
+    weights of models with branches (the nshmp-lib models) sum to 1.
+    """
+    reason = _data_missing(info)
+    if reason:
+        pytest.skip(reason)
+
+    obj = _build(info)
+    branches = obj.ln_branches("pga")
+    assert np.isclose(sum(w for w, _, _ in branches), 1.0)
+    for _, ln_mean, ln_std in branches:
+        assert np.shape(ln_mean) == np.shape(obj.ln_pga)
+        assert np.all(np.isfinite(ln_mean))
+        if ln_std is not None:
+            assert np.all(np.isfinite(ln_std))
 
 
 @pytest.mark.parametrize(

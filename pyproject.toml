@@ -103,6 +103,11 @@ Documentation = "https://pygmm.readthedocs.io"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.exclude-package-data]
+# The Hermkes et al. (2014) model data (164 MB, Git LFS) is downloaded when the
+# model is first imported
+pygmm = ["data/*.npz"]
+
 [tool.setuptools_scm]
 write_to = "src/pygmm/_version.py"
 
