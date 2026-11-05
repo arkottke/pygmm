@@ -31,6 +31,7 @@ test = [
     "coverage[toml]",
     "pytest",
     "pytest-cov",
+    "pyrvt",
     "pandas",
     "matplotlib",
     "nbformat",
@@ -78,6 +79,7 @@ dev = [
     "nbformat",
     "nbclient",
     "ipykernel",
+    "pyrvt>=0.8.1",
 ]
 
 # ---------------------------------------------------------------------------
