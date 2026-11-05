@@ -25,13 +25,13 @@ dependencies = [
 # fallback is used without it) and pyrotd is required by HaleAbrahamson19.
 slope = [
     "numba>=0.61",
-    "pyrotd>=0.6.1",
+    "pyrotd>=0.7.0",
 ]
 test = [
     "coverage[toml]",
     "pytest",
     "pytest-cov",
-    "pyrvt",
+    "pyrvt>=0.9.0",
     "pandas",
     "matplotlib",
     "nbformat",
@@ -71,7 +71,7 @@ dev = [
     "numba",
     "pandas-stubs",
     "scipy-stubs",
-    "pyrotd>=0.6.1",
+    "pyrotd>=0.7.0",
     "pytest",
     "pytest-cov",
     "ruff",
@@ -79,7 +79,7 @@ dev = [
     "nbformat",
     "nbclient",
     "ipykernel",
-    "pyrvt>=0.8.1",
+    "pyrvt>=0.9.0",
 ]
 
 # ---------------------------------------------------------------------------
