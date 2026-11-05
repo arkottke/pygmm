@@ -114,7 +114,7 @@ def epistemic_epsilon(mag: ArrayLike, dist_jb: ArrayLike) -> np.ndarray:
     mag : float or array_like
         moment magnitude
     dist_jb : float or array_like
-        Joyner-Boore distance (km)
+        Joyner-Boore distance [km]
 
     Returns
     -------
@@ -146,7 +146,7 @@ def epistemic_ln_factor(mag: ArrayLike, dist_jb: ArrayLike) -> np.ndarray:
     mag : float or array_like
         moment magnitude
     dist_jb : float or array_like
-        Joyner-Boore distance (km)
+        Joyner-Boore distance [km]
 
     Returns
     -------
@@ -176,7 +176,7 @@ def epistemic_branches(
         moment magnitude, with a trailing axis for the periods (see
         :func:`pygmm.model.as_column`)
     dist_jb : array_like
-        Joyner-Boore distance (km), with a trailing axis for the periods
+        Joyner-Boore distance [km], with a trailing axis for the periods
 
     Returns
     -------
@@ -219,7 +219,7 @@ def mechanism_from_rake(rake: ArrayLike) -> np.ndarray:
     Parameters
     ----------
     rake : float or array_like
-        rake angle (deg)
+        rake angle [deg]
 
     Returns
     -------
@@ -252,13 +252,13 @@ def basin_scale(
     Parameters
     ----------
     periods : array_like
-        spectral periods (s), with 0 for PGA and -1 for PGV
+        spectral periods [s], with 0 for PGA and -1 for PGV
     depth : float or array_like
-        basin depth (km)
+        basin depth [km]
     upper : float
-        depth with a scale of 0 (km)
+        depth with a scale of 0 [km]
     lower : float
-        depth with a scale of 1 (km)
+        depth with a scale of 1 [km]
 
     Returns
     -------

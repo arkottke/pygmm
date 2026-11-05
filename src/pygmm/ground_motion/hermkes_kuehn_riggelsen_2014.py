@@ -126,11 +126,13 @@ class HermkesKuehnRiggelsen2014(model.GroundMotionModel):
     def __init__(self, scenario: model.Scenario, ims=None):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         super().__init__(scenario, ims)
 

@@ -31,13 +31,13 @@ def _load_ak_adjustment(periods: np.ndarray) -> np.ndarray:
 
 @register(tectonic="subduction")
 class AbrahamsonGulerce2020(model.GroundMotionModel):
-    """Abrahamson and Gülerce (2020) ground motion model.
+    r"""Abrahamson and Gülerce (2020) ground motion model.
 
     Regionalized NGA-Subduction ground motion model for subduction interface
     and intraslab events, developed as part of the PEER NGA-Subduction project.
     The model provides the RotD50 average horizontal component.
 
-    References:
+    The model is described in:
 
     * Abrahamson, N., and Gülerce, Z. (2020). Regionalized ground-motion models
       for subduction earthquakes based on the NGA-SUB database. PEER Report No.
@@ -61,14 +61,14 @@ class AbrahamsonGulerce2020(model.GroundMotionModel):
     * The 0.01 s coefficients are used for PGA.
     * There is no forearc-backarc term and no aftershock term.
     * ``depth_tor`` is only used for intraslab events (the depth term uses
-      :math:`\\min(Z_{tor}, 200) - 50`).
+      :math:`\min(Z_{tor}, 200) - 50`).
     * If ``depth_2_5`` is given, the Cascadia basin term
-      (:math:`a_{39} \\ln Z'`) is used for all regions and variants, but only
+      (:math:`a_{39} \ln Z'`) is used for all regions and variants, but only
       when :math:`Z_{2.5}` is greater than the reference value computed from
       :math:`V_{s30}` (the term only amplifies). With ``basin=True`` (the
-      ``*_BASIN`` variants), :math:`\\ln Z'` is also multiplied by the USGS
+      ``*_BASIN`` variants), :math:`\ln Z'` is also multiplied by the USGS
       deep-basin scale factor, which is 0 for periods of 0.5 s or less and for
-      :math:`Z_{2.5} \\le 1` km, increases linearly from 0 at 1 km to 1 at 3
+      :math:`Z_{2.5} \le 1` km, increases linearly from 0 at 1 km to 1 at 3
       km, and is multiplied by 0.585 at 0.75 s.
     * With ``adjusted=True`` (the ``*_ADJUSTED`` variants), the regional
       adjustment to the constant (``cAk`` for Alaska and ``cCasc`` for
@@ -78,9 +78,9 @@ class AbrahamsonGulerce2020(model.GroundMotionModel):
       USGS Alaska data adjustment for the NGA-Subduction models is added to the
       mean (and the reference PGA) of interface events. It has no effect for
       intraslab events.
-    * The standard deviation uses the linear :math:`\\phi_1` model with
-      :math:`\\tau = 0.47` and the nonlinear site effects on :math:`\\phi` and
-      :math:`\\tau`.
+    * The standard deviation uses the linear :math:`\phi_1` model with
+      :math:`\tau = 0.47` and the nonlinear site effects on :math:`\phi` and
+      :math:`\tau`.
 
     The nshmp-lib Gmm ids map to the region and options as follows (the event
     type is "interface" for ``*_INTERFACE*`` and "intraslab" for
@@ -103,20 +103,20 @@ class AbrahamsonGulerce2020(model.GroundMotionModel):
     =============================================== =========== ==============
 
     With ``epistemic=True`` (default), the epistemic uncertainty of the median
-    is represented by three branches with means :math:`\\mu - 1.645
-    \\varepsilon`, :math:`\\mu`, and :math:`\\mu + 1.645 \\varepsilon` (the 5th,
+    is represented by three branches with means :math:`\mu - 1.645
+    \varepsilon`, :math:`\mu`, and :math:`\mu + 1.645 \varepsilon` (the 5th,
     50th, and 95th percentiles) and weights of 0.185, 0.63, and 0.185.
-    :math:`\\varepsilon` is 0.21 for Alaska, 0.27 for Cascadia, and, for the
-    global and prvi models, 0.26 plus :math:`0.15 \\ln(T / 3)` for periods
+    :math:`\varepsilon` is 0.21 for Alaska, 0.27 for Cascadia, and, for the
+    global and prvi models, 0.26 plus :math:`0.15 \ln(T / 3)` for periods
     longer than 3 s (N. Abrahamson, personal communication to the USGS,
     2023). As in nshmp-lib, the branches are collapsed to a single median,
-    :math:`\\ln \\sum_i w_i \\exp(\\mu_i)`, and the standard deviation, which is
+    :math:`\ln \sum_i w_i \exp(\mu_i)`, and the standard deviation, which is
     the same for all branches. The collapsed values are not suitable for
     hazard calculations, which should sum the weighted exceedance
     probabilities of the branches, as nshmp-lib does; the branches are given
     by :meth:`~pygmm.model.GroundMotionModel.ln_branches`. With
     ``epistemic=False``, the central branch
-    (:math:`\\mu`) is used.
+    (:math:`\mu`) is used.
 
     The model is vectorized. Each scenario value (``mag``, ``dist_rup``,
     ``depth_tor``, ``depth_2_5``, ``v_s30``, ``event_type``, and ``region``) can
@@ -245,19 +245,21 @@ class AbrahamsonGulerce2020(model.GroundMotionModel):
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            basin (bool, optional): if *True*, scale the basin term with the
-                USGS deep-basin scale factor.
-            adjusted (bool, optional): if *True*, add the Alaska or Cascadia
-                adjustment to the constant.
-            ak_adjusted (bool, optional): if *True*, add the USGS Alaska
-                adjustment for interface events.
-            epistemic (bool, optional): if *True* (default), include the
-                epistemic branches of the median.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        basin : bool, optional
+            if *True*, scale the basin term with the USGS deep-basin scale factor.
+        adjusted : bool, optional
+            if *True*, add the Alaska or Cascadia adjustment to the constant.
+        ak_adjusted : bool, optional
+            if *True*, add the USGS Alaska adjustment for interface events.
+        epistemic : bool, optional
+            if *True* (default), include the epistemic branches of the median.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         super().__init__(scenario, ims)
         self._basin = bool(basin)
@@ -419,17 +421,17 @@ class AbrahamsonGulerce2020(model.GroundMotionModel):
         is_slab : array_like
             if the event is an intraslab event
         pga_rock : float or array_like
-            peak ground acceleration (g) at the reference condition
+            peak ground acceleration [g] at the reference condition
             (V_s30 = 1000 m/sec). Only used if V_s30 < V_lin.
         mag : array_like
             moment magnitude
         dist_rup : array_like
-            closest distance to the rupture (km)
+            closest distance to the rupture [km]
         depth_tor : array_like
-            depth to the top of the rupture (km), only used for intraslab
+            depth to the top of the rupture [km], only used for intraslab
             events
         v_s30 : float or array_like
-            time-averaged shear-wave velocity over the top 30 m (m/sec)
+            time-averaged shear-wave velocity over the top 30 m [m/sec]
 
         Returns
         -------

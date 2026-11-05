@@ -91,11 +91,13 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
     def __init__(self, scenario: model.Scenario, ims=None):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         super().__init__(scenario, ims)
 
@@ -143,7 +145,7 @@ class AkkarSandikkayaBommer2014(model.GroundMotionModel):
         c : :class:`numpy.recarray`
             coefficients for the periods to compute.
         dist : array_like
-            distance (km) with a trailing axis for the periods.
+            distance [km] with a trailing axis for the periods.
 
         Returns
         -------

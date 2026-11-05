@@ -180,7 +180,7 @@ def z_site_scale(depth_sed):
     Parameters
     ----------
     depth_sed : array_like
-        sediment thickness (km)
+        sediment thickness [km]
 
     Returns
     -------
@@ -203,8 +203,8 @@ def cpa_ln_ratio(depth_sed, mag, dist_jb, indices=None):
     Parameters
     ----------
     depth_sed, mag, dist_jb : array_like
-        sediment thickness (km), moment magnitude, and Joyner-Boore distance
-        (km). NaN sediment thickness is used as 0.
+        sediment thickness [km], moment magnitude, and Joyner-Boore distance
+        [km]. NaN sediment thickness is used as 0.
     indices : array_like, optional
         coefficient rows (periods) to compute; all periods if *None*
 
@@ -252,7 +252,7 @@ def median_adjustment(c, v_s30, z_scale):
     c : :class:`pygmm.model.Coefficients`
         coefficients of the computed periods
     v_s30 : array_like
-        :math:`V_{S30}` (m/s) with a trailing axis for the periods
+        :math:`V_{S30}` [m/s] with a trailing axis for the periods
     z_scale : array_like
         coastal plain taper with a trailing axis for the periods
 
@@ -276,7 +276,7 @@ SiteTerms = collections.namedtuple(
 
 
 def site_terms(c, periods, v_s30, version):
-    """Site amplification terms that do not depend on the rock PGA.
+    r"""Site amplification terms that do not depend on the rock PGA.
 
     The Stewart et al. (2020) linear and Hashash et al. (2020) nonlinear site
     amplification model as implemented in nshmp-lib (``NgaEast.SiteAmp_2018``,
@@ -289,7 +289,7 @@ def site_terms(c, periods, v_s30, version):
     periods : :class:`np.ndarray`
         computed periods (s; -1 for PGV and 0 for PGA)
     v_s30 : array_like
-        :math:`V_{S30}` (m/s) with a trailing axis for the periods
+        :math:`V_{S30}` [m/s] with a trailing axis for the periods
     version : str
         model version: "2018", "2023", or "2026"
 
@@ -297,8 +297,8 @@ def site_terms(c, periods, v_s30, version):
     -------
     terms : :class:`SiteTerms`
         linear amplification and its variance (ln units), nonlinear amplification
-        and its standard deviation per unit of :math:`\\ln((PGA_r + f_3) / f_3)`,
-        and if :math:`V_{S30} \\ge` 3000 m/s, for which there is no amplification
+        and its standard deviation per unit of :math:`\ln((PGA_r + f_3) / f_3)`,
+        and if :math:`V_{S30} \ge` 3000 m/s, for which there is no amplification
     """
     opts = SITE_AMP_OPTIONS[version]
     v_min = 150.0
@@ -384,14 +384,14 @@ def site_terms(c, periods, v_s30, version):
 
 
 def rock_pga_term(f_3, pga_rock, version):
-    """Rock PGA term of the nonlinear site amplification.
+    r"""Rock PGA term of the nonlinear site amplification.
 
     Parameters
     ----------
     f_3 : :class:`np.ndarray`
         f3 coefficient of the computed periods
     pga_rock : array_like
-        PGA (g) for :math:`V_{S30}` = 3000 m/s with a trailing axis for the periods
+        PGA [g] for :math:`V_{S30}` = 3000 m/s with a trailing axis for the periods
     version : str
         model version: "2018", "2023", or "2026". The 2026 version caps the rock
         PGA at 1 g.
@@ -399,7 +399,7 @@ def rock_pga_term(f_3, pga_rock, version):
     Returns
     -------
     ln_ref : :class:`np.ndarray`
-        :math:`\\ln((PGA_r + f_3) / f_3)`
+        :math:`\ln((PGA_r + f_3) / f_3)`
     """
     if SITE_AMP_OPTIONS[version]["cap_pga_rock"]:
         pga_rock = np.minimum(pga_rock, 1.0)
@@ -407,7 +407,7 @@ def rock_pga_term(f_3, pga_rock, version):
 
 
 def site_amp(terms, ln_ref, with_sigma=True):
-    """Site amplification and its standard deviation (ln units).
+    r"""Site amplification and its standard deviation (ln units).
 
     Parameters
     ----------
@@ -421,7 +421,7 @@ def site_amp(terms, ln_ref, with_sigma=True):
     Returns
     -------
     f_s : :class:`np.ndarray`
-        site amplification, which is 0 for :math:`V_{S30} \\ge` 3000 m/s
+        site amplification, which is 0 for :math:`V_{S30} \ge` 3000 m/s
     sigma_s : :class:`np.ndarray` or None
         standard deviation of the site amplification (*None* if not
         `with_sigma`)
@@ -435,12 +435,12 @@ def site_amp(terms, ln_ref, with_sigma=True):
 
 
 def site_amp_factor(f_s, sigma_s, z_score):
-    """Linear site amplification factor of the three-point distribution.
+    r"""Linear site amplification factor of the three-point distribution.
 
     nshmp-lib (``NgaEast.SiteTerm.apply``) applies the site amplification as
-    :math:`\\ln(0.185 e^{\\mu + f_s + z \\sigma_s} + 0.63 e^{\\mu + f_s} + 0.185
-    e^{\\mu + f_s - z \\sigma_s})`, or :math:`\\mu` if :math:`f_s` = 0. This
-    returns the ratio of the linear ground motion to :math:`e^\\mu`.
+    :math:`\ln(0.185 e^{\mu + f_s + z \sigma_s} + 0.63 e^{\mu + f_s} + 0.185
+    e^{\mu + f_s - z \sigma_s})`, or :math:`\mu` if :math:`f_s` = 0. This
+    returns the ratio of the linear ground motion to :math:`e^\mu`.
 
     Parameters
     ----------
@@ -482,7 +482,7 @@ def site_amplified_resp(
     ln_resp_rock : array_like
         natural log of the hard-rock median with periods along the last axis
     ln_pga_rock : array_like
-        natural log of the hard-rock PGA (g) with the scenario shape (no period
+        natural log of the hard-rock PGA [g] with the scenario shape (no period
         axis)
     mu_adj : array_like, optional
         adjustment of the hard-rock median (:func:`median_adjustment`)
@@ -538,17 +538,17 @@ def sigma_epri(c, mag):
 
 
 def sigma_panel(c, mag, v_s30):
-    """Panel aleatory standard deviation (ln units).
+    r"""Panel aleatory standard deviation (ln units).
 
-    Global :math:`\\tau` and :math:`\\phi_{SS}` models, central branch, with the
-    Stewart et al. (2019) :math:`\\phi_{S2S}` model.
+    Global :math:`\tau` and :math:`\phi_{SS}` models, central branch, with the
+    Stewart et al. (2019) :math:`\phi_{S2S}` model.
 
     Parameters
     ----------
     c : :class:`pygmm.model.Coefficients`
         coefficients of the computed periods
     mag, v_s30 : array_like
-        moment magnitude and :math:`V_{S30}` (m/s) with trailing axes for the
+        moment magnitude and :math:`V_{S30}` [m/s] with trailing axes for the
         periods
     """
     # tau (Equation 5-1)
@@ -590,7 +590,7 @@ def combined_sigma(c, mag, v_s30, sum_mean_wts=1.0):
     c : :class:`pygmm.model.Coefficients`
         coefficients of the computed periods
     mag, v_s30 : array_like
-        moment magnitude and :math:`V_{S30}` (m/s) with trailing axes for the
+        moment magnitude and :math:`V_{S30}` [m/s] with trailing axes for the
         periods
     sum_mean_wts : array_like
         sum of the weights of the median models (1 up to round-off)
@@ -838,7 +838,7 @@ class NgaEast(_NgaEastBase):
     scenario : :class:`pygmm.model.Scenario`
         earthquake scenario. ``dist_jb`` is required for ``cpa=True`` if
         a ``depth_sed`` is greater than 0. ``depth_sed`` is the thickness of the
-        Atlantic and Gulf coastal plain sediments (km); *None* or NaN is a site
+        Atlantic and Gulf coastal plain sediments [km]; *None* or NaN is a site
         off the coastal plain.
     version : str, optional
         model version: "2018", "2023", or "2026" (default)
@@ -1114,7 +1114,7 @@ def pezeshk_ln_mean(c, mag, dist):
     c : :class:`pygmm.model.Coefficients`
         coefficients of the computed periods
     mag, dist : array_like
-        moment magnitude and distance (km), with trailing axes for the periods
+        moment magnitude and distance [km], with trailing axes for the periods
 
     Returns
     -------
@@ -1226,7 +1226,7 @@ class NgaEastSeeds(_NgaEastBase):
     scenario : :class:`pygmm.model.Scenario`
         earthquake scenario. ``dist_jb`` is required (for SP16 and the coastal
         plain amplification). ``depth_sed`` is the thickness of the Atlantic and
-        Gulf coastal plain sediments (km); *None* or NaN is a site off the
+        Gulf coastal plain sediments [km]; *None* or NaN is a site off the
         coastal plain.
     version : str, optional
         model version: "2018", "2023", or "2026" (default)
@@ -1394,7 +1394,7 @@ class NgaEastSeeds(_NgaEastBase):
         ln_resp_rock : :class:`np.ndarray`
             natural log of the hard-rock median with periods along the last axis
         ln_pga_rock : :class:`np.ndarray`
-            natural log of the hard-rock PGA (g) with the scenario shape
+            natural log of the hard-rock PGA [g] with the scenario shape
         """
         if seed in SEED_TABLE_IDS:
             index, frac_r, frac_m = position

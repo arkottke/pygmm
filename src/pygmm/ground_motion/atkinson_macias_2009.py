@@ -79,9 +79,9 @@ def deep_basin_term(
     Parameters
     ----------
     periods : array_like
-        spectral periods (s), with 0 for PGA
+        spectral periods [s], with 0 for PGA
     depth_2_5 : float or array_like
-        depth to the 2.5 km/sec shear-wave velocity horizon (km), with a
+        depth to the 2.5 km/sec shear-wave velocity horizon [km], with a
         trailing axis for the periods
     m9 : bool, optional
         apply the Seattle M9 adjustment (default *False*)
@@ -131,7 +131,7 @@ def interpolate_periods(periods, interpolated: dict, calc) -> tuple:
     Parameters
     ----------
     periods : sequence of float
-        target periods (s)
+        target periods [s]
     interpolated : dict
         bounding periods ``(lo, hi)`` of the interpolated periods
     calc : callable
@@ -198,24 +198,24 @@ def conditional_pgv(
     Parameters
     ----------
     periods : array_like
-        spectral periods (s) of the model, in increasing order
+        spectral periods [s] of the model, in increasing order
     ln_resp : array_like
-        natural log of the spectral accelerations (g), with the periods along
+        natural log of the spectral accelerations [g], with the periods along
         the last axis
     ln_std : array_like
         logarithmic standard deviations of the spectral accelerations
     mag : float or array_like
         moment magnitude, with a trailing axis of length one
     dist_rup : float or array_like
-        rupture distance (km), with a trailing axis of length one
+        rupture distance [km], with a trailing axis of length one
     v_s30 : float or array_like
-        time-averaged shear-wave velocity in the top 30 m (m/sec), with a
+        time-averaged shear-wave velocity in the top 30 m [m/sec], with a
         trailing axis of length one
 
     Returns
     -------
     ln_pgv : :class:`np.ndarray`
-        natural log of the PGV (cm/sec), with a trailing axis of length one
+        natural log of the PGV [cm/sec], with a trailing axis of length one
     ln_std_pgv : :class:`np.ndarray`
         logarithmic standard deviation of the PGV
     """
@@ -356,7 +356,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
       ``BA08.csv``) at the same period, with the PGA of the model at the
       reference site as the reference PGA of the nonlinear term.
     * nshmp-lib passes the natural log of the reference PGA, instead of the
-      PGA (g), to the BA08 site term (``lnPgaRock``), so that the nonlinear
+      PGA [g], to the BA08 site term (``lnPgaRock``), so that the nonlinear
       term is always that of a weak-motion reference PGA (0.03 g or less),
       :math:`b_{nl} \ln(0.06 / 0.1)`. ``site_fix=True`` (the ``_SITE_FIX``
       variants, added in nshmp-lib in 2025) uses the PGA.
@@ -367,7 +367,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
       (linearly in period) between 0.01 and 0.05 s, 0.05 and 0.1 s, 0.1 and
       0.2 s, 0.2 and 0.3 s, and 1.0 and 2.0 s (``InterpolatedGmm``). 7.5 s is
       used for the 0.13 Hz values (7.7 s in the NSHM Fortran code).
-    * PGV (cm/sec) is computed with the Abrahamson and Bhasin (2020)
+    * PGV [cm/sec] is computed with the Abrahamson and Bhasin (2020)
       conditional model from the response spectrum of the model
       (:func:`conditional_pgv`).
     * The standard deviation is the total standard deviation of the model
@@ -400,7 +400,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
     array, and the arrays are broadcast against each other. For a scalar
     scenario, the response and standard deviation have one value per period,
     as in other models. For arrays of N scenarios, they have shape (N,
-    periods), so, for example, ``pga`` has shape (N,). ``depth_2_5`` (km) is
+    periods), so, for example, ``pga`` has shape (N,). ``depth_2_5`` [km] is
     only used with ``basin=True``, and can be *None* (or *NaN* for some
     scenarios) for no basin term.
 
@@ -419,7 +419,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
         s; the ``_M9`` variants). It requires ``basin=True``. Default is
         *False*.
     site_fix : bool, optional
-        if *True*, pass the reference PGA (g), instead of its natural log, to
+        if *True*, pass the reference PGA [g], instead of its natural log, to
         the BA08 nonlinear site term (the ``_SITE_FIX`` variants). Default is
         *False*, as in ``AM_09_INTERFACE`` and ``AM_09_INTERFACE_BASIN``.
     ims : str or sequence of str, optional
@@ -519,7 +519,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
 
     @property
     def site_fix(self) -> bool:
-        """If the reference PGA (g) is used by the nonlinear site term."""
+        """If the reference PGA [g] is used by the nonlinear site term."""
         return self._site_fix
 
     def _scenario_values(self) -> dict:
@@ -543,7 +543,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
 
     @classmethod
     def _ln_mean_ref(cls, c, mag, dist_rup) -> np.ndarray:
-        """Natural log of the reference site response (g)."""
+        """Natural log of the reference site response [g]."""
         h = (mag * mag) - (3.1 * mag) - 14.55
         d_m = mag - 8.0
         r = np.sqrt(dist_rup * dist_rup + h * h)
@@ -558,11 +558,11 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
         Parameters
         ----------
         periods : array_like
-            spectral periods (s), with 0 for PGA
+            spectral periods [s], with 0 for PGA
         pga_ref : float or array_like
-            reference PGA (g) of the nonlinear term
+            reference PGA [g] of the nonlinear term
         v_s30 : float or array_like
-            time-averaged shear-wave velocity in the top 30 m (m/sec)
+            time-averaged shear-wave velocity in the top 30 m [m/sec]
 
         Returns
         -------
@@ -613,7 +613,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
         Parameters
         ----------
         periods : array_like
-            periods (s) with coefficients, with 0 for PGA
+            periods [s] with coefficients, with 0 for PGA
         v : dict
             ``mag``, ``dist_rup``, ``v_s30``, and ``depth_2_5`` with a
             trailing axis for the periods
@@ -623,7 +623,7 @@ class AtkinsonMacias2009(_NshmpSubductionBase):
         Returns
         -------
         ln_resp : :class:`np.ndarray`
-            natural log of the response (g)
+            natural log of the response [g]
         ln_std : :class:`np.ndarray`
             logarithmic standard deviation
         """

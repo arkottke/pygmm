@@ -53,7 +53,7 @@ def _load_epistemic():
 
 @register(tectonic="subduction")
 class KuehnEtAl2020(model.GroundMotionModel):
-    """Kuehn et al. (2020) ground motion model.
+    r"""Kuehn et al. (2020) ground motion model.
 
     Partially non-ergodic NGA-Subduction ground motion model for subduction
     interface and intraslab events (KBCG20), with the global model and the
@@ -74,36 +74,36 @@ class KuehnEtAl2020(model.GroundMotionModel):
     * The magnitude break, :math:`M_b`, is 7.9 (interface) and 7.6
       (intraslab) for the global and PRVI models, 8.0 and 7.2 for Cascadia, and
       8.6 and 7.2 for Alaska. The reference depths of the depth term are 15 km
-      (interface) and 50 km (intraslab), and :math:`\\theta_{10} = 0`.
-    * The regional models use the regional constant (:math:`\\theta_1`), the
-      regional :math:`V_{s30}` scaling (:math:`\\theta_7`), and the regional
+      (interface) and 50 km (intraslab), and :math:`\theta_{10} = 0`.
+    * The regional models use the regional constant (:math:`\theta_1`), the
+      regional :math:`V_{s30}` scaling (:math:`\theta_7`), and the regional
       anelastic attenuation coefficient ``theta_6_2_reg`` (forearc and backarc
-      sites are not distinguished). The PRVI model uses :math:`\\theta_1` and
-      :math:`\\theta_7` from ``KBCG20_PRVI.csv`` with the global
-      :math:`\\theta_6`.
+      sites are not distinguished). The PRVI model uses :math:`\theta_1` and
+      :math:`\theta_7` from ``KBCG20_PRVI.csv`` with the global
+      :math:`\theta_6`.
     * Spectral accelerations at periods of 0.1 s or less are not less than PGA.
     * If the basin depth (``depth_2_5``) is given, the Cascadia basin term,
-      :math:`\\min(\\theta_{11} + \\theta_{12} \\Delta \\ln Z_{2.5},
-      \\theta_{11,S})`, is used for all regions (the term is limited by the
-      Seattle basin mean residual, :math:`\\theta_{11,S}`). Without
+      :math:`\min(\theta_{11} + \theta_{12} \Delta \ln Z_{2.5},
+      \theta_{11,S})`, is used for all regions (the term is limited by the
+      Seattle basin mean residual, :math:`\theta_{11,S}`). Without
       ``depth_2_5`` (*None* or *NaN*), there is no basin term.
-    * The standard deviation is :math:`\\sqrt{\\phi^2 + \\tau^2}` with the
+    * The standard deviation is :math:`\sqrt{\phi^2 + \tau^2}` with the
       Campbell and Bozorgnia (2014) adjustment for nonlinear site
-      amplification, which uses the coefficient :math:`\\rho` and
-      :math:`\\phi_{\\ln AF} = 0.3`.
+      amplification, which uses the coefficient :math:`\rho` and
+      :math:`\phi_{\ln AF} = 0.3`.
 
     The options select the nshmp-lib variants (``Gmm`` ids). Each option only
     applies to the regions and event types for which nshmp-lib has the
     variant, and has no effect on the other scenarios:
 
     * ``basin=True``: the USGS basin depth and period scaling of the basin term
-      (zero for periods of 0.5 s or less and for :math:`Z_{2.5} \\le` 1 km,
+      (zero for periods of 0.5 s or less and for :math:`Z_{2.5} \le` 1 km,
       linear to one at 3 km, times 0.585 at 0.75 s). Cascadia only.
     * ``seattle_basin=True``: the basin term is the Seattle basin mean
-      residual, :math:`\\theta_{11,S}`, for sites with a basin depth. Cascadia
+      residual, :math:`\theta_{11,S}`, for sites with a basin depth. Cascadia
       only.
     * ``m9=True``: with ``seattle_basin=True``, the basin term is
-      :math:`\\ln 2` for periods of 2 s and longer and :math:`Z_{2.5}` > 6 km
+      :math:`\ln 2` for periods of 2 s and longer and :math:`Z_{2.5}` > 6 km
       (USGS adjustment based on M9 simulations). Cascadia interface events
       only.
     * ``ak_adjusted=True``: the USGS Alaska data adjustment of the global
@@ -133,12 +133,12 @@ class KuehnEtAl2020(model.GroundMotionModel):
     ================================================ ==========================
 
     The epistemic uncertainty of the median is represented as in nshmp-lib by
-    three branches with means :math:`\\mu - 1.645 \\psi`, :math:`\\mu`, and
-    :math:`\\mu + 1.645 \\psi` and weights of 0.185, 0.63, and 0.185, where
-    :math:`\\psi` is the standard deviation of the median from the tables of
+    three branches with means :math:`\mu - 1.645 \psi`, :math:`\mu`, and
+    :math:`\mu + 1.645 \psi` and weights of 0.185, 0.63, and 0.185, where
+    :math:`\psi` is the standard deviation of the median from the tables of
     Kuehn et al. (global, Cascadia, or Alaska; PRVI uses the global tables).
-    The branches are collapsed to a single median, :math:`\\ln \\sum_i w_i
-    \\exp(\\mu_i)`, and the standard deviation, which is the same for all
+    The branches are collapsed to a single median, :math:`\ln \sum_i w_i
+    \exp(\mu_i)`, and the standard deviation, which is the same for all
     branches. The collapsed values are not suitable for hazard calculations,
     which should sum the weighted exceedance probabilities of the branches,
     as nshmp-lib does; the branches are given by
@@ -469,16 +469,16 @@ class KuehnEtAl2020(model.GroundMotionModel):
         mag : array_like
             moment magnitude
         dist_rup : array_like
-            closest distance to the rupture (km)
+            closest distance to the rupture [km]
         depth_tor : array_like
-            depth to the top of the rupture (km)
+            depth to the top of the rupture [km]
         depth_2_5 : array_like
-            depth to a shear-wave velocity of 2.5 km/sec (km), *NaN* for no
+            depth to a shear-wave velocity of 2.5 km/sec [km], *NaN* for no
             basin term
         v_s30 : float or array_like
-            time-averaged shear-wave velocity over the top 30 m (m/sec)
+            time-averaged shear-wave velocity over the top 30 m [m/sec]
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference condition
+            peak ground acceleration [g] at the reference condition
             (V_s30 = 1100 m/sec)
         with_basin : bool, optional
             if *False*, the basin term is not included (for the reference PGA)

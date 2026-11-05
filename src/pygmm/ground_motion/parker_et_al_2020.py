@@ -48,7 +48,7 @@ def _load_ak_adjustment(periods):
 
 @register(tectonic="subduction")
 class ParkerEtAl2020(model.GroundMotionModel):
-    """Parker et al. (2020) NGA-Subduction ground motion model.
+    r"""Parker et al. (2020) NGA-Subduction ground motion model.
 
     Ground motion model for subduction interface and intraslab earthquakes
     developed as part of the NGA-Subduction project, with the global model and
@@ -74,7 +74,7 @@ class ParkerEtAl2020(model.GroundMotionModel):
       coefficients, corner magnitudes, and epistemic uncertainty.
     * For intraslab events, the hypocentral depth used by the source depth
       term is estimated from the depth to the top of rupture,
-      :math:`Z_{hyp} = Z_{tor} + 0.48 \\times 6.5` km.
+      :math:`Z_{hyp} = Z_{tor} + 0.48 \times 6.5` km.
     * The reference PGA (:math:`V_{s30}` = 760 m/sec) used by the nonlinear
       site term excludes the site and basin terms, and includes the Alaska
       adjustment if it is applied.
@@ -82,16 +82,16 @@ class ParkerEtAl2020(model.GroundMotionModel):
       (equations 11 to 13 with the Cascadia :math:`Z_{2.5}` model) is applied
       for all regions and event types. Without ``basin``, it is applied to all
       periods without the USGS scaling.
-    * The standard deviation is :math:`\\sqrt{\\tau^2 + \\phi^2}`, with the
-      distance and :math:`V_{s30}` dependent :math:`\\phi` (equations 18 to
+    * The standard deviation is :math:`\sqrt{\tau^2 + \phi^2}`, with the
+      distance and :math:`V_{s30}` dependent :math:`\phi` (equations 18 to
       20).
     * With ``epistemic=True`` (default), the epistemic uncertainty (equation
       27 and Table E4) is represented by three branches with means
-      :math:`\\mu - 1.645 \\sigma_\\epsilon`, :math:`\\mu`, and :math:`\\mu +
-      1.645 \\sigma_\\epsilon` (the 5th, 50th, and 95th percentiles) and
+      :math:`\mu - 1.645 \sigma_\epsilon`, :math:`\mu`, and :math:`\mu +
+      1.645 \sigma_\epsilon` (the 5th, 50th, and 95th percentiles) and
       weights of 0.185, 0.63, and 0.185. As in nshmp-lib
       (``GroundMotions.combine``), the branches are collapsed to a single
-      median, :math:`\\ln \\sum_i w_i \\exp(\\mu_i)`, and the standard
+      median, :math:`\ln \sum_i w_i \exp(\mu_i)`, and the standard
       deviation, which is the same for all branches. The collapsed values are
       not suitable for hazard calculations, which should sum the weighted
       exceedance probabilities of the branches, as nshmp-lib does; the
@@ -278,19 +278,22 @@ class ParkerEtAl2020(model.GroundMotionModel):
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            basin (bool, optional): if *True*, apply the USGS scaling of the
-                basin term for Cascadia events.
-            ak_adjusted (bool, optional): if *True*, add the USGS Alaska
-                adjustment to global interface events.
-            m9 (bool, optional): if *True*, apply the USGS M9 adjustment for
-                Cascadia interface events. Requires ``basin=True``.
-            epistemic (bool, optional): if *True* (default), include the
-                epistemic branches.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        basin : bool, optional
+            if *True*, apply the USGS scaling of the basin term for Cascadia events.
+        ak_adjusted : bool, optional
+            if *True*, add the USGS Alaska adjustment to global interface events.
+        m9 : bool, optional
+            if *True*, apply the USGS M9 adjustment for Cascadia interface events.
+            Requires ``basin=True``.
+        epistemic : bool, optional
+            if *True* (default), include the epistemic branches.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         if m9 and not basin:
             raise ValueError(
@@ -578,8 +581,7 @@ class ParkerEtAl2020(model.GroundMotionModel):
         )
 
     def _calc(self) -> tuple:
-        """Calculate the natural logarithm of the response and the standard
-        deviation.
+        """Calculate the natural log of the response and the standard deviation.
 
         Returns
         -------

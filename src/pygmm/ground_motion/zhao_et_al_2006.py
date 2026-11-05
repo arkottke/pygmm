@@ -55,7 +55,7 @@ def bchydro_2012(periods, v, basin=False) -> tuple:
     Parameters
     ----------
     periods : array_like
-        periods (s) with coefficients, with 0 for PGA (0.03 s is not
+        periods [s] with coefficients, with 0 for PGA (0.03 s is not
         included, as nshmp-lib interpolates it)
     v : dict
         ``mag``, ``dist_rup``, ``depth_tor``, ``v_s30``, ``depth_2_5``, and
@@ -66,7 +66,7 @@ def bchydro_2012(periods, v, basin=False) -> tuple:
     Returns
     -------
     ln_resp : :class:`np.ndarray`
-        natural log of the response (g)
+        natural log of the response [g]
     ln_std : :class:`np.ndarray`
         logarithmic standard deviation
     """
@@ -165,7 +165,7 @@ class ZhaoEtAl2006(_NshmpSubductionBase):
       model at 7.5 or 10 s to those at 5 s, :math:`\mu(T) = \mu_{ref}(T)
       \mu(5) / \mu_{ref}(5)`. (Note that this scales the natural log of the
       median, not the median.)
-    * PGV (cm/sec) is computed with the Abrahamson and Bhasin (2020)
+    * PGV [cm/sec] is computed with the Abrahamson and Bhasin (2020)
       conditional model from the response spectrum of the model
       (:func:`~pygmm.ground_motion.atkinson_macias_2009.conditional_pgv`).
     * The scenario values are not clipped to the model limits.
@@ -196,7 +196,7 @@ class ZhaoEtAl2006(_NshmpSubductionBase):
     other models. For arrays of N scenarios, they have shape (N, periods), so,
     for example, ``pga`` has shape (N,). ``depth_tor`` is only needed for
     intraslab events, so it can be *None* if none of the events are intraslab
-    events. ``depth_2_5`` (km) is only used with ``basin=True``, and can be
+    events. ``depth_2_5`` [km] is only used with ``basin=True``, and can be
     *None* (or *NaN* for some scenarios) for no basin term. Results for
     events that are neither interface nor intraslab events are *NaN*.
 
