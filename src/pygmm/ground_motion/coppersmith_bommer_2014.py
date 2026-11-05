@@ -1,5 +1,7 @@
-"""Coppersmith and Bommer (2014) ground motion model, part of the PNNL Site
-Wide Hazard."""
+"""Coppersmith and Bommer (2014) ground motion model.
+
+The model is part of the PNNL Site Wide Hazard study, :cite:t:`coppersmith14`.
+"""
 
 import numpy as np
 
@@ -12,8 +14,10 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="subduction")
 class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
-    """Coppersmith and Bommer (2014) ground motion model developed as part of
-    the PNNL hazard study for the Hanford site.
+    """Coppersmith and Bommer (2014) ground motion model.
+
+    The model was developed as part of the PNNL hazard study for the Hanford
+    site, :cite:p:`coppersmith14`.
 
     This model was developed for subduction regions and is a modified version
     of the BCHydro model.
@@ -81,13 +85,15 @@ class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
     def __init__(self, scenario, scale_atten=1.0, ims=None):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            scale_atten (float, optional): scale factor applied to the
-                anelastic attenuation term.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        scale_atten : float, optional
+            scale factor applied to the anelastic attenuation term.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         super().__init__(
             scenario, adjust_c1=None, adjust_c4=0, scale_atten=scale_atten, ims=ims
@@ -99,7 +105,7 @@ class CoppersmithBommer2014(AbrahamsonGregorAddo2016):
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then the response at the reference
             condition is computed.
         rows : array_like, optional

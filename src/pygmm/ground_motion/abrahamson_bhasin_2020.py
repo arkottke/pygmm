@@ -1,4 +1,4 @@
-"""Abrahamson and Bhasin (2020, :cite:`abrahamson20`) model."""
+"""Abrahamson and Bhasin (2020, :cite:p:`abrahamson20`) model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("pgv",), input="conditional")
 class AbrahamsonBhasin2020(model.Model):
-    """Abrahamson (2020, :cite:`abrahamson20`) model.
+    """Abrahamson (2020, :cite:p:`abrahamson20`) model.
 
     Conditional PGV model
 
@@ -154,12 +154,12 @@ class AbrahamsonBhasin2020(model.Model):
 
     @property
     def ln_pgv(self):
-        """Natural log of the median PGV (cm/sec)."""
+        """Natural log of the median PGV [cm/sec]."""
         return self._ln_pgv
 
     @property
     def pgv(self):
-        """Median PGV (cm/sec)."""
+        """Median PGV [cm/sec]."""
         return np.exp(self._ln_pgv)
 
     @property
@@ -179,12 +179,12 @@ class AbrahamsonBhasin2020(model.Model):
 
     @property
     def pgv_plus_sigma(self):
-        """84th-percentile PGV (cm/sec): ``exp(ln_pgv + ln_std)``."""
+        """84th-percentile PGV [cm/sec]: ``exp(ln_pgv + ln_std)``."""
         return np.exp(self._ln_pgv + self._ln_std)
 
     @property
     def pgv_minus_sigma(self):
-        """16th-percentile PGV (cm/sec): ``exp(ln_pgv - ln_std)``."""
+        """16th-percentile PGV [cm/sec]: ``exp(ln_pgv - ln_std)``."""
         return np.exp(self._ln_pgv - self._ln_std)
 
     @classmethod

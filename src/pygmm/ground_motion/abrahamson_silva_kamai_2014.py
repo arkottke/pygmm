@@ -1,4 +1,4 @@
-"""Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model."""
+"""Abrahamson, Silva, and Kamai (2014, :cite:p:`abrahamson14`) model."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
-    """Abrahamson, Silva, and Kamai (2014, :cite:`abrahamson14`) model.
+    r"""Abrahamson, Silva, and Kamai (2014, :cite:p:`abrahamson14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
@@ -35,13 +35,13 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
     published model. With ``nshmp=True``, the model is computed as in
     nshmp-lib, which:
 
-    - applies the hanging-wall term for sites with :math:`R_x \\ge 0` if
+    - applies the hanging-wall term for sites with :math:`R_x \ge 0` if
       ``on_hanging_wall`` is not given (it is only non-zero for :math:`R_{JB}
       <` 30 km, :math:`M >` 5.5, and :math:`Z_{tor} <` 10 km), with the
       :math:`R_{JB}` taper (equation 15b, ``dist_y0`` is not used) and a dip
       taper of 1.33333333 for dips of 30 degrees or less,
     - computes ``width`` from the depth to the bottom of the rupture,
-      :math:`(Z_{bor} - Z_{tor}) / \\sin \\delta`, if ``width`` is *None* and
+      :math:`(Z_{bor} - Z_{tor}) / \sin \delta`, if ``width`` is *None* and
       ``depth_bor`` is given,
     - has no basin (soil depth) term if ``depth_1_0`` is *None* or NaN, and
       interpolates the basin slope in :math:`V_{S30}` between 150, 250, 400,
@@ -230,13 +230,14 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
-            nshmp, epistemic, basin, cybershake, prvi (bool, optional): the
-                nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed. nshmp, epistemic, basin, cybershake, prvi (bool, optional):
+            the nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
         """
         self._set_options(nshmp, epistemic, basin, cybershake, prvi)
         super().__init__(scenario, ims)
@@ -410,7 +411,7 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
             (N, periods).
         depth_1_0 : float or array_like
             depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{1.0}` in (km). If *None*, then no basin term is applied.
+            :math:`Z_{1.0}` in [km]. If *None*, then no basin term is applied.
         region : str or array_like, optional
             region of basin model. Valid options: 'california', 'japan'. If
             *None*, then 'california' is used as the default value.
@@ -486,7 +487,7 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
 
     @staticmethod
     def _calc_v_1(c, nshmp: bool = False) -> np.ndarray:
-        """Calculate the period dependent limiting velocity :math:`V_1` (m/s).
+        """Calculate the period dependent limiting velocity :math:`V_1` [m/s].
 
         Equation 9 of Abrahamson et al. (2014): 1500 m/sec for periods of 0.5 s
         and shorter, 800 m/sec for periods of 3 s and longer, and a log-linear
@@ -623,7 +624,7 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_tor(mag: ArrayLike) -> ArrayLike:
-        """Calculate the depth to top of rupture (km).
+        """Calculate the depth to top of rupture [km].
 
         Parameters
         ----------
@@ -633,17 +634,17 @@ class AbrahamsonSilvaKamai2014(usgs.NshmpOptions, model.GroundMotionModel):
         Returns
         -------
         depth_tor : float or :class:`np.ndarray`
-            estimated depth to top of rupture (km)
+            estimated depth to top of rupture [km]
         """
         return np.interp(mag, [5.0, 7.2], [7.8, 0])
 
     @staticmethod
     def calc_depth_1_0(v_s30: ArrayLike, region: ArrayLike = "california") -> ArrayLike:
-        """Estimate the depth to 1 km/sec horizon (:math:`Z_{1.0}`) based on
-        :math:`V_{s30}` and region.
+        """Estimate the depth to the 1 km/sec horizon (:math:`Z_{1.0}`).
 
-        This is based on equations 18 and 19 in the :cite:`abrahamson14`
-        and differs from the equations in the :cite:`chiou14`.
+        The estimate is based on :math:`V_{s30}` and region, using equations 18
+        and 19 in :cite:p:`abrahamson14`. It differs from the equations in
+        :cite:p:`chiou14`.
 
         Parameters
         ----------

@@ -1,4 +1,4 @@
-"""Pinilla-Ramos et al. (2023, :cite:`pinilla-ramos23`) duration model."""
+"""Pinilla-Ramos et al. (2023, :cite:p:`pinilla-ramos23`) duration model."""
 
 import numpy as np
 
@@ -65,7 +65,7 @@ def _as_output(value: np.ndarray) -> float | np.ndarray:
 
 @register(provides=("duration",))
 class PinillaRamosEtAl2023(model.Model):
-    """Pinilla-Ramos et al. (2023, :cite:`pinilla-ramos23`) duration model.
+    """Pinilla-Ramos et al. (2023, :cite:p:`pinilla-ramos23`) duration model.
 
     This model predicts significant duration for different energy thresholds
     (D5-X) where X represents the percentage of cumulative energy. The model

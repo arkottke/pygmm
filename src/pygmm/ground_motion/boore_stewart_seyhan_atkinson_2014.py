@@ -31,7 +31,7 @@ def calc_depth_1_0(v_s30: ArrayLike, region: ArrayLike) -> np.ndarray:
     Returns
     -------
     depth_1_0 : :class:`np.ndarray`
-        average depth to a shear-wave velocity of 1 km/sec (km)
+        average depth to a shear-wave velocity of 1 km/sec [km]
     """
     v_s30 = np.asarray(v_s30, dtype=float)
     japan = model.equals(region, "japan")
@@ -42,7 +42,7 @@ def calc_depth_1_0(v_s30: ArrayLike, region: ArrayLike) -> np.ndarray:
 
 @register(tectonic="active_crustal")
 class BooreStewartSeyhanAtkinson2014(usgs.NshmpOptions, model.GroundMotionModel):
-    """Boore, Stewart, Seyhan, and Atkinson (2014, :cite:`boore14`) model.
+    """Boore, Stewart, Seyhan, and Atkinson (2014, :cite:p:`boore14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
@@ -258,13 +258,14 @@ class BooreStewartSeyhanAtkinson2014(usgs.NshmpOptions, model.GroundMotionModel)
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
-            nshmp, epistemic, basin, cybershake, prvi (bool, optional): the
-                nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed. nshmp, epistemic, basin, cybershake, prvi (bool, optional):
+            the nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
         """
         self._set_options(nshmp, epistemic, basin, cybershake, prvi)
         super().__init__(scenario, ims)
@@ -343,7 +344,7 @@ class BooreStewartSeyhanAtkinson2014(usgs.NshmpOptions, model.GroundMotionModel)
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
         c : :class:`numpy.recarray`, optional
             coefficients for the periods to compute. If *None*, the
@@ -462,14 +463,14 @@ class BooreStewartSeyhanAtkinson2014(usgs.NshmpOptions, model.GroundMotionModel)
         Parameters
         ----------
         pga_ref : float
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then no site term is applied.
         v_s30 : float
             site condition. Set `v_s30` to the reference
             velocity (e.g., 1180 m/s) for the reference response.
         depth_1_0 : float
             depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{1.0}` in (km).
+            :math:`Z_{1.0}` in [km].
         region : str, optional
             region of basin model. Valid options: 'california', 'japan'. If
             *None*, then 'california' is used as the default value.

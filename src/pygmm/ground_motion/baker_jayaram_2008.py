@@ -1,4 +1,4 @@
-"""Baker and Jayaram (2008, :cite:`baker08`) correlation model."""
+"""Baker and Jayaram (2008, :cite:p:`baker08`) correlation model."""
 
 import numpy as np
 
@@ -8,7 +8,7 @@ __author__ = "Albert Kottke"
 
 
 def calc_correls(periods: ArrayLike, period_cond: float) -> np.ndarray:
-    """Baker and Jayaram (2008, :cite:`baker08`) correlation model.
+    """Baker and Jayaram (2008, :cite:p:`baker08`) correlation model.
 
     Parameters
     ----------
@@ -61,7 +61,7 @@ def calc_cond_mean_spectrum(
     period_cond: float,
     ln_psa_cond: float,
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Conditional mean spectrum by Baker & Jayaram (2008, :cite:`baker08`).
+    """Conditional mean spectrum by Baker & Jayaram (2008, :cite:p:`baker08`).
 
     Parameters
     ----------

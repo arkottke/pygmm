@@ -21,19 +21,19 @@ class Scenario(collections.UserDict):
     ----------
     depth_1_0 : float
         depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-        :math:`Z_{1.0}` in (km).
+        :math:`Z_{1.0}` in [km].
     depth_2_5 : float
         depth to the 2.5 km∕s shear-wave velocity horizon beneath the site,
-        :math:`Z_{2.5}` in (km).
+        :math:`Z_{2.5}` in [km].
     depth_tor : float
         depth to the top of the rupture plane (:math:`Z_{tor}`, km).
     depth_bor : float
         depth to the bottom of the rupture plane (:math:`Z_{bor}`, km).
     depth_bot : float
-        depth to bottom of seismogenic crust (km).
+        depth to bottom of seismogenic crust [km].
     depth_sed : float
         thickness of the Atlantic and Gulf coastal plain sediments beneath the
-        site (km), the depth to the base of the sediments (``zSed`` in USGS
+        site [km], the depth to the base of the sediments (``zSed`` in USGS
         nshmp-lib). NaN or *None* is a site that is not on the coastal plain.
     dip : float
         fault dip angle (:math:`\phi`, deg).
@@ -59,7 +59,7 @@ class Scenario(collections.UserDict):
         strike (:math:`R_{y0}`, km).
     dpp_centered : float
         direct point parameter (DPP) for directivity effect (see Chiou and
-        Spudich (2014, :cite:`spudich14`)) centered on the earthquake-specific
+        Spudich (2014, :cite:p:`spudich14`)) centered on the earthquake-specific
         average DPP for California.
     event_type : str
         event type. Type of event used in subduction models to distinguish
@@ -70,7 +70,7 @@ class Scenario(collections.UserDict):
         moment magnitude of the event (:math:`M_w`)
     mechanism : str
         fault mechanism. Valid options: "SS", "NS", "RS", and "U". See
-        :ref:`Mechanism` for more information.
+        the mechanism reference in the user guide for more information.
     on_hanging_wall : bool
         If the site is located on the hanging wall of the fault. If *None*,
         then *False* is assumed.
@@ -141,6 +141,13 @@ class Scenario(collections.UserDict):
         return "<Scenario(mag={mag}, dist_jb={dist_jb})>".format(**self.data)
 
     def copy_with(self, **kwds):
+        """Return a copy of the scenario with parameters replaced.
+
+        Parameters
+        ----------
+        **kwds
+            New values of the parameters.
+        """
         self._check_keys(kwds.keys())
         other = self.copy()
         other.update(**kwds)
@@ -153,6 +160,13 @@ class Scenario(collections.UserDict):
 
 
 class Model:
+    """Base class of the ground motion models.
+
+    A model is constructed from a :class:`Scenario`, or the keywords of one.
+    Only the parameters in ``PARAMS`` are kept, and each is checked against the
+    range recommended for the model.
+    """
+
     #: Long name of the model
     NAME = ""
     #: Short name of the model
@@ -184,6 +198,7 @@ class Model:
 
     @property
     def scenario(self):
+        """Scenario of the model, limited to the parameters that the model uses."""
         return self._scenario
 
 
@@ -331,7 +346,7 @@ class GroundMotionModel(Model):
         Parameters
         ----------
         period : float
-            spectral period (s)
+            spectral period [s]
 
         Returns
         -------
@@ -355,7 +370,7 @@ class GroundMotionModel(Model):
         Returns
         -------
         period : float
-            spectral period (s)
+            spectral period [s]
 
         """
         try:
@@ -508,7 +523,7 @@ class GroundMotionModel(Model):
 
     @property
     def spec_accels(self) -> np.ndarray:
-        """Pseudo-spectral accelerations computed by the model (g)."""
+        """Pseudo-spectral accelerations computed by the model [g]."""
         return np.exp(self._take_psa(self._resp_vector))
 
     def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum:
@@ -547,7 +562,7 @@ class GroundMotionModel(Model):
 
     @property
     def pga(self) -> float | np.ndarray:
-        """Peak ground acceleration (PGA) computed by the model (g)."""
+        """Peak ground acceleration (PGA) computed by the model [g]."""
         if self.INDEX_PGA is None:
             raise NotImplementedError
         else:
@@ -575,7 +590,7 @@ class GroundMotionModel(Model):
 
     @property
     def pgv(self) -> float | np.ndarray:
-        """Peak ground velocity (PGV) computed by the model (cm/sec)."""
+        """Peak ground velocity (PGV) computed by the model [cm/sec]."""
         if self.INDEX_PGV is None:
             raise NotImplementedError
         else:
@@ -591,7 +606,7 @@ class GroundMotionModel(Model):
 
     @property
     def pgd(self) -> float | np.ndarray:
-        """Peak ground displacement (PGD) computed by the model (cm)."""
+        """Peak ground displacement (PGD) computed by the model [cm]."""
         if self.INDEX_PGD is None:
             raise NotImplementedError
         else:

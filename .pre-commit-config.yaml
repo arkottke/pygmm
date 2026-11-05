@@ -1,3 +1,6 @@
+# Scientific data files are read with fixed-width or exact parsing, so the
+# whitespace and end-of-file hooks must not rewrite them.
+exclude: '^(tests/data/|src/pygmm/data/|examples/data/)'
 repos:
     - repo: https://github.com/pre-commit/pre-commit-hooks
       rev: v5.0.0
@@ -8,7 +11,7 @@ repos:
           - id: end-of-file-fixer
     - repo: https://github.com/astral-sh/ruff-pre-commit
       # Ruff version.
-      rev: v0.12.4
+      rev: v0.15.4
       hooks:
           # Run the linter.
           - id: ruff-check
@@ -16,6 +19,16 @@ repos:
                 [--fix]
                 # Run the formatter.
           - id: ruff-format
+    - repo: local
+      hooks:
+          # Pinned: the pre-commit mirror only offers 4.0 alphas after 3.1.0, and
+          # 4.0.0-alpha.8 hangs. Needs node on PATH.
+          - id: prettier
+            name: prettier
+            entry: prettier --write --ignore-unknown
+            language: node
+            additional_dependencies: ["prettier@3.9.10"]
+            files: \.(md|yml)$
 #   - repo: https://github.com/pycqa/pydocstyle
 #     rev: 5.1.1  # pick a git hash / tag to point to
 #     hooks:

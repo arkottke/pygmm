@@ -1,4 +1,4 @@
-"""Afshari and Stewart (2016, :cite:`afshari2016`) duration model."""
+"""Afshari and Stewart (2016, :cite:p:`afshari2016`) duration model."""
 
 import numpy as np
 
@@ -9,7 +9,7 @@ from ..registry import register
 
 @register(provides=("duration",))
 class AfshariStewart2016(model.Model):
-    """Afshari and Stewart (2016, :cite:`afshari2016`) duration model.
+    """Afshari and Stewart (2016, :cite:p:`afshari2016`) duration model.
 
     The basin term uses the difference between `depth_1_0` and the average
     depth for the site's `v_s30`. The average depth uses the Japan relation for
@@ -190,7 +190,7 @@ class AfshariStewart2016(model.Model):
         Returns
         -------
         depth_1_0 : float or :class:`np.ndarray`
-            average depth to a shear-wave velocity of 1 km/sec (km)
+            average depth to a shear-wave velocity of 1 km/sec [km]
         """
         if np.ndim(region) > 0:
             return np.where(
@@ -219,14 +219,18 @@ class AfshariStewart2016(model.Model):
 
     @property
     def duration(self):
-        """Return the durations as a `np.recarray`. Values can be accessed with
-        'D_5t75', 'D_5t95', or 'D_20t80'."""
+        """Return the durations as a `np.recarray`.
+
+        Values can be accessed with 'D_5t75', 'D_5t95', or 'D_20t80'.
+        """
         return AfshariStewart2016._as_recarray(np.exp(self._ln_dur))
 
     @property
     def std_err(self):
-        """Return the standard errors of the durations as a `np.recarray`. Values can be
-        accessed with 'D_5t75', 'D_5t95', or 'D_20t80'."""
+        """Return the standard errors of the durations as a `np.recarray`.
+
+        Values can be accessed with 'D_5t75', 'D_5t95', or 'D_20t80'.
+        """
         std_err = self._std_err
         if np.ndim(self._ln_dur) > 1:
             std_err = np.broadcast_to(std_err, np.shape(self._ln_dur))

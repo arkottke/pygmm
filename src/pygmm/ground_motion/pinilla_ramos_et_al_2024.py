@@ -1,4 +1,4 @@
-"""Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model."""
+"""Pinilla-Ramos et al. (2024, :cite:p:`pinilla-ramos24`) subduction duration model."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("duration",), tectonic="subduction")
 class PinillaRamosEtAl2024(model.Model):
-    """Pinilla-Ramos et al. (2024, :cite:`pinilla-ramos24`) subduction duration model.
+    """Pinilla-Ramos et al. (2024, :cite:p:`pinilla-ramos24`) subduction duration model.
 
     This model predicts significant duration for different energy thresholds
     (D5-X) where X represents the percentage of cumulative energy. The model
@@ -61,13 +61,13 @@ class PinillaRamosEtAl2024(model.Model):
     - event_type: 'interface' for interface events, 'slab' for intraslab events
     - region: 'Japan', 'New Zealand', 'South America', or 'Taiwan' (slab only)
     - mag: moment magnitude (Mw)
-    - dist_rup: rupture distance (km)
-    - v_s30: time-averaged shear-wave velocity in top 30m (m/s)
+    - dist_rup: rupture distance [km]
+    - v_s30: time-averaged shear-wave velocity in top 30m [m/s]
 
     References
     ----------
-    .. [1] Pinilla-Ramos et al. (2024). "Subduction Zone Significant Duration
-           Model for Interface and Intraslab Earthquakes."
+    :cite:t:`pinilla-ramos24`
+
     """
 
     NAME = "Pinilla-Ramos et al. (2024)"

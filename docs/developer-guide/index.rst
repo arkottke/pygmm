@@ -6,4 +6,3 @@ Developer Guide
 
    contributing
    changelog
-   history

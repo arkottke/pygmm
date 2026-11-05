@@ -1,4 +1,4 @@
-"""Bayless and Abrahamson (2019, :cite:`bayless19`) model."""
+"""Bayless and Abrahamson (2019, :cite:p:`bayless19`) model."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("fas",), tectonic="active_crustal")
 class BaylessAbrahamson2019(model.Model):
-    """Bayless and Abrahamson (2019, :cite:`bayless19`) model.
+    """Bayless and Abrahamson (2019, :cite:p:`bayless19`) model.
 
     This Fourier-amplitude spectra model was developed for active tectonic regions.
 
@@ -57,19 +57,22 @@ class BaylessAbrahamson2019(model.Model):
 
     @property
     def freqs(self):
+        """Frequencies [Hz] of the spectrum."""
         return self.FREQS
 
     @property
     def ln_eas(self):
+        """Natural log of the effective amplitude spectrum [g-s]."""
         return self._ln_eas
 
     @property
     def eas(self):
+        """Effective amplitude spectrum [g-s]."""
         return np.exp(self._ln_eas)
 
     @property
     def fourier_amps(self):
-        """Fourier amplitudes (g-sec).
+        """Fourier amplitudes [g-sec].
 
         Canonical name for :attr:`eas`. Consumers such as pyRVT's
         ``RvtMotion.from_fas`` duck-type on ``freqs``/``fourier_amps``/
@@ -80,6 +83,7 @@ class BaylessAbrahamson2019(model.Model):
 
     @property
     def ln_std(self):
+        """Natural log standard deviation of the effective amplitude spectrum."""
         return self._ln_std
 
     def _check_inputs(self) -> None:
@@ -197,7 +201,7 @@ class BaylessAbrahamson2019(model.Model):
         """Compute the generic depth to 1 km/sec based on Vs30.
 
         Parameters
-        ---------
+        ----------
         v_s30 : float
             site condition. Set `v_s30` to the reference
             velocity (e.g., 1180 m/s) for the reference response.
@@ -230,8 +234,9 @@ class BaylessAbrahamson2019(model.Model):
         if duration is None:
             raise ValueError(
                 "BaylessAbrahamson2019 predicts EAS only and has no duration. "
-                "Supply one from a duration model, e.g. "
-                "AfshariStewart2016(scenario).duration_model().duration."
+                "Supply the RVT duration, the 5-75% normalized Arias duration, "
+                "from a duration model, e.g. "
+                "AfshariStewart2016(scenario).duration_model().d_5_75."
             )
         return FourierSpectrum(
             freqs=self.freqs, fourier_amps=self.fourier_amps, duration=float(duration)

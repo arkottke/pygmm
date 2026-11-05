@@ -9,23 +9,33 @@ authors = [{ name = "Albert Kottke", email = "albert.kottke@gmail.com" }]
 description = "Ground motion models implemented in Python."
 readme = "README.md"
 license = { text = "MIT" }
-requires-python = ">=3.12"
+requires-python = ">=3.13"
 # Lower bounds follow SPEC 0: the oldest minor released within the last
 # 24 months. See the SPEC 0 note below for the review schedule.
 dependencies = [
     "matplotlib>=3.10",
-    "numpy>=2.1",
+    "numpy>=2.2",
     "pandas>=2.3",
     "pint>=0.25",
     "scipy>=1.15",
 ]
 
 [project.optional-dependencies]
+# Slope displacement: numba compiles the rigid-block integration (a pure-Python
+# fallback is used without it) and pyrotd is required by HaleAbrahamson19.
+slope = [
+    "numba>=0.61",
+    "pyrotd>=0.6.1",
+]
 test = [
     "coverage[toml]",
     "pytest",
     "pytest-cov",
     "pandas",
+    "matplotlib",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
 ]
 docs = [
     "sphinx",
@@ -37,6 +47,7 @@ docs = [
     "sphinx-autobuild",
     "myst-parser",
     "nbsphinx",
+    "nbsphinx-link",
     "ipython",
     "linkify-it-py",
     "lxml[html_clean]",
@@ -56,11 +67,17 @@ typing = [
 dev = [
     "coverage[toml]",
     "mypy",
+    "numba",
     "pandas-stubs",
     "scipy-stubs",
+    "pyrotd>=0.6.1",
     "pytest",
     "pytest-cov",
     "ruff",
+    "matplotlib",
+    "nbformat",
+    "nbclient",
+    "ipykernel",
 ]
 
 # ---------------------------------------------------------------------------
@@ -70,13 +87,13 @@ dev = [
 # Python:       support minors released in the last 36 months.
 # Core packages: support minors released in the last 24 months.
 #
-# Reviewed 2026-08-03. Next scheduled changes:
-#   2026-08-18  numpy >=2.2       (2.1 released 2024-08-18)
-#   2026-10-01  drop Python 3.12  -> requires-python >=3.13
+# Reviewed 2026-11-03. Next scheduled changes:
+#   2026-12-08  numpy >=2.3       (2.2 released 2024-12-08)
 #   2026-12-14  matplotlib >=3.11 (3.10 released 2024-12-14)
 #   2027-01-03  scipy >=1.16      (1.15 released 2025-01-03)
 #   2027-06-05  pandas >=3.0      (2.3 released 2025-06-05)
 #   2027-08-15  pint >=0.26       (0.25 released 2025-08-15)
+#   2027-10-07  drop Python 3.13  -> requires-python >=3.14
 # ---------------------------------------------------------------------------
 
 [project.urls]
@@ -98,15 +115,28 @@ write_to = "src/pygmm/_version.py"
 exclude = ["docs"]
 line-length = 88
 indent-width = 4
-target-version = "py312"
+target-version = "py313"
 extend-include = ["*.ipynb"]
 
 [tool.ruff.format]
 quote-style = "double"
 
 [tool.ruff.lint]
-select = ["E", "F", "W", "Q", "I", "UP"]
-ignore = ["E203"]
+select = ["E", "F", "W", "Q", "I", "UP", "D"]
+ignore = ["E203", "D105", "D107", "D401"]
+
+# Docstrings follow the NumPy convention. Magic methods (D105) and __init__
+# (D107) need none, since the class docstring documents the parameters, and
+# D401 (imperative mood) is a matter of taste.
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.ruff.lint.per-file-ignores]
+# The package is documented; tests, scripts, examples and setup.py need not be
+"tests/**" = ["D"]
+"utils/**" = ["D"]
+"examples/**" = ["D"]
+"setup.py" = ["D"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -136,7 +166,7 @@ convention = "numpy"
 match = "(?!test_).*\\.py"
 
 [tool.mypy]
-python_version = "3.12"
+python_version = "3.13"
 files = ["src/pygmm"]
 # The scientific stack is only partially typed; stubs are pulled in for pandas
 # and scipy, and the rest is allowed through untyped.

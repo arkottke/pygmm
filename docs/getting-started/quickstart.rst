@@ -1,13 +1,11 @@
 Quickstart
 ==========
 
-This guide walks through the basic workflow for evaluating ground motion predictions with pyGMM.
+A scenario, a model and the model's attributes: the minimum to predict a response
+spectrum. :doc:`../user-guide/index` describes how the other parts are added.
 
-Defining a Scenario
--------------------
-
-All ground motion models take a :class:`~pygmm.model.Scenario` that specifies the earthquake
-and site parameters.  Only parameters relevant to a given model need to be provided.
+Define a scenario
+-----------------
 
 .. code-block:: python
 
@@ -16,83 +14,69 @@ and site parameters.  Only parameters relevant to a given model need to be provi
     scenario = pygmm.Scenario(
         mag=6.5,          # moment magnitude
         dist_rup=20.0,    # rupture distance (km)
-        v_s30=760.0,      # time-averaged Vs in top 30 m (m/s)
-        mechanism="SS",   # fault mechanism: 'SS', 'NS', 'RS', or 'U'
+        dist_jb=20.0,     # Joyner-Boore distance (km)
+        dist_x=20.0,      # distance perpendicular to the strike (km)
+        dip=90.0,         # fault dip (degrees)
+        mechanism="SS",   # "SS", "NS", "RS" or "U"
+        v_s30=760.0,      # time-averaged shear-wave velocity of the top 30 m (m/s)
     )
 
-Running a Model
----------------
+A model needs a subset of the parameters and raises ``ValueError`` for a required
+parameter that is missing; see :doc:`../user-guide/scenario`.
 
-Construct a model with the scenario, then read the results off its attributes.
-``spec_accels`` is the **median** spectral acceleration in g and ``ln_stds`` the
-**log-standard deviation**, both over the model's spectral periods:
+Run a model
+-----------
 
 .. code-block:: python
 
-    model = pygmm.CampbellBozorgnia2014(scenario)
-    ln_sa, ln_std = np.log(model.spec_accels), model.ln_stds
+    model = pygmm.ChiouYoungs2014(scenario)
+    model.periods       # periods (s)
+    model.spec_accels   # median 5%-damped spectral acceleration (g)
+    model.ln_stds       # standard deviation of ln(spec_accels)
+    model.pga, model.pgv
 
-    import numpy as np
-    sa = np.exp(ln_sa)   # median spectral acceleration (g)
+Compare models
+--------------
 
-Access the periods with ``model.PERIODS``.
-
-Comparing Models
-----------------
-
-Because all models share the same interface, comparing predictions is straightforward:
+All of the response-spectrum models have the same attributes.
 
 .. code-block:: python
 
     import matplotlib.pyplot as plt
 
-    models = [
-        pygmm.CampbellBozorgnia2014(scenario),
-        pygmm.BooreStewartSeyhanAtkinson2014(scenario),
-        pygmm.AbrahamsonSilvaKamai2014(scenario),
+    classes = [
+        pygmm.AbrahamsonSilvaKamai2014,
+        pygmm.BooreStewartSeyhanAtkinson2014,
+        pygmm.CampbellBozorgnia2014,
+        pygmm.ChiouYoungs2014,
     ]
 
     fig, ax = plt.subplots()
-    for m in models:
-        ln_sa, _ = m(scenario)
-        ax.semilogx(m.PERIODS, np.exp(ln_sa), label=m.NAME)
-
-    ax.set_xlabel("Period (s)")
-    ax.set_ylabel("Spectral Acceleration (g)")
+    for cls in classes:
+        m = cls(scenario)
+        ax.plot(m.periods, m.spec_accels, label=cls.ABBREV)
+    ax.set(xscale="log", yscale="log", xlabel="Period (s)", ylabel="Spectral acceleration (g)")
     ax.legend()
-    plt.show()
 
-Duration Models
----------------
+Other predictions
+-----------------
 
-Duration models (e.g. significant duration D5-75) follow the same pattern:
-
-.. code-block:: python
-
-    dur_model = pygmm.AfshariStewart2016(scenario)
-    ln_dur, ln_std = dur_model(scenario)
-    d575_median = np.exp(ln_dur)   # seconds
-
-Soil Curves
------------
-
-Strain-dependent modulus reduction and damping curves can be used directly with pyStrata:
+A duration model is used the same way:
 
 .. code-block:: python
 
-    curves = pygmm.DarendeliSoilType(
-        p_atm=1.0,
-        sigma_v0=50.0,   # vertical effective stress (kPa)
-        PI=0,            # plasticity index
-        OCR=1,           # over-consolidation ratio
-        freq=1.0,
-        n_cycles=10,
-    )
-    print(curves.strains, curves.mod_reduc, curves.damping)
+    duration = pygmm.AfshariStewart2016(scenario).duration  # durations (s)
 
-Next Steps
+and a soil-type class returns modulus reduction and damping curves:
+
+.. code-block:: python
+
+    curves = pygmm.DarendeliSoilType(unit_wt=18.0, plas_index=20, stress_mean=100.0).curves()
+    curves.strains, curves.mod_reduc, curves.damping
+
+Next steps
 ----------
 
-- :doc:`../user-guide/models` — complete list of available models
-- :doc:`../user-guide/usage` — detailed usage patterns
-- :doc:`../examples/index` — worked examples
+- :doc:`../user-guide/index`: how the parts fit together.
+- :doc:`../examples/index`: worked examples.
+- :doc:`../api/index`: the API reference.

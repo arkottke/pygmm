@@ -9,8 +9,6 @@ from ..registry import register
 from ._hyperbolic import ModifiedHyperbolicBase
 from ._units import convert_units
 
-_KPA_TO_ATM = 1.0 / 101.325
-
 
 @register(provides=("soil_curves",), input="kwargs")
 class RollinsEtAlSoilType(ModifiedHyperbolicBase):
@@ -70,14 +68,17 @@ class RollinsEtAlSoilType(ModifiedHyperbolicBase):
 
     @property
     def strain_ref(self) -> float:
+        """Reference shear strain of the hyperbolic model [decimal]."""
         if self._coef_unif is not None:
             return 0.0046 * self._coef_unif**-0.197 * self._stress_mean**0.52 / 100
         return 0.0039 * self._stress_mean**0.42 / 100
 
     @property
     def curvature(self) -> float:
+        """Curvature coefficient of the hyperbolic model."""
         return 0.84
 
     @property
     def masing_scaling(self) -> float:
+        """Scaling of the damping from Masing behavior."""
         return 0.53 - 0.0057 * np.log(self._num_cycles)

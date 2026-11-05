@@ -1,4 +1,4 @@
-"""Abrahamson and Silva (1996, :cite:`abrahamson96`) duration model."""
+"""Abrahamson and Silva (1996, :cite:p:`abrahamson96`) duration model."""
 
 import numpy as np
 
@@ -11,7 +11,7 @@ __author__ = "Albert Kottke"
 
 @register(provides=("duration",))
 class AbrahamsonSilva1996(model.Model):
-    """Abrahamson and Silva (1996, :cite:`abrahamson96`) duration model.
+    """Abrahamson and Silva (1996, :cite:p:`abrahamson96`) duration model.
 
     The model is vectorized. Each scenario value (``mag``, ``dist_rup``, and
     ``site_cond``) can be a scalar or an array, and the arrays are broadcast
@@ -118,7 +118,7 @@ class AbrahamsonSilva1996(model.Model):
 
     @property
     def duration(self):
-        """Duration from 5 to 75% of the normalized Arias intensity (sec)."""
+        """Duration from 5 to 75% of the normalized Arias intensity [sec]."""
         return np.exp(self._ln_dur)
 
     @property
@@ -175,7 +175,7 @@ class AbrahamsonSilva1996(model.Model):
         Returns
         -------
         durations : :class:`np.ndarray`
-            durations (sec). For a scalar scenario, the shape is that of `nias`,
+            durations [sec]. For a scalar scenario, the shape is that of `nias`,
             or (len(stds), len(nias)) if `stds` is provided. For a vectorized
             scenario with N scenarios, the shape is (N, len(nias)), or
             (N, len(stds), len(nias)) if `stds` is provided.

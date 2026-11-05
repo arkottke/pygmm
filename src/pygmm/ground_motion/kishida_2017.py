@@ -1,4 +1,4 @@
-"""Kishida (2017, :cite:`kishida17`) conditional spectrum."""
+"""Kishida (2017, :cite:p:`kishida17`) conditional spectrum."""
 
 import numpy as np
 
@@ -9,10 +9,10 @@ from .baker_jayaram_2008 import calc_correls
 def calc_cond_mean_spectrum_vector(
     periods: ArrayLike, ln_psas: ArrayLike, ln_stds: ArrayLike, ln_psas_cond: ArrayLike
 ) -> tuple[np.ndarray, np.ndarray]:
-    """Kishida (2017, :cite:`kishida17`) conditional spectrum.
+    """Kishida (2017, :cite:p:`kishida17`) conditional spectrum.
 
     Conditional mean spectrum vector (CMSV) by Kishida (2017,
-    :cite:`kishida17`) is specifying the target spectral acceleration at
+    :cite:p:`kishida17`) is specifying the target spectral acceleration at
     multiple periods, rather than the single conditioning period by Cornell and
     Baker (2008). If this approach is used for a single period, then the
     resulting spectrum is the same as computed by Cornell and Baker (2008) --

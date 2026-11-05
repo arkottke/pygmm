@@ -33,7 +33,7 @@ def _pow(x: ArrayLike, y: float) -> ArrayLike:
 
 @register(tectonic="active_crustal")
 class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
-    r"""Campbell and Bozorgnia (2014, :cite:`campbell14`) model.
+    r"""Campbell and Bozorgnia (2014, :cite:p:`campbell14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
@@ -294,13 +294,14 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
-            nshmp, epistemic, basin, cybershake, prvi (bool, optional): the
-                nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed. nshmp, epistemic, basin, cybershake, prvi (bool, optional):
+            the nshmp-lib options (see :mod:`pygmm.ground_motion.nshmp`).
         """
         self._set_options(nshmp, epistemic, basin, cybershake, prvi)
         super().__init__(scenario, ims)
@@ -354,7 +355,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then the reference condition is
             computed, which uses the basin depth estimated from `v_s30`.
         v_s30 : float or array_like
@@ -364,12 +365,11 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
             coefficients for the periods to compute. If *None*, the
             coefficients for the requested intensity measures are used.
         pga_rock : array_like, optional
-            reference PGA (g) of each computed period (with a trailing axis
+            reference PGA [g] of each computed period (with a trailing axis
             for the periods), which replaces `pga_ref` (nshmp-lib).
 
         Returns
         -------
-
             class:`np.array`: Natural log of the response.
 
         """
@@ -486,14 +486,14 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference condition. If
+            peak ground acceleration [g] at the reference condition. If
             :class:`np.nan`, then the basin depth is estimated from `v_s30`.
         v_s30 : float or array_like
             site condition. Set `v_s30` to the reference
             velocity (e.g., 1180 m/s) for the reference response.
         depth_2_5 : float or array_like
             depth to the 2.5 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{2.5}` in (km).
+            :math:`Z_{2.5}` in [km].
         region : str or array_like, optional
             region of basin model. Valid options:
             "global", "california", "japan", "italy", "china". If
@@ -623,12 +623,11 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition.
 
         Returns
         -------
-
             class:`np.array`: Logarithmic standard deviation.
 
         """
@@ -685,8 +684,9 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
     def calc_depth_2_5(
         v_s30: float, region: str = "global", depth_1_0: float | None = None
     ) -> float:
-        """Calculate the depth to a shear-wave velocity of 2.5 km/sec
-        (:math:`Z_{2.5}`).
+        """Calculate the depth to a shear-wave velocity of 2.5 km/sec.
+
+        This is :math:`Z_{2.5}`.
 
         Provide either `v_s30` or `depth_1_0`.
 
@@ -701,14 +701,14 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
             "california", "japan". (Default value = 'global')
         depth_1_0 : Optional[float or array_like]
             depth to the 1.0 km∕s shear-wave
-            velocity horizon beneath the site, :math:`Z_{1.0}` in (km).
+            velocity horizon beneath the site, :math:`Z_{1.0}` in [km].
             (Default value = None)
 
         Returns
         -------
         float or :class:`np.ndarray`
             estimated depth to a shear-wave velocity of 2.5 km/sec
-            (km). Arrays of `v_s30` (or `depth_1_0`) and `region` are
+            [km]. Arrays of `v_s30` (or `depth_1_0`) and `region` are
             broadcast against each other.
 
         """
@@ -740,7 +740,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
 
     @staticmethod
     def _calc_depth_tor(mag: ArrayLike, mechanism: ArrayLike) -> ArrayLike:
-        """Estimate the depth to the top of rupture (km).
+        """Estimate the depth to the top of rupture [km].
 
         Same as :meth:`pygmm.ChiouYoungs2014.calc_depth_tor`, but accepts
         arrays of `mag` and `mechanism`.
@@ -758,7 +758,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
     def calc_depth_hyp(
         mag: float, dip: float, depth_tor: float, depth_bor: float
     ) -> float:
-        """Estimate the depth to hypocenter.
+        r"""Estimate the depth to hypocenter.
 
         Parameters
         ----------
@@ -776,7 +776,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
         Returns
         -------
         float or :class:`np.ndarray`
-            estimated hypocenter depth (km)
+            estimated hypocenter depth [km]
 
         """
         # Equations 35, 36, and 37 of journal article
@@ -793,7 +793,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
     def calc_width(
         mag: float, dip: float, depth_tor: float, depth_bot: float = 15.0
     ) -> float:
-        """Estimate the fault width using Equation (39) of CB14.
+        r"""Estimate the fault width using Equation (39) of CB14.
 
         Parameters
         ----------
@@ -807,13 +807,13 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
             Keyword Args:
         depth_bot : Optional[float or array_like]
             depth to bottom of seismogenic crust
-            (km). Used to calculate fault width if none is specified. If
+            [km]. Used to calculate fault width if none is specified. If
             *None*, then a value of 15 km is used. (Default value = 15.0)
 
         Returns
         -------
         float or :class:`np.ndarray`
-            estimated fault width (km)
+            estimated fault width [km]
         """
         return _min(
             np.sqrt(10 ** ((mag - 4.07) / 0.98)),
@@ -822,7 +822,7 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_bor(depth_tor: float, dip: float, width: float) -> float:
-        """Compute the depth to bottom of the rupture (km).
+        r"""Compute the depth to bottom of the rupture [km].
 
         Parameters
         ----------
@@ -837,6 +837,6 @@ class CampbellBozorgnia2014(usgs.NshmpOptions, model.GroundMotionModel):
         Returns
         -------
         float or :class:`np.ndarray`
-            depth to bottom of the fault rupture (km)
+            depth to bottom of the fault rupture [km]
         """
         return depth_tor + width * np.sin(np.radians(dip))

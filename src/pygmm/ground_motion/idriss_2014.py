@@ -1,4 +1,4 @@
-"""Idriss (2014, :cite:`idriss14`) model."""
+"""Idriss (2014, :cite:p:`idriss14`) model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class Idriss2014(model.GroundMotionModel):
-    """Idriss (2014, :cite:`idriss14`) model.
+    """Idriss (2014, :cite:p:`idriss14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.

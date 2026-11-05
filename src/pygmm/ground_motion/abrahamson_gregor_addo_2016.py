@@ -13,7 +13,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="subduction")
 class AbrahamsonGregorAddo2016(model.GroundMotionModel):
-    """Abrahamson, Gregor, and Addo (2016) ground motion model.
+    r"""Abrahamson, Gregor, and Addo (2016) ground motion model.
 
     This model was developed for subduction regions and is commonly referred to
     as the BCHydro model.
@@ -33,12 +33,12 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
     scenario : :class:`pygmm.model.Scenario`
         earthquake scenario
     adjust_c1 : float or array_like, optional
-        adjustment to the magnitude scaling break point (:math:`\\Delta C_1`)
+        adjustment to the magnitude scaling break point (:math:`\Delta C_1`)
         as a single value or one value per period. If *None* (default), -0.3
         is used for intraslab events and a period dependent value from 0.2 to
         -0.2 is used for interface events.
     adjust_c4 : float, optional
-        adjustment to the finite-fault distance term (:math:`\\Delta C_4`,
+        adjustment to the finite-fault distance term (:math:`\Delta C_4`,
         km), which is added to :math:`C_4` (10 km). Default is 0.
     scale_atten : float, optional
         scale factor applied to the anelastic attenuation term. Default is 1.
@@ -105,18 +105,20 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
     ):
         """Initialize the model.
 
-        Args:
-            scenario (:class:`pygmm.model.Scenario`): earthquake scenario.
-            adjust_c1 (float or array_like, optional): adjustment to the
-                magnitude scaling break point. If *None* (default), the
-                adjustment depends on the event type.
-            adjust_c4 (float, optional): adjustment added to the
-                finite-fault distance term, C_4 (km).
-            scale_atten (float, optional): scale factor applied to the
-                anelastic attenuation term.
-            ims (str or sequence of str, optional): intensity measures to
-                compute. If *None* (default), all intensity measures are
-                computed.
+        Parameters
+        ----------
+        scenario : pygmm.model.Scenario
+            earthquake scenario.
+        adjust_c1 : float or array_like, optional
+            adjustment to the magnitude scaling break point. If *None* (default), the
+            adjustment depends on the event type.
+        adjust_c4 : float, optional
+            adjustment added to the finite-fault distance term, C_4 [km].
+        scale_atten : float, optional
+            scale factor applied to the anelastic attenuation term.
+        ims : str or sequence of str, optional
+            intensity measures to compute. If *None* (default), all intensity measures
+            are computed.
         """
         super().__init__(scenario, ims)
 
@@ -142,7 +144,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
 
     @property
     def adjust_c1(self):
-        """Adjustment to the magnitude scaling break point (:math:`\\Delta C_1`).
+        r"""Adjustment to the magnitude scaling break point (:math:`\Delta C_1`).
 
         The default adjustment has one value per computed period, with shape
         (N, periods) for N scenarios with different event types.
@@ -153,11 +155,12 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
 
     @property
     def adjust_c4(self):
-        """Adjustment to the finite-fault distance term (:math:`\\Delta C_4`, km)."""
+        r"""Adjustment to the finite-fault distance term (:math:`\Delta C_4`, km)."""
         return self._adjust_c4
 
     @property
     def scale_atten(self):
+        """Scale factor applied to the attenuation."""
         return self._scale_atten
 
     def _select_rows(self, values: Any, rows=None) -> Any:
@@ -213,7 +216,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         Parameters
         ----------
         pga_ref : float or array_like
-            peak ground acceleration (g) at the reference
+            peak ground acceleration [g] at the reference
             condition. If :class:`np.nan`, then the response at the reference
             condition is computed.
         rows : array_like, optional
@@ -283,7 +286,7 @@ class AbrahamsonGregorAddo2016(model.GroundMotionModel):
         Returns
         -------
         dist : class:`np.array`:
-            distance (km)
+            distance [km]
 
         """
         s = self._scenario

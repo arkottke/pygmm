@@ -1,0 +1,91 @@
+"""Tests for the function-style relationships in pygmm.ground_motion."""
+
+import json
+
+import numpy as np
+import pytest
+from numpy.testing import assert_allclose
+
+from pygmm.ground_motion import (
+    calc_damping_scaling_rea15,
+    calc_period_rea05,
+    calc_pulse_proportion_hea12,
+)
+
+from . import FPATH_DATA
+
+
+@pytest.mark.parametrize(
+    "kind,mag,dist_rup,site_class,directivity,expected",
+    [
+        # Example from Rathje et. al (2014)
+        ("period_mean", 7, 5, "b", False, 0.45),
+        # Example from Rathje and Antonakos (2011)
+        ("period_mean", 8, 2, "b", False, 0.46),
+    ],
+)
+def test_calc_period_rea05(kind, mag, dist_rup, site_class, directivity, expected):
+    actual = calc_period_rea05(kind, mag, dist_rup, site_class, directivity)
+    assert_allclose(actual, expected, rtol=0.01)
+
+
+with open(FPATH_DATA / "rezaeian_et_al-2014.json") as fp:
+    REA15_CASES = json.load(fp)
+
+
+@pytest.mark.parametrize("case", REA15_CASES)
+def test_calc_damping_scaling_rea15(case):
+    ret = calc_damping_scaling_rea15(
+        case["damping"], case["mag"], case["dist_rup"], comp=case["comp"]
+    )
+
+    assert_allclose(ret.dsf, case["dsf"], rtol=0.01)
+    assert_allclose(ret.ln_std, case["ln_std"], rtol=0.01)
+
+
+def test_calc_damping_scaling_rea15_periods():
+    full = calc_damping_scaling_rea15(2, 6, 10)
+    periods = full.period[[3, 10]]
+    ret = calc_damping_scaling_rea15(2, 6, 10, periods=periods)
+    assert_allclose(ret.dsf, full.dsf[[3, 10]])
+
+
+def test_calc_damping_scaling_rea15_bounds():
+    with pytest.raises(ValueError, match="damping"):
+        calc_damping_scaling_rea15(50, 6, 10)
+
+
+def test_calc_pulse_proportion_hea12():
+    prop = calc_pulse_proportion_hea12(np.array([0.0, 10.0, 30.0]), 1.0)
+    assert np.all((0 < prop) & (prop < 1))
+    # Proportion decreases with distance
+    assert np.all(np.diff(prop) < 0)
+
+
+def test_calc_period_rea05_directivity_vanishes_beyond_20_km():
+    kwds = dict(kind="period_mean", mag=7, site_class="b")
+    # The directivity term is a near-fault effect: it must not change the
+    # period at 20 km and it must never reduce it further away
+    for dist_rup in [20.0, 50.0, 80.0]:
+        with_dir = calc_period_rea05(dist_rup=dist_rup, directivity=True, **kwds)
+        without = calc_period_rea05(dist_rup=dist_rup, directivity=False, **kwds)
+        assert_allclose(with_dir, without)
+    near = calc_period_rea05(dist_rup=5.0, directivity=True, **kwds)
+    assert near != calc_period_rea05(dist_rup=5.0, directivity=False, **kwds)
+
+
+def test_abrahamson_silva_1996_does_not_modify_the_input():
+    """Out-of-range intensities give NaN in the result, not in the caller's array."""
+    from pygmm import AbrahamsonSilva1996, Scenario
+
+    nias = np.array([0.05, 0.5, 0.99])
+    expected = nias.copy()
+
+    model = AbrahamsonSilva1996(Scenario(mag=6.5, dist_rup=20, site_cond="rock"))
+    durations = model.interp(nias)
+    increments = AbrahamsonSilva1996.calc_ln_dur_incr(nias)
+
+    assert_allclose(nias, expected)
+    assert np.isnan(durations[0]) and np.isnan(durations[-1])
+    assert np.isfinite(durations[1])
+    assert np.isnan(increments[0]) and np.isfinite(increments[1])

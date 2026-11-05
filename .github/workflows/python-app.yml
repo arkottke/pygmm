@@ -9,7 +9,7 @@ jobs:
             CODACY_PROJECT_TOKEN: ${{ secrets.CODACY_PROJECT_TOKEN }}
         strategy:
             matrix:
-                python-version: ["3.12", "3.13", "3.14"]
+                python-version: ["3.13", "3.14"]
 
         steps:
             - uses: actions/checkout@v4.2.2

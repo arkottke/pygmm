@@ -1,4 +1,4 @@
-"""Chiou and Youngs (2014, :cite:`chiou14`) model."""
+"""Chiou and Youngs (2014, :cite:p:`chiou14`) model."""
 
 import logging
 
@@ -14,7 +14,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="active_crustal")
 class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
-    """Chiou and Youngs (2014, :cite:`chiou14`) model.
+    r"""Chiou and Youngs (2014, :cite:p:`chiou14`) model.
 
     This model was developed for active tectonic regions as part of the
     NGA-West2 effort.
@@ -36,7 +36,7 @@ class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
     published model. With ``nshmp=True``, the model is computed as in
     nshmp-lib, which:
 
-    - applies the hanging-wall term for sites with :math:`R_x \\ge 0` if
+    - applies the hanging-wall term for sites with :math:`R_x \ge 0` if
       ``on_hanging_wall`` is not given,
     - has no basin term if ``depth_1_0`` is *None* or NaN, and always uses the
       California reference :math:`Z_{1.0}`,
@@ -390,7 +390,7 @@ class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
             velocity (e.g., 1180 m/s) for the reference response.
         depth_1_0 : float or array_like
             depth to the 1.0 km∕s shear-wave velocity horizon beneath the site,
-            :math:`Z_{1.0}` in (km). If *None*, then no basin term is applied.
+            :math:`Z_{1.0}` in [km]. If *None*, then no basin term is applied.
         region : str or array_like, optional
             region of basin model. Valid options: 'california', 'japan'. If
             *None*, then 'california' is used as the default value.
@@ -582,7 +582,7 @@ class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
         Returns
         -------
         depth_1_0 : float
-            estimated depth to a shear-wave velocity of 1 km/sec (km)
+            estimated depth to a shear-wave velocity of 1 km/sec [km]
 
         """
         if np.ndim(region) > 0:
@@ -612,7 +612,7 @@ class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
 
     @staticmethod
     def calc_depth_tor(mag: float, mechanism: str) -> float:
-        """Calculate an estimate of the depth to top of rupture (km).
+        """Calculate an estimate of the depth to top of rupture [km].
 
         Parameters
         ----------
@@ -625,7 +625,7 @@ class ChiouYoungs2014(usgs.NshmpOptions, model.GroundMotionModel):
         Returns
         -------
         depth_tor : float or :class:`np.ndarray`
-            estimated depth to top of rupture (km)
+            estimated depth to top of rupture [km]
 
         """
         if np.ndim(mag) > 0 or np.ndim(mechanism) > 0:

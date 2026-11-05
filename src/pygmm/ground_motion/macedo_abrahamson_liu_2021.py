@@ -1,4 +1,4 @@
-"""Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model."""
+"""Macedo, Abrahamson, and Liu (2021, :cite:p:`macedo21`) CAV model."""
 
 import numpy as np
 
@@ -10,7 +10,7 @@ __author__ = "Mahdi Bahrampouri"
 
 @register(provides=("cav",), input="conditional")
 class MacedoAbrahamsonLiu2021(model.Model):
-    """Macedo, Abrahamson, and Liu (2021, :cite:`macedo21`) CAV model.
+    r"""Macedo, Abrahamson, and Liu (2021, :cite:p:`macedo21`) CAV model.
 
     Conditional ground-motion model (CGMM) and scenario-based models for
     cumulative absolute velocity (CAV, m/s) for shallow crustal tectonic
@@ -21,7 +21,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     **Conditional mode** (``pga_model=None``): CAV is estimated from a
     user-supplied PGA value (in g) using Eq. (12). The aleatory variability is
-    :math:`\\sigma = \\sqrt{\\tau^2 + \\phi^2} \\approx 0.31`.
+    :math:`\sigma = \sqrt{\tau^2 + \phi^2} \approx 0.31`.
 
     **Scenario mode** (``pga_model`` is one of ``'ASK14'``, ``'BSSA14'``,
     ``'CB14'``, ``'CY14'``, ``'I14'``): The median PGA and its lognormal
@@ -45,10 +45,7 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     References
     ----------
-    .. [1] Macedo, J., Abrahamson, N., and Liu, C. (2021). "New Scenario-Based
-           Cumulative Absolute Velocity Models for Shallow Crustal Tectonic
-           Settings." Bulletin of the Seismological Society of America,
-           111(1), 157–172. doi: 10.1785/0120190321.
+    :cite:t:`macedo21`
 
     """
 
@@ -118,12 +115,12 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     @property
     def ln_cav(self):
-        """Natural log of the median CAV (m/s)."""
+        """Natural log of the median CAV [m/s]."""
         return self._ln_cav
 
     @property
     def cav(self):
-        """Median CAV (m/s)."""
+        """Median CAV [m/s]."""
         return np.exp(self._ln_cav)
 
     @property
@@ -143,12 +140,12 @@ class MacedoAbrahamsonLiu2021(model.Model):
 
     @property
     def cav_plus_sigma(self):
-        """84th-percentile CAV (m/s): ``exp(ln_cav + ln_std)``."""
+        """84th-percentile CAV [m/s]: ``exp(ln_cav + ln_std)``."""
         return np.exp(self._ln_cav + self._ln_std)
 
     @property
     def cav_minus_sigma(self):
-        """16th-percentile CAV (m/s): ``exp(ln_cav - ln_std)``."""
+        """16th-percentile CAV [m/s]: ``exp(ln_cav - ln_std)``."""
         return np.exp(self._ln_cav - self._ln_std)
 
     # ------------------------------------------------------------------ #

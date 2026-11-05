@@ -6,8 +6,9 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Two, and the difference matters:
 
-- **`/home/albert/envs/py312`** (Python 3.12.9) — a shared environment with
-  pygmm, **pyrvt and pystrata all installed editable**. Use this for anything
+- **`/home/albert/envs/py313`** (Python 3.13) — a shared environment with
+  pygmm, **pyrvt, pystrata and pyrotd all installed editable**. (The older
+  `py312` environment is below the Python floor and is not maintained.) Use this for anything
   touching cross-package interop; it is the only place the
   `tests/test_fourier_spectrum_interop.py` cases actually run rather than
   being skipped by `importorskip`.
@@ -23,12 +24,12 @@ All pytest config now lives in `pyproject.toml`.
 ## Commands
 
 ```bash
-# Run all tests (use the py312 env for interop coverage)
-/home/albert/envs/py312/bin/python -m pytest tests/
+# Run all tests (use the py313 env for interop coverage)
+/home/albert/envs/py313/bin/python -m pytest tests/
 uv run pytest                      # equivalent, minus the interop tests
 
 # A single test file
-/home/albert/envs/py312/bin/python -m pytest tests/test_registry.py
+/home/albert/envs/py313/bin/python -m pytest tests/test_registry.py
 
 # Coverage
 uv run pytest --cov=pygmm --cov-report=html
@@ -41,7 +42,7 @@ uv run ruff format src/ tests/
 uv run mypy
 
 # Build docs
-uv run --group docs make -C docs html
+uv run --extra docs make -C docs html
 ```
 
 ## Architecture
@@ -70,7 +71,7 @@ several intensity measures at once.
 - `src/pygmm/model.py` — `Model`, `GroundMotionModel`, `Scenario`, `Parameter`, `Coefficients`.
 - `src/pygmm/registry.py` — `@register`, `ModelInfo`, `find_models()`, `get_model()`. Capability-based discovery; replaces the deprecated `pygmm.models` list.
 - `src/pygmm/contracts.py` — Output dataclasses (`ResponseSpectrum`, `FourierSpectrum`, `Duration`, `NonlinearSoilCurves`, `VelocityProfile`) plus the `Supports*` **Protocols** producers satisfy structurally. pystrata and pyrvt duck-type against these and take no runtime dependency on pygmm.
-- `src/pygmm/kamai_2016.py` — `kea16_profile`; sole producer of `VelocityProfile`, so it has no package of its own.
+- `src/pygmm/_utils.py` — `dist_lognorm`, `check_bounds`, `check_options`, and unit constants for the function-style relationships.
 - `src/pygmm/__init__.py` — Public API.
 
 ### The three model packages
@@ -82,14 +83,28 @@ subpackages demanded a four-axis classification and consequently misfiled
 `GulerceAbrahamson2011` (a V/H ratio model, filed under `response_spectrum/`)
 and `Stafford2017`.
 
-| Varies with | Package | Contents |
-|---|---|---|
-| shear strain | `soil_curves/` | G/Gmax and damping curves (Darendeli, Menq, Kishida, Wang, Alemu, Rollins) |
-| frequency | `fourier_spectrum/` | FAS models (BA19, Stafford 2022, SourceTheoryModel) and inter-frequency correlation (BA18, Stafford 2017) |
-| period, or a scalar from a `Scenario` | `ground_motion/` | response spectra, peak parameters, duration, Arias, CAV, V/H ratio, inter-period correlation |
+| Varies with                           | Package             | Contents                                                                                                  |
+| ------------------------------------- | ------------------- | --------------------------------------------------------------------------------------------------------- |
+| shear strain                          | `soil_curves/`      | G/Gmax and damping curves (Darendeli, Menq, Kishida, Wang, Alemu, Rollins)                                |
+| frequency                             | `fourier_spectrum/` | FAS models (BA19, Stafford 2022, SourceTheoryModel) and inter-frequency correlation (BA18, Stafford 2017) |
+| period, or a scalar from a `Scenario` | `ground_motion/`    | response spectra, peak parameters, duration, Arias, CAV, V/H ratio, inter-period correlation              |
 
 Anything else stays at the top level until a second producer of the same
 quantity earns it a package.
+
+Three more packages exist because each has several producers of one quantity:
+`velocity_profile/` (Vs profiles), `kappa/` (site κ0 from Vs30), and
+`slope_displacement/` (sliding displacement). Single-producer modules sit at
+the top level: `elastic.py`, `liquefaction.py`, `time_series.py`.
+
+### Function-style relationships
+
+`Model`/`Scenario` is for ground-motion models. Everything folded in from the
+former pyGEEMs (slope displacement, κ0, liquefaction, REA15, REA05, ...) is a
+plain `calc_*` function, not registered. Lognormal ones are wrapped by
+`_utils.dist_lognorm`: they return the median, or `(ln_mean, ln_std)` with
+`stats=True`. `numba` and `pyrotd` are the optional `slope` extra;
+`slope_displacement.rigid_block` falls back to pure Python without numba.
 
 A model's **capabilities are registry metadata, not its location** — a
 directory can express only one classification, and `AtkinsonBoore2006` emits
@@ -119,7 +134,7 @@ This repo follows [SPEC 0](https://scientific-python.org/specs/spec-0000/):
 - **Python** — support the minors released in the last **36 months**.
 - **Core dependencies** — support the minors released in the last **24 months**.
 
-Floor as of 2026-08-03: **Python 3.12**; CI runs 3.12, 3.13, 3.14.
+Floor as of 2026-11-03: **Python 3.13**; CI runs 3.13, 3.14.
 
 The dated drop schedule lives in `pyproject.toml` next to `[project.urls]`.
 When advancing a floor, update all four in step: `requires-python`, the

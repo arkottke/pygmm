@@ -1,4 +1,7 @@
-"""Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity model."""
+"""Abrahamson, Shi, and Yang (2016) Arias intensity model.
+
+See :cite:t:`abrahamson16arias`.
+"""
 
 import numpy as np
 
@@ -10,12 +13,12 @@ __author__ = "Albert Kottke"
 
 @register(provides=("arias",), input="conditional")
 class AbrahamsonShiYang2016(model.Model):
-    """Abrahamson, Shi, and Yang (2016, :cite:`abrahamson16arias`) Arias intensity
-    model.
+    r"""Abrahamson, Shi, and Yang (2016) Arias intensity model.
 
-    Conditional ground-motion model (CGMM) and scenario-based models for
-    Arias intensity (Ia, m/s) for shallow crustal tectonic settings, consistent
-    with the NGA-West2 ground-motion models. Calibrated on the NGA-West2
+    See :cite:t:`abrahamson16arias`. Conditional ground-motion model (CGMM)
+    and scenario-based models for Arias intensity (Ia, m/s) for shallow
+    crustal tectonic settings, consistent with the NGA-West2 ground-motion
+    models. Calibrated on the NGA-West2
     database (~15,209 recordings, 326 events, M 3.0–7.9).
 
     Two evaluation modes are supported:
@@ -23,7 +26,7 @@ class AbrahamsonShiYang2016(model.Model):
     **Conditional mode** (``backbone=None``): Ia is estimated from user-supplied
     PGA and SA(T=1 s) values (both in g) using Equations (3.3) and (3.4).
     The aleatory variability is
-    :math:`\\sigma = \\sqrt{\\tau^2 + \\phi^2} \\approx 0.38`.
+    :math:`\sigma = \sqrt{\tau^2 + \phi^2} \approx 0.38`.
 
     **Scenario mode** (``backbone`` is one of ``'ASK14'``, ``'BSSA14'``,
     ``'CB14'``, ``'CY14'``, ``'I14'``): The median PGA and SA(T=1 s), and
@@ -41,19 +44,15 @@ class AbrahamsonShiYang2016(model.Model):
         ``'ASK14'``, ``'BSSA14'``, ``'CB14'``, ``'CY14'``, ``'I14'``.
         Default ``None`` selects conditional mode.
     pga : float or None, optional
-        Peak ground acceleration (g) for conditional mode. Required when
+        Peak ground acceleration [g] for conditional mode. Required when
         ``backbone`` is ``None``.
     sa_t1 : float or None, optional
-        Spectral acceleration at T=1 s (g) for conditional mode. Required
+        Spectral acceleration at T=1 s [g] for conditional mode. Required
         when ``backbone`` is ``None``.
 
     References
     ----------
-    .. [1] Abrahamson, C., Shi, H.-J. M., and Yang, B. (2016). "Ground-Motion
-           Prediction Equations for Arias Intensity Consistent with the
-           NGA-West2 Ground-Motion Models." PEER Report No. 2016/05, Pacific
-           Earthquake Engineering Research Center, University of California,
-           Berkeley.
+    :cite:t:`abrahamson16arias`
 
     """
 
@@ -135,7 +134,7 @@ class AbrahamsonShiYang2016(model.Model):
 
     @property
     def ia(self):
-        """Median Arias intensity (m/s)."""
+        """Median Arias intensity [m/s]."""
         return np.exp(self._ln_ia)
 
     @property
@@ -155,12 +154,12 @@ class AbrahamsonShiYang2016(model.Model):
 
     @property
     def ia_plus_sigma(self):
-        """84th-percentile Arias intensity (m/s): ``exp(ln_ia + ln_std)``."""
+        """84th-percentile Arias intensity [m/s]: ``exp(ln_ia + ln_std)``."""
         return np.exp(self._ln_ia + self._ln_std)
 
     @property
     def ia_minus_sigma(self):
-        """16th-percentile Arias intensity (m/s): ``exp(ln_ia - ln_std)``."""
+        """16th-percentile Arias intensity [m/s]: ``exp(ln_ia - ln_std)``."""
         return np.exp(self._ln_ia - self._ln_std)
 
     # ------------------------------------------------------------------ #

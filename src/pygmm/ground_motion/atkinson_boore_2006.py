@@ -1,4 +1,4 @@
-"""Atkinson and Boore (2006, :cite:`atkinson06`) model."""
+"""Atkinson and Boore (2006, :cite:p:`atkinson06`) model."""
 
 from typing import Any
 
@@ -13,7 +13,7 @@ __author__ = "Albert Kottke"
 
 @register(tectonic="stable_continental")
 class AtkinsonBoore2006(model.GroundMotionModel):
-    """Atkinson and Boore (2006, :cite:`atkinson06`) model.
+    """Atkinson and Boore (2006, :cite:p:`atkinson06`) model.
 
     Developed for the Eastern North America with a reference velocity of 760
     or 2000 m/s. Hard-rock sites (``v_s30`` of 2000 m/s or greater) use the
@@ -146,7 +146,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         return ln_resp
 
     def _calc_log10_ref(self, c: Any, periods: ArrayLike) -> np.ndarray:
-        """Calculate the log10 response (cm/sec/sec) at the reference condition.
+        """Calculate the log10 response [cm/sec/sec] at the reference condition.
 
         Parameters
         ----------
@@ -204,8 +204,10 @@ class AtkinsonBoore2006(model.GroundMotionModel):
         return ln_std
 
     def _calc_stress_factor(self, periods: ArrayLike) -> np.ndarray:
-        """Calculate the stress correction factor proposed by Atkinson and
-        Boore (2011) :cite:`atkinson11`.
+        """Calculate the stress correction factor.
+
+        The factor was proposed by Atkinson and Boore (2011)
+        :cite:p:`atkinson11`.
 
         Parameters
         ----------
@@ -243,7 +245,7 @@ class AtkinsonBoore2006(model.GroundMotionModel):
             peak ground acceleration (PGA, cm/sec/sec) at the B/C boundary,
             with a trailing axis of length one.
         v_s30 : array_like
-            time-averaged shear-wave velocity (m/sec), with a trailing axis of
+            time-averaged shear-wave velocity [m/sec], with a trailing axis of
             length one.
         periods : array_like
             periods at which the site amplification is computed.

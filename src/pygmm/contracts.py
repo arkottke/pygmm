@@ -42,7 +42,10 @@ class ResponseSpectrum:
     damping : float
         Oscillator damping ratio (decimal, e.g. 0.05).
     duration : float, optional
-        Ground-motion duration [s] (e.g. for RVT consumers).
+        Ground-motion duration [s] for RVT consumers. pyRVT's peak
+        calculators expect the duration of the stationary portion of the
+        motion, typically the 5-75% normalized Arias intensity duration
+        (``Duration.d_5_75``), not the 5-95% significant duration.
     """
 
     periods: npt.NDArray[np.floating]
@@ -62,7 +65,10 @@ class FourierSpectrum:
     fourier_amps : np.ndarray
         Fourier amplitudes of acceleration [g-s].
     duration : float
-        Ground-motion duration [s] used by RVT.
+        Ground-motion duration [s] used by RVT. pyRVT's peak calculators expect
+        the duration of the stationary portion of the motion, typically the
+        5-75% normalized Arias intensity duration (``Duration.d_5_75``), not
+        the 5-95% significant duration.
     """
 
     freqs: npt.NDArray[np.floating]
@@ -120,9 +126,9 @@ class NonlinearSoilCurves:
     mod_reduc : np.ndarray
         Shear-modulus reduction ratio G/G_max.
     damping : np.ndarray
-        Material damping ratio (decimal).
+        Material damping ratio [decimal].
     damping_min : float
-        Small-strain (minimum) damping (decimal).
+        Small-strain (minimum) damping [decimal].
     unit_wt : float, optional
         Soil unit weight [kN/m^3].
     name : str, optional
@@ -176,7 +182,14 @@ class VelocityProfile:
 class SupportsResponseSpectrum(Protocol):
     """A model that can emit a :class:`ResponseSpectrum`."""
 
-    def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum: ...
+    def response_spectrum(self, damping: float = 0.05) -> ResponseSpectrum:
+        """Return the response spectrum.
+
+        Parameters
+        ----------
+        damping : float, default=0.05
+            Oscillator damping ratio [decimal].
+        """
 
 
 @runtime_checkable
@@ -189,21 +202,31 @@ class SupportsFourierSpectrum(Protocol):
     letting a ``None`` surface deep inside a consumer's RVT integration.
     """
 
-    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum: ...
+    def fourier_spectrum(self, duration: float | None = None) -> FourierSpectrum:
+        """Return the Fourier amplitude spectrum.
+
+        Parameters
+        ----------
+        duration : float, optional
+            Ground-motion duration [s] for the RVT consumer, if the model
+            does not predict one.
+        """
 
 
 @runtime_checkable
 class SupportsDuration(Protocol):
     """A model that can emit a :class:`Duration`."""
 
-    def duration_model(self) -> Duration: ...
+    def duration_model(self) -> Duration:
+        """Return the ground-motion duration."""
 
 
 @runtime_checkable
 class SupportsSoilCurves(Protocol):
     """A model that can emit :class:`NonlinearSoilCurves`."""
 
-    def curves(self) -> NonlinearSoilCurves: ...
+    def curves(self) -> NonlinearSoilCurves:
+        """Return the modulus reduction and damping curves."""
 
 
 __all__ = [

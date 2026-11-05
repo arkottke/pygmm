@@ -1,4 +1,4 @@
-"""Kempton and Stewart (2006, :cite:`kempton2006`) duration model."""
+"""Kempton and Stewart (2006, :cite:p:`kempton2006`) duration model."""
 
 import numpy as np
 
@@ -11,7 +11,7 @@ __author__ = ""
 
 @register(provides=("duration",))
 class KemptonStewart2006(model.Model):
-    """Kempton and Stewart (2006, :cite:`kempton2006`) duration model.
+    """Kempton and Stewart (2006, :cite:p:`kempton2006`) duration model.
 
     The model is vectorized. Each scenario value (``mag``, ``dist_rup``, and
     ``v_s30``) can be a scalar or an array, and the arrays are broadcast against
@@ -84,10 +84,12 @@ class KemptonStewart2006(model.Model):
 
     @property
     def duration(self):
+        """Median durations [s] as a `np.recarray`, accessed by the interval."""
         return KemptonStewart2006._as_recarray(np.exp(self._ln_dur))
 
     @property
     def std_err(self):
+        """Standard errors of the natural log durations as a `np.recarray`."""
         std_err = self._std_err
         if np.ndim(self._ln_dur) > 1:
             std_err = np.broadcast_to(std_err, np.shape(self._ln_dur))

@@ -1,20 +1,20 @@
-"""Boore & Joyner (1997) / Boore (2016) generic rock velocity profiles.
+r"""Boore & Joyner (1997) / Boore (2016) generic rock velocity profiles.
 
 Boore and Joyner (1997; BJ97) defined two reference shear-wave velocity
 profiles used widely for computing generic crustal amplifications:
 
 - ``BJ97gr``, the "generic rock" profile, with a 30 m time-averaged
-  velocity :math:`\\bar V_S(30\\ \\mathrm{m})` of 618 m/s.
+  velocity :math:`\bar V_S(30\ \mathrm{m})` of 618 m/s.
 - ``BJ97gvhr``, the "generic very hard rock" profile, with
-  :math:`\\bar V_S(30\\ \\mathrm{m})` of 2780 m/s.
+  :math:`\bar V_S(30\ \mathrm{m})` of 2780 m/s.
 
 Boore (2016) interpolates these two profiles (in slowness space) to derive a
 third profile, ``BJ97gr760``, with the more commonly used reference velocity
-:math:`\\bar V_S(30\\ \\mathrm{m})` = 760 m/s, and tabulates it (with a
+:math:`\bar V_S(30\ \mathrm{m})` = 760 m/s, and tabulates it (with a
 companion density model) in Table 1 of that article. ``BJ97gr`` itself is
 reconstructed here algebraically by inverting Boore's (2016) interpolation
 equations using the tabulated ``BJ97gr760`` and ``BJ97gvhr`` profiles; this
-recovers :math:`\\bar V_S(30\\ \\mathrm{m})` of about 616 m/s (versus the
+recovers :math:`\bar V_S(30\ \mathrm{m})` of about 616 m/s (versus the
 618 m/s target), the small difference being due to the decimation of the
 tabulated profiles.
 
@@ -25,7 +25,7 @@ sites, *BSSA*, 87(2), 327-341.
 
 Boore, D. M. (2016). Determining generic velocity and density models for
 crustal amplification calculations, with an update of the Boore and Joyner
-(1997) generic site amplification for :math:`\\bar V_S(Z)` = 760 m/s,
+(1997) generic site amplification for :math:`\bar V_S(Z)` = 760 m/s,
 *BSSA*, 106(1), 316-320.
 """
 
@@ -195,4 +195,58 @@ def _tabulated_profile(
     std_vs_ln = np.zeros_like(vs_median)
     return VelocityProfile(
         depth=depth, vs_median=vs_median, std_vs_ln=std_vs_ln, site_class=site_class
+    )
+
+
+def calc_vel_comp_bea16(vel_shear: npt.ArrayLike) -> npt.NDArray[np.floating]:
+    """Compression-wave velocity from shear-wave velocity (Boore, 2016).
+
+    Parameters
+    ----------
+    vel_shear : array_like
+        Shear-wave velocity [m/s].
+
+    Returns
+    -------
+    np.ndarray
+        Compression-wave velocity [m/s].
+    """
+    vs_kps = np.asarray(vel_shear, dtype=float) / 1000
+    return 1000 * (
+        0.9409
+        + 2.0947 * vs_kps
+        - 0.8206 * vs_kps**2
+        + 0.2683 * vs_kps**3
+        - 0.0251 * vs_kps**4
+    )
+
+
+def calc_density_bea16(vel_shear: npt.ArrayLike) -> npt.NDArray[np.floating]:
+    """Mass density from shear-wave velocity (Boore, 2016).
+
+    Parameters
+    ----------
+    vel_shear : array_like
+        Shear-wave velocity [m/s].
+
+    Returns
+    -------
+    np.ndarray
+        Mass density [g/cm^3].
+    """
+    # Both velocities in km/s
+    vp_kps = calc_vel_comp_bea16(vel_shear) / 1000
+    vs_kps = np.asarray(vel_shear, dtype=float) / 1000
+
+    return np.select(
+        [vs_kps < 0.30, (0.30 <= vs_kps) & (vs_kps < 3.55), 3.55 <= vs_kps],
+        [
+            1 + 1.53 * vs_kps**0.85 / (0.35 + 1.889 * vs_kps**1.7),
+            1.74 * vp_kps**0.25,
+            1.6612 * vp_kps
+            - 0.4721 * vp_kps**2
+            + 0.0671 * vp_kps**3
+            - 0.0043 * vp_kps**4
+            + 0.000106 * vp_kps**5,
+        ],
     )

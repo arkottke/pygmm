@@ -1,4 +1,4 @@
-"""Derras, Bard and Cotton (2014, :cite:`derras14`) model."""
+"""Derras, Bard and Cotton (2014, :cite:p:`derras14`) model."""
 
 import json
 import os
@@ -13,7 +13,7 @@ __author__ = "Albert Kottke"
 
 @register()
 class DerrasBardCotton2014(model.GroundMotionModel):
-    """Derras, Bard and Cotton (2014, :cite:`derras14`) model.
+    """Derras, Bard and Cotton (2014, :cite:p:`derras14`) model.
 
     The model is vectorized. Each scenario value (``mag``, ``dist_jb``,
     ``v_s30``, ``depth_hyp``, and ``mechanism``) can be a scalar or an array,
