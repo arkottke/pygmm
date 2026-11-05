@@ -1,57 +1,89 @@
 # pyGMM
 
-[![PyPi Cheese
-Shop](https://img.shields.io/pypi/v/pygmm.svg)](https://pypi.org/project/pygmm/)
+[![PyPI](https://img.shields.io/pypi/v/pygmm.svg)](https://pypi.org/project/pygmm/)
+[![Python](https://img.shields.io/python/required-version-toml?tomlFilePath=https://raw.githubusercontent.com/arkottke/pygmm/main/pyproject.toml)](https://pypi.org/project/pygmm/)
 [![Documentation](https://readthedocs.org/projects/pygmm/badge/?version=latest)](https://pygmm.readthedocs.io/?badge=latest)
-[![Build
-Status](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml/badge.svg)](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml)
-[![Code
-Quality](https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7)](https://app.codacy.com/gh/arkottke/pygmm/dashboard)
-[![Test
-Coverage](https://api.codacy.com/project/badge/Coverage/abc9878c890143c8b590e6f3602056b7)](https://app.codacy.com/gh/arkottke/pygmm/dashboard)
-![License](https://img.shields.io/badge/license-MIT-blue.svg)
+[![Build Status](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml/badge.svg)](https://github.com/arkottke/pygmm/actions/workflows/python-app.yml)
+[![Code Quality](https://api.codacy.com/project/badge/Grade/abc9878c890143c8b590e6f3602056b7)](https://app.codacy.com/gh/arkottke/pygmm/dashboard)
+[![Test Coverage](https://api.codacy.com/project/badge/Coverage/abc9878c890143c8b590e6f3602056b7)](https://app.codacy.com/gh/arkottke/pygmm/dashboard)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/arkottke/pygmm/blob/main/LICENSE)
 [![DOI](https://zenodo.org/badge/53176693.svg)](https://zenodo.org/badge/latestdoi/53176693)
 
 Ground motion models implemented in Python.
 
-I have recently learned that additional ground motion models have been
-implemented through GEM\'s OpenQuake
-[Hazardlib](https://github.com/gem/oq-hazardlib), which I recommend
-checking out.
+pyGMM evaluates published empirical models through a common interface, so they
+can be compared with each other and used as input to site response and random
+vibration theory calculations.
 
 ## Features
 
-Models currently supported:
+- Ground motion models for response spectra, PGA and PGV, including the
+  NGA-West2, NGA-East and subduction models, and the variants used in the USGS
+  National Seismic Hazard Model.
+- Duration, Arias intensity, CAV, vertical-to-horizontal ratio and spectral
+  correlation models.
+- Fourier amplitude spectrum models, including source theory and Stafford et
+  al. (2022).
+- Nonlinear soil curves and velocity profiles.
+- Slope displacement models.
+- Vectorized: a scenario can hold arrays, and `ims` selects the intensity
+  measures to compute.
 
-- Akkar, Sandikkaya, & Bommer (2014) with unit tests
-- Atkinson & Boore (2006)
-- Abrahamson, Silva, & Kamai (2014) with unit tests
-- Abrahamson, Gregor, & Addo (2016) with unit tests
-- Boore, Stewart, Seyhan, & Atkinson (2014) with unit tests
-- Campbell (2003)
-- Campbell & Bozorgnia (2014) with unit tests
-- Chiou & Youngs (2014) with unit tests
-- Derras, Bard & Cotton (2013) with unit tests
-- Idriss (2014) with unit tests
-- Pezeshk, Zandieh, & Tavakoli (2001)
-- Tavakoli & Pezeshk (2005)
+See the [list of models](https://pygmm.readthedocs.io/en/latest/user-guide/ground-motion.html)
+for what is available. Most models are tested with unit tests that check the
+implementation of the model.
 
-Conditional spectra models:
+## Installation
 
-- Baker & Jayaram (2008) with unit tests
-- Kishida (2017) with unit tests
+pyGMM requires Python 3.13 or later and can be installed with
+[pip](https://pip.pypa.io):
 
-Duration models:
+```bash
+python -m pip install pygmm
+```
 
-- Kempton and Stewart (2006)
-- Afshari and Stewart (2016)
+The slope displacement models need the optional extra:
 
-Most models are tested with unit tests that test the implemention of the
-model.
+```bash
+python -m pip install "pygmm[slope]"
+```
+
+## Example
+
+```python
+import pygmm
+
+scenario = pygmm.Scenario(
+    mag=6.5, dist_rup=20.0, dist_jb=20.0, dist_x=20.0, dip=90.0,
+    mechanism="SS", v_s30=760.0,
+)
+model = pygmm.ChiouYoungs2014(scenario)
+model.periods, model.spec_accels, model.ln_stds
+```
+
+## Documentation
+
+Information on the usage can be found in the
+[documentation](https://pygmm.readthedocs.io/). The
+[changelog](https://github.com/arkottke/pygmm/blob/main/CHANGELOG.md) lists the
+changes in each release.
+
+The ground motion models of GEM's
+[OpenQuake Hazardlib](https://github.com/gem/oq-hazardlib) cover additional
+models and are also worth checking out.
+
+## Related packages
+
+pyGMM is developed together with:
+
+- [pyRVT](https://github.com/arkottke/pyrvt): random vibration theory
+- [pyRotd](https://github.com/arkottke/pyrotd): response spectra and rotated
+  response spectra from acceleration time series
+- [pyStrata](https://github.com/arkottke/pystrata): site response analysis
 
 ## Citation
 
-Please cite this software using the
+When citing the software, please reference the
 [DOI](https://zenodo.org/badge/latestdoi/53176693).
 
 ## Contributors
@@ -59,3 +91,8 @@ Please cite this software using the
 - Albert Kottke
 - Greg Lavrentiadis
 - Artie Rodgers
+
+## License
+
+pyGMM is made available under the MIT License. See
+[LICENSE](https://github.com/arkottke/pygmm/blob/main/LICENSE).
