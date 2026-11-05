@@ -1096,7 +1096,12 @@ class Coefficients(collections.abc.Mapping):
         return self._data[key]
 
     def __getattr__(self, key):
-        return self.__getitem__(key)
+        # A missing name raises AttributeError, so that hasattr() and getattr()
+        # with a default work (e.g., inspect.unwrap() checks for __wrapped__)
+        try:
+            return self.__getitem__(key)
+        except KeyError:
+            raise AttributeError(key) from None
 
     def __len__(self):
         return len(self._data)

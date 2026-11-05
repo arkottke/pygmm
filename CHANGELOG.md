@@ -169,6 +169,9 @@
   one of two duplicate copies. Nine modules existed in duplicate; the stale
   copies are removed.
 - Fixed: parameter-limit warnings printed `{self.min}`/`{self.max}` literally.
+- Fixed: `model.Coefficients` raised a `KeyError` instead of an `AttributeError` for a
+  missing attribute, so `hasattr()` failed on it, and the doctests could not be collected
+  from `slope_displacement.cho_rathje_2022`.
 - Fixed: `AbrahamsonSilva1996.interp` and `calc_ln_dur_incr` no longer modify the `nias` array that
   is passed in, and accept integer values.
 - Fixed: Boore et al. (2014) used the global relation for the reference depth to 1.0 km/s for the

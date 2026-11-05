@@ -7,6 +7,7 @@ from numpy.testing import assert_allclose, assert_array_equal
 
 from pygmm import Campbell2003 as C03
 from pygmm.model import (
+    Coefficients,
     Scenario,
     as_column,
     equals,
@@ -136,3 +137,14 @@ def test_subduction_epistemic_branches(name):
         assert_allclose(b[2], center.ln_std_pga)
     [(w_c, _, _)] = center.ln_branches("pga")
     assert w_c == 1.0
+
+
+def test_coefficients_missing_attribute():
+    """A missing name raises AttributeError, so hasattr and getattr work."""
+    c = Coefficients(a=1.0)
+    assert c.a == 1.0
+    assert c["a"] == 1.0
+    assert not hasattr(c, "__wrapped__")
+    assert getattr(c, "b", None) is None
+    with pytest.raises(KeyError):
+        c["b"]
