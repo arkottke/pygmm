@@ -79,12 +79,17 @@ from .ground_motion import (
 from .model import Scenario
 from .registry import ModelInfo, get_model, register
 from .velocity_profile import (
+    NcmProfile,
+    aaa21_profile,
     bj97gr760_profile,
     bj97gr_profile,
     bj97gvhr_profile,
     btc11_profile,
+    fetch_ncm_profile,
     kea16_profile,
+    load_ncm_profile,
     sa18_profile,
+    simplify_velocity_profile,
 )
 
 __all__ = [
@@ -145,8 +150,13 @@ __all__ = [
     "MenqSoilType",
     "RollinsEtAlSoilType",
     "WangSoilType",
+    "NcmProfile",
+    "aaa21_profile",
+    "fetch_ncm_profile",
     "kea16_profile",
+    "load_ncm_profile",
     "sa18_profile",
+    "simplify_velocity_profile",
     "bj97gr760_profile",
     "bj97gr_profile",
     "bj97gvhr_profile",

@@ -4,6 +4,14 @@ pygmm.velocity\_profile package
 Submodules
 ----------
 
+pygmm.velocity\_profile.al\_atik\_abrahamson\_2021 module
+---------------------------------------------------------
+
+.. automodule:: pygmm.velocity_profile.al_atik_abrahamson_2021
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pygmm.velocity\_profile.boore\_2016 module
 ------------------------------------------
 
@@ -28,6 +36,14 @@ pygmm.velocity\_profile.kamai\_2016 module
    :show-inheritance:
    :undoc-members:
 
+pygmm.velocity\_profile.national\_crustal\_model module
+-------------------------------------------------------
+
+.. automodule:: pygmm.velocity_profile.national_crustal_model
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
 pygmm.velocity\_profile.shi\_asimaki\_2018 module
 -------------------------------------------------
 
@@ -40,6 +56,14 @@ pygmm.velocity\_profile.wair\_dejong\_shantz\_2012 module
 ---------------------------------------------------------
 
 .. automodule:: pygmm.velocity_profile.wair_dejong_shantz_2012
+   :members:
+   :show-inheritance:
+   :undoc-members:
+
+pygmm.velocity\_profile.\_simplify module
+-----------------------------------------
+
+.. automodule:: pygmm.velocity_profile._simplify
    :members:
    :show-inheritance:
    :undoc-members:

@@ -2,6 +2,19 @@
 
 ## Unreleased
 
+- Added: `aaa21_profile(model, vs30, depth=None)` returns the Al Atik and
+  Abrahamson (2021) reference Vs profiles as a `VelocityProfile`. Moved from
+  `pystrata.generic`; the returned profile now includes a layer at 0 m (the
+  table starts at 1.4 m) and can be sampled at given depths.
+- Added: `fetch_ncm_profile` and `load_ncm_profile` for USGS National Crustal
+  Model profiles, moved from `pystrata.generic`. `load_ncm_profile` returns an
+  `NcmProfile` (a `VelocityProfile` with `density` [kg/m³] and
+  `water_table_depth`) instead of a DataFrame.
+- Added: `simplify_velocity_profile(vp, tol)` merges adjacent layers with
+  similar velocity, preserving travel time.
+
+## 0.9.1 (2026-11-05)
+
 - Fixed: the total standard deviation of `BaylessAbrahamson2019` was wrong for
   magnitudes below 6 at the frequencies where the first coefficient of Eqs.
   19a-c is larger than the second. The interpolated value was clipped between

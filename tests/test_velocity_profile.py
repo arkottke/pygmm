@@ -263,3 +263,201 @@ def test_calc_vel_shear_spt_wds12(soil_type, age, expected):
 def test_calc_vel_shear_spt_wds12_invalid_soil_type():
     with pytest.raises(ValueError, match="soil_type"):
         calc_vel_shear_spt_wds12(20, 1.0, soil_type="rock")
+
+
+# ---------------------------------------------------------------------------
+# Al Atik & Abrahamson (2021), National Crustal Model, simplification
+# ---------------------------------------------------------------------------
+
+import gzip  # noqa: E402
+import json  # noqa: E402
+import urllib.request  # noqa: E402
+
+from pygmm.velocity_profile import (  # noqa: E402
+    NcmProfile,
+    aaa21_profile,
+    fetch_ncm_profile,
+    load_ncm_profile,
+    simplify_velocity_profile,
+)
+
+
+def _vs_avg(depth, vs, z=30.0):
+    """Time-averaged velocity to depth z of a layer-top profile."""
+    top = np.asarray(depth, float)
+    bottom = np.append(top[1:], np.inf)
+    thick = np.clip(np.minimum(bottom, z) - top, 0, None)
+    return z / np.sum(thick / vs)
+
+
+@pytest.mark.parametrize("model", ["ASK14", "BSSA14", "CB14", "CY14"])
+@pytest.mark.parametrize("vs30", [620, 760, 1100])
+def test_aaa21_profile(model, vs30):
+    prof = aaa21_profile(model, vs30)
+
+    assert isinstance(prof, VelocityProfile)
+    assert prof.depth[0] == 0
+    assert np.all(np.diff(prof.depth) > 0)
+    assert np.all((prof.vs_median > 100) & (prof.vs_median < 5000))
+    assert_allclose(prof.std_vs_ln, 0)
+    # Units and layering are right if the profile reproduces its own Vs30
+    assert_allclose(_vs_avg(prof.depth, prof.vs_median), vs30, rtol=0.03)
+
+
+def test_aaa21_profile_case_insensitive_and_errors():
+    assert_allclose(
+        aaa21_profile("ask14", 760).vs_median, aaa21_profile("ASK14", 760).vs_median
+    )
+    with pytest.raises(KeyError):
+        aaa21_profile("NOPE", 760)
+    with pytest.raises(KeyError):
+        aaa21_profile("ASK14", 500)
+
+
+def test_aaa21_profile_sampled_at_depths():
+    full = aaa21_profile("CY14", 760)
+    prof = aaa21_profile("CY14", 760, depth=[0, 10, 1000.0])
+
+    assert_allclose(prof.depth, [0, 10, 1000])
+    # A depth on a layer top returns that layer
+    i = np.searchsorted(full.depth, 1000.0, side="right") - 1
+    assert prof.vs_median[2] == full.vs_median[i]
+    assert prof.vs_median[0] == full.vs_median[0]
+    with pytest.raises(ValueError):
+        aaa21_profile("CY14", 760, depth=[-1.0])
+
+
+def _profile(density=None):
+    kw = {}
+    if density is not None:
+        kw["density"] = np.asarray(density, float)
+        kw["water_table_depth"] = 1.0
+        cls = NcmProfile
+    else:
+        cls = VelocityProfile
+    return cls(
+        depth=np.array([0.0, 5, 10, 20, 30, 50]),
+        vs_median=np.array([200.0, 202, 204, 300, 302, 800]),
+        std_vs_ln=np.array([0.1, 0.1, 0.1, 0.2, 0.2, 0.0]),
+        **kw,
+    )
+
+
+def test_simplify_preserves_travel_time_and_depth():
+    vp = _profile()
+    out = simplify_velocity_profile(vp, tol=0.05)
+
+    assert type(out) is VelocityProfile
+    assert_allclose(out.depth, [0, 20, 50])
+
+    # Travel time through the finite layers
+    def travel_time(p):
+        return np.sum(np.diff(p.depth) / p.vs_median[:-1])
+
+    assert_allclose(travel_time(out), travel_time(vp), rtol=1e-9)
+    assert out.depth[-1] == vp.depth[-1]
+    assert out.vs_median[-1] == 800
+    assert_allclose(out.std_vs_ln, [0.1, 0.2, 0.0])
+
+
+def test_simplify_idempotent_and_density():
+    vp = _profile(density=[1800, 1800, 1900, 2000, 2100, 2500])
+    once = simplify_velocity_profile(vp, tol=0.05)
+    twice = simplify_velocity_profile(once, tol=0.05)
+
+    assert isinstance(once, NcmProfile)
+    assert once.water_table_depth == 1.0
+    # Thickness-weighted: (5, 5, 10) m and (10, 20) m groups, then the half-space
+    assert_allclose(
+        once.density, [(1800 * 10 + 1900 * 10) / 20, (2000 * 10 + 2100 * 20) / 30, 2500]
+    )
+    assert_allclose(twice.depth, once.depth)
+    assert_allclose(twice.vs_median, once.vs_median)
+
+
+def _ncm_payload(results=True):
+    return {
+        "status": "sucess",
+        "request": {"depths": {"depth_vector": [0.0, 5.0, 10.0]}},
+        "response": {
+            "results": [
+                {
+                    "location": {"water_table_depth": 2.5},
+                    "profile": {
+                        "vs": [150.0, 200.0, 400.0],
+                        "density": [1700.0, 1800.0, 2000.0],
+                    },
+                }
+            ]
+            if results
+            else []
+        },
+    }
+
+
+@pytest.mark.parametrize("compress", [True, False])
+def test_load_ncm_profile(tmp_path, compress):
+    path = tmp_path / "ncm.json"
+    opener = gzip.open if compress else open
+    with opener(path, "wt") as fp:
+        json.dump(_ncm_payload(), fp)
+
+    prof = load_ncm_profile(path)
+
+    assert isinstance(prof, NcmProfile)
+    assert isinstance(prof, VelocityProfile)
+    assert_allclose(prof.depth, [0, 5, 10])
+    assert_allclose(prof.vs_median, [150, 200, 400])
+    assert_allclose(prof.density, [1700, 1800, 2000])
+    assert prof.water_table_depth == 2.5
+    assert_allclose(prof.std_vs_ln, 0)
+
+
+def test_load_ncm_profile_empty(tmp_path):
+    path = tmp_path / "ncm.json"
+    path.write_text(json.dumps(_ncm_payload(results=False)))
+    with pytest.raises(ValueError):
+        load_ncm_profile(path)
+
+
+class _FakeResponse:
+    def __init__(self, payload):
+        self._body = json.dumps(payload).encode()
+
+    def read(self):
+        return self._body
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *exc):
+        return False
+
+
+@pytest.mark.parametrize("gzip_output", [True, False])
+def test_fetch_ncm_profile(tmp_path, monkeypatch, gzip_output):
+    urls = []
+
+    def fake_urlopen(url, timeout=None):
+        urls.append(url)
+        return _FakeResponse(_ncm_payload())
+
+    monkeypatch.setattr(urllib.request, "urlopen", fake_urlopen)
+    path = tmp_path / "out.json"
+
+    fetch_ncm_profile(37.5, -122.25, path, gzip_output=gzip_output)
+
+    assert "location=37.5,-122.25" in urls[0]
+    assert "depths=0,5,10000.0" in urls[0]
+    assert load_ncm_profile(path).water_table_depth == 2.5
+
+
+def test_fetch_ncm_profile_failure(tmp_path, monkeypatch):
+    monkeypatch.setattr(
+        urllib.request,
+        "urlopen",
+        lambda url, timeout=None: _FakeResponse({"status": "error"}),
+    )
+    with pytest.raises(RuntimeError):
+        fetch_ncm_profile(0, 0, tmp_path / "out.json")
+    assert not (tmp_path / "out.json").exists()
