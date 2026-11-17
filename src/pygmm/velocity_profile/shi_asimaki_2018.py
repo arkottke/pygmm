@@ -29,12 +29,78 @@ _VS30_RECOMMENDED = (173.1, 1000.0)
 _VS30_MAX = 1500.0
 
 
+def _svm_params(vs30: float) -> tuple[float, float, float]:
+    """Eq. (4): SVM parameters ``(vs_0, k, n)`` as a function of Vs30."""
+    vs_0 = _P1 * vs30**2 + _P2 * vs30 + _P3
+    k = np.exp(_R1 * vs30**_R2 + _R3)
+    n = _S1 * np.exp(_S2 * vs30) + _S3 * np.exp(_S4 * vs30)
+    return float(vs_0), float(k), float(n)
+
+
+def sa18_mean_vs(depth: npt.ArrayLike, vs30: float) -> npt.NDArray[np.floating]:
+    """Arithmetic-mean shear-wave velocity from Shi and Asimaki (2018).
+
+    This is eq. (3) as fit by the authors to the *arithmetic mean* of the
+    (lognormal) measured velocities, see eq. (1). Use :func:`sa18_profile` for
+    the median.
+
+    Parameters
+    ----------
+    depth : array_like
+        Depths [m] at which to evaluate the profile.
+    vs30 : float
+        Time-averaged shear-wave velocity in the upper 30 m [m/s].
+
+    Returns
+    -------
+    numpy.ndarray
+        Mean shear-wave velocity [m/s] at each depth.
+    """
+    vs_0, k, n = _svm_params(vs30)
+    dz = np.maximum(np.asarray(depth, dtype=float) - _DEPTH_0, 0.0)
+    return vs_0 * (1 + k * dz) ** (1 / n)
+
+
+def sa18_depth_to_vs(vs: npt.ArrayLike, vs30: float) -> npt.NDArray[np.floating]:
+    """Depth at which the mean SVM profile reaches a shear-wave velocity.
+
+    Inverts eq. (3) of Shi and Asimaki (2018). For example, the authors
+    recommend using the profile only down to a velocity of 1000 m/s.
+
+    Parameters
+    ----------
+    vs : array_like
+        Shear-wave velocity [m/s]. Must be at least the near-surface velocity
+        :math:`V_{S0}` of the model.
+    vs30 : float
+        Time-averaged shear-wave velocity in the upper 30 m [m/s].
+
+    Returns
+    -------
+    numpy.ndarray
+        Depth [m] of the mean profile at each velocity.
+    """
+    vs_0, k, n = _svm_params(vs30)
+    vs = np.asarray(vs, dtype=float)
+    if np.any(vs < vs_0):
+        raise ValueError(
+            f"vs must be at least the near-surface velocity ({vs_0:.1f} m/s)."
+        )
+    return _DEPTH_0 + ((vs / vs_0) ** n - 1) / k
+
+
 def sa18_profile(depth: npt.ArrayLike, vs30: float) -> VelocityProfile:
     """Median shear-wave velocity profile from Shi and Asimaki (2018).
 
     The sediment velocity model (SVM) predicts a 1D shear-wave velocity
     profile as a function of :math:`V_{S30}` for basin sediments in
     California.
+
+    The authors fit eq. (3) to the arithmetic mean of lognormally distributed
+    velocities (:func:`sa18_mean_vs`). The returned ``vs_median`` is the
+    corresponding lognormal median, ``mean * exp(-std_vs_ln**2 / 2)``. The
+    standard deviation of eq. (9), which the authors define at the layer
+    midpoint, is evaluated here at each ``depth``.
 
     Parameters
     ----------
@@ -66,15 +132,8 @@ def sa18_profile(depth: npt.ArrayLike, vs30: float) -> VelocityProfile:
 
     depth = np.asarray(depth, dtype=float)
 
-    # Eq. (4): SVM parameters as a function of Vs30.
-    vs_0 = _P1 * vs30**2 + _P2 * vs30 + _P3
-    k = np.exp(_R1 * vs30**_R2 + _R3)
-    n = _S1 * np.exp(_S2 * vs30) + _S3 * np.exp(_S4 * vs30)
-
-    # Eq. (3): median Vs profile, constant for depths shallower than
-    # _DEPTH_0 and a power-law increase below it.
-    dz = np.maximum(depth - _DEPTH_0, 0.0)
-    vs_median = vs_0 * (1 + k * dz) ** (1 / n)
+    # Eqs. (3) and (4): arithmetic-mean Vs profile.
+    vs_mean = sa18_mean_vs(depth, vs30)
 
     # Eq. (9): standard deviation of Vs [m/s] as a function of depth and
     # Vs30, clipped at 0 to avoid unphysical negative values.
@@ -82,8 +141,11 @@ def sa18_profile(depth: npt.ArrayLike, vs30: float) -> VelocityProfile:
 
     # Convert the linear-space standard deviation to a log-space standard
     # deviation using the lognormal moment relationships of Toro (1995)
-    # (eqs. 1 and 2), noting that `vs_median` is the arithmetic mean.
-    std_vs_ln = np.sqrt(np.log1p((sd_vs / vs_median) ** 2))
+    # (eqs. 1 and 2), noting that the SVM profile is the arithmetic mean.
+    std_vs_ln = np.sqrt(np.log1p((sd_vs / vs_mean) ** 2))
+
+    # Median of the lognormal distribution (eq. 1 inverted).
+    vs_median = vs_mean * np.exp(-(std_vs_ln**2) / 2)
 
     return VelocityProfile(
         depth=depth,

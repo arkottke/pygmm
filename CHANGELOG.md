@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Changed: `sa18_profile` now returns the lognormal median in `vs_median`. It
+  previously returned the arithmetic mean fit by Shi and Asimaki (2018),
+  which is about 4-5 % higher than the median.
+- Added: `sa18_mean_vs` (the arithmetic-mean profile of Shi and Asimaki, 2018)
+  and `sa18_depth_to_vs` (depth at which that profile reaches a velocity).
 - Added: `aaa21_profile(model, vs30, depth=None)` returns the Al Atik and
   Abrahamson (2021) reference Vs profiles as a `VelocityProfile`. Moved from
   `pystrata.generic`; the returned profile now includes a layer at 0 m (the

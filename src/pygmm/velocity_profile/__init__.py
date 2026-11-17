@@ -12,7 +12,7 @@ from .boore_2016 import (
 from .boore_thompson_cadet_2011 import btc11_profile
 from .kamai_2016 import kea16_profile
 from .national_crustal_model import NcmProfile, fetch_ncm_profile, load_ncm_profile
-from .shi_asimaki_2018 import sa18_profile
+from .shi_asimaki_2018 import sa18_depth_to_vs, sa18_mean_vs, sa18_profile
 from .wair_dejong_shantz_2012 import calc_vel_shear_spt_wds12
 
 __all__ = [
@@ -28,6 +28,8 @@ __all__ = [
     "fetch_ncm_profile",
     "kea16_profile",
     "load_ncm_profile",
+    "sa18_depth_to_vs",
+    "sa18_mean_vs",
     "sa18_profile",
     "simplify_velocity_profile",
 ]

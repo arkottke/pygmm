@@ -88,6 +88,8 @@ from .velocity_profile import (
     fetch_ncm_profile,
     kea16_profile,
     load_ncm_profile,
+    sa18_depth_to_vs,
+    sa18_mean_vs,
     sa18_profile,
     simplify_velocity_profile,
 )
@@ -155,6 +157,8 @@ __all__ = [
     "fetch_ncm_profile",
     "kea16_profile",
     "load_ncm_profile",
+    "sa18_depth_to_vs",
+    "sa18_mean_vs",
     "sa18_profile",
     "simplify_velocity_profile",
     "bj97gr760_profile",

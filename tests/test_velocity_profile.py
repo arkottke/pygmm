@@ -12,6 +12,8 @@ from pygmm.velocity_profile import (
     calc_vel_comp_bea16,
     calc_vel_shear_spt_wds12,
     kea16_profile,
+    sa18_depth_to_vs,
+    sa18_mean_vs,
     sa18_profile,
 )
 from pygmm.velocity_profile.boore_2016 import (
@@ -87,27 +89,31 @@ def test_sa18_profile_shape_and_monotonicity():
     assert np.all(np.isfinite(prof.vs_median))
     assert np.all(np.isfinite(prof.std_vs_ln))
     assert np.all(prof.std_vs_ln > 0)
-    # Vs is constant over the top 2.5 m and monotonically increasing below.
-    assert prof.vs_median[0] == prof.vs_median[1] == prof.vs_median[2]
+    # The mean Vs is constant over the top 2.5 m and increases below. The
+    # median also depends on the (depth-dependent) standard deviation.
+    mean = sa18_mean_vs(depth, 300.0)
+    assert mean[0] == mean[1] == mean[2]
+    assert np.all(np.diff(mean[2:]) > 0)
     assert np.all(np.diff(prof.vs_median[2:]) > 0)
     assert prof.region == "california"
 
 
 def test_sa18_profile_known_values():
-    # Regression values computed directly from equations (3), (4), and (9)
-    # of Shi and Asimaki (2018) for Vs30 = 300 m/s.
+    # Regression values computed directly from equations (1)-(4) and (9) of
+    # Shi and Asimaki (2018) for Vs30 = 300 m/s. The mean profile is
+    # 205.3928 m/s at 0-2.5 m; the median is lower by exp(-std_vs_ln**2 / 2).
     depth = np.array([0.0, 1.25, 2.5, 5, 10, 30, 50])
     prof = sa18_profile(depth, vs30=300.0)
 
     expected_vs_median = np.array(
         [
-            205.3928,
-            205.3928,
-            205.3928,
-            239.54615298,
-            288.92766567,
-            406.23029423,
-            480.82679063,
+            195.43075004,
+            194.85229673,
+            194.26156428,
+            228.70434742,
+            277.73590654,
+            390.68953,
+            459.393344,
         ]
     )
     expected_std_vs_ln = np.array(
@@ -124,6 +130,24 @@ def test_sa18_profile_known_values():
 
     assert_allclose(prof.vs_median, expected_vs_median, rtol=1e-5)
     assert_allclose(prof.std_vs_ln, expected_std_vs_ln, rtol=1e-5)
+
+
+def test_sa18_median_is_lognormal_median_of_mean():
+    depth = np.array([0.0, 5, 10, 30, 80])
+    prof = sa18_profile(depth, vs30=300.0)
+    mean = sa18_mean_vs(depth, 300.0)
+
+    assert_allclose(prof.vs_median * np.exp(prof.std_vs_ln**2 / 2), mean, rtol=1e-10)
+    assert np.all(prof.vs_median < mean)
+
+
+def test_sa18_depth_to_vs_roundtrip():
+    depth = np.array([2.5, 5, 30, 120])
+    vs = sa18_mean_vs(depth, 400.0)
+    assert_allclose(sa18_depth_to_vs(vs, 400.0), depth, rtol=1e-9)
+
+    with pytest.raises(ValueError, match="at least"):
+        sa18_depth_to_vs(10.0, 400.0)
 
 
 @pytest.mark.parametrize("vs30", [100.0, 1100.0])
